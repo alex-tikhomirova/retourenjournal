@@ -8,10 +8,12 @@ services:
       context: .
       dockerfile: docker/php/Dockerfile
     container_name: retourenjournal-app
+    user: "${UID}:${GID}"
     working_dir: /var/www/html/src
 
     volumes:
       - ./:/var/www/html
+      - ./src/.env:/var/www/html/src/.env
       - ./docker/php/php.ini:/usr/local/etc/php/conf.d/99-app.ini
       - ./docker/php/xdebug.ini:/usr/local/etc/php/conf.d/99-xdebug.ini
 
