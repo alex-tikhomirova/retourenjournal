@@ -21,4 +21,4 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 RUN pecl install xdebug \
     && docker-php-ext-enable xdebug
 
-WORKDIR /var/www/html/src
+WORKDIR /var/www/html/backend
