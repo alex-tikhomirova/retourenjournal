@@ -1,0 +1,21 @@
+
+@use "variables";
+@use "normalize";
+@use "typography";
+@use "layout";
+@use "fonts";
+@use "buttons";
+@use "forms";
+
+
+.grid-table{
+  width: 100%;
+  th{
+    text-align: left;
+    background-color: #f5f5f5;
+  }
+  tbody > tr > td, thead > tr > td, thead > tr > th{
+    border-top: 1px solid variables.$border-color;
+    padding: 10px;
+  }
+}

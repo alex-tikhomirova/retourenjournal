@@ -32,7 +32,7 @@ use Illuminate\Support\Carbon;
  *     Shipment direction (1 = to_merchant, 2 = to_customer).
  *
  * @property int $payer
- *     Shipment payer (1 = customer, 2 = merchant, 3 = shared, 4 = unknown).
+ *     Shipment payer (payer: 1 = customer, 2 = merchant, 3 = plarform, 4 = shared, 5 = unknown).
  *
  * @property int|null $cost_cents
  *     Shipment cost in cents.
@@ -48,6 +48,9 @@ use Illuminate\Support\Carbon;
  *
  * @property string|null $tracking_number
  *     Tracking number.
+ *
+ * @property string|null $label_ref
+ *     shipping label
  *
  * @property int|null $created_by_user_id
  *     User who created the shipment record.
@@ -82,10 +85,36 @@ class ReturnShipment extends Model
         'status_id',
         'carrier',
         'tracking_number',
+        'label_ref',
         'created_by_user_id',
         'updated_by_user_id',
     ];
 
+
+
+    /**
+     * fill some data before saving
+     *
+     * @return void
+     */
+    protected static function booted(): void
+    {
+        static::creating(function (self $model) {
+            /** @var User $user */
+            if ($user = auth()->user()) {
+                $model->organization_id = $user->current_organization_id;
+                $model->created_by_user_id = $user->id;
+                $model->updated_by_user_id = $user->id;
+                $model->status_id = 1;
+            }
+        });
+
+        static::updating(function (self $model) {
+            if ($userId = auth()->id()) {
+                $model->updated_by_user_id = $userId;
+            }
+        });
+        }
     /**
      * Get the organization that owns this shipment.
      */

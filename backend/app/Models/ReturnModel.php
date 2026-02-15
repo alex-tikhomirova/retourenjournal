@@ -47,8 +47,6 @@ use Illuminate\Support\Carbon;
  * @property string|null $reason
  *     Customer‑provided reason for the return.
  *
- * @property string|null $internal_note
- *     Internal note visible only to staff.
  *
  * @property int|null $created_by_user_id
  *     User who created the return.
@@ -60,7 +58,10 @@ use Illuminate\Support\Carbon;
  *     Timestamp when the record was created.
  *
  * @property Carbon|null $updated_at
- *     Timestamp when the record was last updated.
+ *     Timestamp when the record was last updated
+ *
+ * @property Carbon|null $deleted_at
+ *      Timestamp when the record was deleted (soft delete).
  *
  *
  * @property-read Organization|null $organization
@@ -78,6 +79,17 @@ use Illuminate\Support\Carbon;
 class ReturnModel extends Model
 {
 
+    protected $table = 'returns';
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'deleted_at' => 'datetime',
+    ];
+
     /**
      * The attributes that are mass assignable.
      *
@@ -91,10 +103,54 @@ class ReturnModel extends Model
         'decision_id',
         'order_reference',
         'reason',
-        'internal_note',
+        'deleted_at',
         'created_by_user_id',
         'updated_by_user_id',
     ];
+
+
+    /**
+     * fill some data before saving
+     *
+     * @return void
+     */
+    protected static function booted(): void
+    {
+        static::creating(function (self $model) {
+            /** @var User $user */
+            if ($user = auth()->user()) {
+                $model->organization_id = $user->current_organization_id;
+                $model->created_by_user_id = $user->id;
+                $model->updated_by_user_id = $user->id;
+                $model->status_id = ReturnStatus::initialReturnStatus($user->current_organization_id)->id;
+            }
+        });
+
+        static::updating(function (self $model) {
+            if ($userId = auth()->id()) {
+                $model->updated_by_user_id = $userId;
+            }
+        });
+
+        static::saved(function (self $model) {
+            $eventFields = ReturnEvent::eventFields('return');
+            foreach ($model->getDirty() as $field => $value) {
+                if (isset($eventFields[$field])) {
+                    $eventField = $eventFields[$field];
+                    $model->events()->save(
+                        new ReturnEvent([
+                            'action' => (int) $model->wasRecentlyCreated,
+                            'return_id' => $model->id,
+                            'field' => "return.$field",
+                            'ref_type' => $eventField['ref_type']??null,
+                            'ref_id' => isset($eventField['ref_type'])?$model->getAttributeValue($field):null,
+                            'value' => $model->getAttributeValue($field),
+                        ])
+                    );
+                }
+            }
+        });
+    }
 
     // ---------------------------------------------------------
     //  BelongsTo relations

@@ -53,4 +53,5 @@ class ShipmentStatus extends Model
         'sort_order',
         'is_terminal',
     ];
+
 }

@@ -61,6 +61,22 @@ class Customer extends Model
         'address_text',
     ];
 
+
+    /**
+     * fill some data before saving
+     *
+     * @return void
+     */
+    protected static function booted(): void
+    {
+        static::creating(function (self $model) {
+            /** @var User $user */
+            if ($user = auth()->user()) {
+                $model->organization_id = $user->current_organization_id;
+            }
+        });
+    }
+
     /**
      * Get the organization that owns the customer.
      *

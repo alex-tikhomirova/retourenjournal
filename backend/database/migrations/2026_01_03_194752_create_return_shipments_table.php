@@ -27,7 +27,7 @@ return new class extends Migration
             // direction: 1 = to_merchant, 2 = to_customer
             $table->unsignedSmallInteger('direction');
 
-            // payer: 1 = customer, 2 = merchant, 3 = shared, 4 = unknown
+            // payer: 1 = customer, 2 = merchant, 3 = plarform, 4 = shared, 5 = unknown
             $table->unsignedSmallInteger('payer');
 
             $table->integer('cost_cents')->nullable();
@@ -40,6 +40,7 @@ return new class extends Migration
 
             $table->string('carrier')->nullable();
             $table->string('tracking_number')->nullable();
+            $table->string('label_ref')->nullable();
 
             // audit
             $table->foreignId('created_by_user_id')

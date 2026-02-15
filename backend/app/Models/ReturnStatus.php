@@ -8,6 +8,7 @@
 
 namespace App\Models;
 
+use App\Models\Support\ReturnEventRefLoadable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -53,6 +54,8 @@ use Illuminate\Support\Carbon;
  */
 class ReturnStatus extends Model
 {
+
+    use ReturnEventRefLoadable;
     /**
      * The attributes that are mass assignable.
      *
@@ -75,5 +78,21 @@ class ReturnStatus extends Model
     public function organization(): BelongsTo
     {
         return $this->belongsTo(Organization::class);
+    }
+
+    /**
+     * @param int|null $orgId
+     * @return ReturnStatus
+     */
+    public static function initialReturnStatus(?int $orgId = null): ReturnStatus
+    {
+/*        if ($orgId !== null) {
+            $orgInititalStatus = ReturnStatus::query()->where('kind', 1)->where('organization_id', $orgId)->first();
+            if ($orgInititalStatus) {
+                return $orgInititalStatus;
+            }
+        }*/
+        return static::query()->where('kind', 1)->firstOrFail();
+
     }
 }

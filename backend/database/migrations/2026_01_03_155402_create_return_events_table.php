@@ -27,7 +27,7 @@ return new class extends Migration
                 ->constrained('users')
                 ->nullOnDelete();
 
-            // 1 = created, 2 = updated
+            // 0 = created, 1 = updated
             $table->unsignedSmallInteger('action');
 
             // e.g. status_id, decision_id, shipment, refund
@@ -36,16 +36,15 @@ return new class extends Migration
             // Typed references (restricted in application code to:
             // return_status | return_decision | return_shipment | return_refund)
             $table->string('ref_type')->nullable();
-            $table->unsignedBigInteger('old_ref_id')->nullable();
-            $table->unsignedBigInteger('new_ref_id')->nullable();
+            $table->unsignedBigInteger('ref_id')->nullable();
             // Extra payload
-            $table->jsonb('meta')->nullable();
+            $table->text('value')->nullable();
 
             // We want event time to be explicit and index-friendly
             $table->timestamp('created_at')->useCurrent();
 
             $table->index(['organization_id', 'return_id', 'created_at']);
-            $table->index(['organization_id', 'ref_type', 'new_ref_id']);
+            $table->index(['organization_id', 'ref_type', 'ref_id']);
         });
     }
 

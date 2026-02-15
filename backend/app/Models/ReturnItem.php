@@ -47,17 +47,13 @@ use Illuminate\Support\Carbon;
  * @property string $currency
  *     ISO‑4217 currency code (default: EUR).
  *
- * @property Carbon|null $created_at
- *     Timestamp when the record was created.
- *
- * @property Carbon|null $updated_at
- *     Timestamp when the record was last updated.
- *
  * @property-read Organization $organization
  * @property-read ReturnModel $return
  */
 class ReturnItem extends Model
 {
+
+    public $timestamps = false;
     /**
      * The attributes that are mass assignable.
      *
@@ -74,6 +70,20 @@ class ReturnItem extends Model
         'currency',
     ];
 
+    /**
+     * fill some data before saving
+     *
+     * @return void
+     */
+    protected static function booted(): void
+    {
+        static::creating(function (self $model) {
+            /** @var User $user */
+            if ($user = auth()->user()) {
+                $model->organization_id = $user->current_organization_id;
+            }
+        });
+    }
     /**
      * Get the organization that owns this return item.
      */

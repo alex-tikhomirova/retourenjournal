@@ -37,10 +37,9 @@ return new class extends Migration
                 ->on('return_decisions')
                 ->nullOnDelete();
 
-            $table->string('order_reference');
+            $table->string('order_reference')->nullable();
 
             $table->text('reason')->nullable();
-            $table->text('internal_note')->nullable();
             $table->foreignId('created_by_user_id')
                 ->nullable()
                 ->constrained('users')

@@ -78,25 +78,25 @@ return new class extends Migration
             [
                 'code' => 'pending',
                 'name' => 'Ausstehend',
-                'is_terminal' => false,
+                'is_counted' => true,
                 'sort_order' => 20,
             ],
             [
                 'code' => 'processing',
                 'name' => 'In Bearbeitung',
-                'is_terminal' => false,
+                'is_counted' => true,
                 'sort_order' => 30,
             ],
             [
                 'code' => 'refunded',
                 'name' => 'Erstattet',
-                'is_terminal' => true,
+                'is_counted' => true,
                 'sort_order' => 90,
             ],
             [
                 'code' => 'failed',
                 'name' => 'Fehlgeschlagen',
-                'is_terminal' => true,
+                'is_counted' => false,
                 'sort_order' => 100,
             ],
         ]);

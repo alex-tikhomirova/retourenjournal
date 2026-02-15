@@ -1,0 +1,114 @@
+
+/* =========================
+   Normalize / Base Reset
+   ========================= */
+
+/* 1. Box model */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* 2. Remove default margin */
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* 3. Improve text rendering */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  font-size: 16px;
+}
+
+/* 4. Body defaults */
+body {
+
+  min-height: 100vh;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont,
+  "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  text-rendering: optimizeLegibility;
+}
+
+/* 5. Headings reset */
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+/* 6. Text elements */
+p,
+blockquote,
+figure {
+  margin: 0;
+}
+
+/* 7. Lists */
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* 8. Links */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* 9. Images & media */
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* 10. Tables */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* 11. Forms */
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+  margin: 0;
+}
+
+/* Remove default button styles */
+button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* 12. Textarea */
+textarea {
+  resize: vertical;
+}
+
+/* 13. Disabled elements */
+:disabled {
+  cursor: not-allowed;
+}
+
+/* 14. Hidden */
+[hidden] {
+  display: none !important;
+}

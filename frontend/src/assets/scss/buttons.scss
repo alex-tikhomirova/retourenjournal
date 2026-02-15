@@ -1,0 +1,184 @@
+@use "variables" as v;
+@use "sass:color";
+
+// buttons.scss
+// Simple UI buttons (text and/or SVG icon)
+
+// ==========================
+// Color variables
+// ==========================
+$btn-primary:  v.$color-primary !default;
+$btn-secondary:#6B7280 !default; // neutral gray
+$btn-success:  #16A34A !default;
+$btn-danger:   #DC2626 !default;
+
+$btn-text-on-dark: #fff !default;
+
+$btn-disabled-bg:  #E5E7EB !default;
+$btn-disabled-fg:  #9CA3AF !default;
+$btn-disabled-bd:  #D1D5DB !default;
+
+// ==========================
+// Shape & typography
+// ==========================
+$btn-radius: 5px !default;
+$btn-border-width: 1px !default;
+
+$btn-font-weight: 400 !default;
+
+// Default size (md): visually ~40px height (20 + 10 + 10)
+$btn-md-font-size: 14px !default;
+$btn-md-pad-y: 8px !default;
+$btn-md-pad-x: 12px !default;
+
+// Small (sm): ~32px (18 + 7 + 7)
+$btn-sm-font-size: 13px !default;
+$btn-sm-pad-y: 4px !default;
+$btn-sm-pad-x: 8px !default;
+
+// Large (lg): ~44px (22 + 11 + 11)
+$btn-lg-font-size: 16px !default;
+$btn-lg-pad-y: 12px !default;
+$btn-lg-pad-x: 18px !default;
+
+// Icon sizing (inline svg)
+$btn-icon-size: 18px !default;
+
+// Transitions
+$btn-transition: 140ms ease !default;
+
+// ==========================
+// Helpers
+// ==========================
+@function _hover-bg($c) {
+  @return color.mix(#fff, $c, 12%); // slightly lighter
+}
+@function _active-bg($c) {
+  @return color.mix(#000, $c, 10%); // slightly darker
+}
+
+@mixin btn-size($fs, $py, $px) {
+  font-size: $fs;
+  padding: $py $px;
+  gap: $py;
+  svg{
+    width: $fs;
+    height: $fs;
+  }
+}
+
+@mixin btn-solid($base-color) {
+  background: $base-color;
+  border-color: color.mix(#000, $base-color, 12%); // subtle border
+  color: $btn-text-on-dark;
+
+  &:hover:not(:disabled):not(.is-disabled) {
+    background: _hover-bg($base-color);
+    border-color: color.mix(#000, _hover-bg($base-color), 12%);
+  }
+
+  &:active:not(:disabled):not(.is-disabled),
+  &.is-active {
+    background: _active-bg($base-color);
+    border-color: color.mix(#000, _active-bg($base-color), 18%);
+    transform: translateY(1px);
+  }
+}
+
+@mixin btn-outline($base-color) {
+  background: transparent;
+  border-color: color.mix(#000, $base-color, 12%);
+  color: $base-color;
+
+  &:hover:not(:disabled):not(.is-disabled) {
+    background: color.mix(#fff, $base-color, 92%); // very light tint
+  }
+
+  &:active:not(:disabled):not(.is-disabled),
+  &.is-active {
+    background: color.mix(#fff, $base-color, 86%);
+    transform: translateY(1px);
+  }
+}
+
+// ==========================
+// Base button
+// ==========================
+.btn {
+  appearance: none;
+  border: $btn-border-width solid transparent;
+  border-radius: $btn-radius;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  font-weight: $btn-font-weight;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+
+  @include btn-size($btn-md-font-size, $btn-md-pad-y, $btn-md-pad-x);
+
+  transition:
+          background $btn-transition,
+          border-color $btn-transition,
+          color $btn-transition,
+          box-shadow $btn-transition,
+          transform $btn-transition,
+          opacity $btn-transition;
+  transform: translateY(0);
+
+  &:focus {
+    outline: none;
+  }
+  &:focus-visible {
+    box-shadow: 0 0 0 3px color.change($btn-primary, $alpha: 0.28);
+  }
+
+  &:disabled,
+  &.is-disabled {
+    cursor: not-allowed;
+    opacity: 0.9;
+    background: $btn-disabled-bg;
+    border-color: $btn-disabled-bd;
+    color: $btn-disabled-fg;
+    transform: none;
+    box-shadow: none;
+
+    svg {
+      opacity: 0.8;
+    }
+  }
+}
+
+// ==========================
+// Variants (solid)
+// ==========================
+.btn-primary   { @include btn-solid($btn-primary); }
+.btn-secondary { @include btn-solid($btn-secondary); }
+.btn-success   { @include btn-solid($btn-success); }
+.btn-danger    { @include btn-solid($btn-danger); }
+
+// ==========================
+// Variants (outline)
+// ==========================
+.btn-outline-primary   { @include btn-outline($btn-primary); }
+.btn-outline-secondary { @include btn-outline($btn-secondary); }
+.btn-outline-success   { @include btn-outline($btn-success); }
+.btn-outline-danger    { @include btn-outline($btn-danger); }
+
+// ==========================
+// Sizes
+// ==========================
+.btn-sm { @include btn-size($btn-sm-font-size, $btn-sm-pad-y, $btn-sm-pad-x); }
+.btn-lg { @include btn-size($btn-lg-font-size, $btn-lg-pad-y, $btn-lg-pad-x); }
+
+// ==========================
+// Optional: block button
+// ==========================
+.btn-block {
+  width: 100%;
+}

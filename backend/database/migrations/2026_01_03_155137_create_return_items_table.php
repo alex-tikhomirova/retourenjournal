@@ -32,8 +32,6 @@ return new class extends Migration
             $table->integer('unit_price_cents')->nullable();
             $table->char('currency', 3)->default('EUR');
 
-            $table->timestamps();
-
             $table->index(['organization_id', 'return_id']);
             $table->index(['organization_id', 'sku']);
         });

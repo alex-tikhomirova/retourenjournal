@@ -8,5 +8,3 @@ Route::get('/', function () {
         'service' => 'retourenjournal-api',
     ]);
 });
-
-require __DIR__.'/auth.php';
