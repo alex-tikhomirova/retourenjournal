@@ -19,7 +19,7 @@ Route::prefix('auth')->group(function () {
         Route::get('me', [AuthController::class, 'me']);
 
         Route::post('email/verification-notification', [EmailVerificationController::class, 'send'])
-            ->middleware('throttle:6,1');
+            ->middleware('throttle:1,1');
 
         Route::get('verify-email/{id}/{hash}', [EmailVerificationController::class, 'verify'])
             ->middleware(['signed', 'throttle:6,1'])->name('verification.verify');

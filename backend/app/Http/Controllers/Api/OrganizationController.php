@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\OrganizationStoreRequest;
 use App\Http\Resources\OrganizationResource;
 use App\Models\Organization;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
@@ -45,7 +46,12 @@ class OrganizationController extends Controller
      */
     public function store(OrganizationStoreRequest $request): JsonResponse
     {
+        /** @var User $user */
         $user = $request->user();
+
+        if ($user->organizations()->wherePivot('is_owner', true)->exists()) {
+            abort(409, 'Sie haben bereits eine Organisation erstellt.');
+        }
 
         $org = DB::transaction(function () use ($request, $user) {
             $org = new Organization([

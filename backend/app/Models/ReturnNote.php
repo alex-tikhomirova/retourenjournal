@@ -9,6 +9,7 @@
 namespace App\Models;
 
 
+use App\Models\Scopes\OrganizationScope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -58,6 +59,16 @@ class ReturnNote extends Model
         'created_by_user_id',
         'note',
     ];
+
+    /**
+     * add global scope
+     *
+     * @return void
+     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new OrganizationScope);
+    }
 
     /**
      * Get the organization that owns this note.

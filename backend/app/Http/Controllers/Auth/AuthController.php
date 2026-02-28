@@ -51,6 +51,8 @@ class AuthController extends Controller
 
         event(new Registered($user));
 
+        $user->sendEmailVerificationNotification();
+
         Auth::login($user);
         $request->session()->regenerate();
 

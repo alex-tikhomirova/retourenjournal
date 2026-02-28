@@ -5,18 +5,17 @@
 // Simple UI buttons (text and/or SVG icon)
 
 // ==========================
-// Color variables
-// ==========================
-$btn-primary:  v.$color-primary !default;
-$btn-secondary:#6B7280 !default; // neutral gray
-$btn-success:  #16A34A !default;
-$btn-danger:   #DC2626 !default;
+// Semantic button aliases
+$btn-primary: v.$color-primary;
+$btn-secondary: v.$color-secondary;
+$btn-success: v.$color-success;
+$btn-danger: v.$color-danger;
 
-$btn-text-on-dark: #fff !default;
+$btn-text-on-dark: #fff;
 
-$btn-disabled-bg:  #E5E7EB !default;
-$btn-disabled-fg:  #9CA3AF !default;
-$btn-disabled-bd:  #D1D5DB !default;
+$btn-disabled-bg: v.$color-disabled-bg;
+$btn-disabled-fg: v.$color-disabled-fg;
+$btn-disabled-bd: v.$color-disabled-border;
 
 // ==========================
 // Shape & typography

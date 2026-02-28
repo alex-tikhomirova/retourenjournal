@@ -8,6 +8,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\OrganizationScope;
 use App\Models\Support\ReturnEventRefLoadable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -69,6 +70,20 @@ class ReturnStatus extends Model
         'sort_order',
         'is_active',
     ];
+
+    public function tenantMode(): string
+    {
+        return 'or_global';
+    }
+    /**
+     * add global scope
+     *
+     * @return void
+     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new OrganizationScope);
+    }
 
     /**
      * Get the organization that owns this return status.

@@ -29,7 +29,7 @@ class ReturnStoreRequest extends FormRequest
         return [
             'return_number' => ['required', 'nullable', 'string', 'max:60'], // если пришло — используем
             'order_reference' => ['sometimes', 'nullable', 'string', 'max:60'], // если пришло — используем
-            'internal_note' => ['sometimes', 'nullable', 'string', 'max:2000'],
+            'reason' => ['sometimes', 'nullable', 'string', 'max:2000'],
 
             'customer' => ['required', 'array'],
             'customer.id' => ['nullable', 'integer'],

@@ -2,6 +2,9 @@
 
 import BrandHeader from "@/components/blocks/BrandHeader.vue";
 import LogoChar from "@/components/blocks/LogoChar.vue";
+import {useUserStore} from "@/stores/user.js";
+
+const userStore = useUserStore()
 </script>
 
 <template>
@@ -12,10 +15,11 @@ import LogoChar from "@/components/blocks/LogoChar.vue";
           <BrandHeader/>
           <div class="nav"></div>
           <div class="actions">
-
-            <RouterLink class="btn" to="/login">Anmelden</RouterLink>
-            <RouterLink class="btn btn-primary" to="/register">Registrieren</RouterLink>
-
+            <RouterLink class="btn btn-primary" to="/app" v-if="userStore.isLoggedIn">Zur App</RouterLink>
+            <template v-else>
+              <RouterLink class="btn" to="/login">Anmelden</RouterLink>
+              <RouterLink class="btn btn-primary" to="/register">Registrieren</RouterLink>
+            </template>
           </div>
         </div>
       </div>

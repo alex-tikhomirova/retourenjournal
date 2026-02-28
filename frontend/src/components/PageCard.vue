@@ -30,7 +30,7 @@
       border-bottom: 1px solid variables.$border-color;
       border-top-right-radius: variables.$border-radius;
       border-top-left-radius: variables.$border-radius;
-      height: 48px;
+      height: 40px;
       padding-left: 20px;
       padding-right: 20px;
       display: flex;

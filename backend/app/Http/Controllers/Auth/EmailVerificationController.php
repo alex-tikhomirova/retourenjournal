@@ -11,6 +11,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
+use App\Models\User;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -28,6 +29,7 @@ class EmailVerificationController extends Controller
      */
     public function send(Request $request): JsonResponse
     {
+        /** @var User $user */
         $user = $request->user();
 
         if ($user->hasVerifiedEmail()) {

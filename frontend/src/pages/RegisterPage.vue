@@ -86,7 +86,7 @@ async function onSubmit() {
         />
       </label>
 
-      <button class="btn" type="submit" :disabled="user.isLoading">
+      <button class="btn btn-primary" type="submit" :disabled="user.isLoading">
         {{ user.isLoading ? 'Creating…' : 'Create account' }}
       </button>
 

@@ -8,6 +8,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\OrganizationScope;
 use App\Models\Support\ReturnEventRefLoadable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -108,6 +109,7 @@ class ReturnEvent extends Model
             }
         });
 
+        static::addGlobalScope(new OrganizationScope);
     }
 
     public function getEventTitleAttribute(): string

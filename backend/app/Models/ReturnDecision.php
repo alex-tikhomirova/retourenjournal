@@ -9,6 +9,8 @@
 namespace App\Models;
 
 
+use App\Models\Scopes\OrganizationScope;
+use App\Models\Support\ReturnEventRefLoadable;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -33,6 +35,8 @@ use Illuminate\Database\Eloquent\Model;
 class ReturnDecision extends Model
 {
 
+    use ReturnEventRefLoadable;
+
     /**
      * Indicates if the model should be timestamped.
      *
@@ -50,4 +54,19 @@ class ReturnDecision extends Model
         'name',
         'sort_order',
     ];
+
+    public function tenantMode(): string
+    {
+        return 'or_global';
+    }
+
+    /**
+     * add global scope
+     *
+     * @return void
+     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new OrganizationScope);
+    }
 }

@@ -8,6 +8,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\OrganizationScope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -114,7 +115,10 @@ class ReturnShipment extends Model
                 $model->updated_by_user_id = $userId;
             }
         });
-        }
+
+        static::addGlobalScope(new OrganizationScope);
+
+    }
     /**
      * Get the organization that owns this shipment.
      */

@@ -2,6 +2,8 @@
 import {reactive, ref} from 'vue'
 import {useRouter} from 'vue-router'
 import {useUserStore} from '@/stores/user.js'
+import FormFieldText from "@/components/forms/FormFieldText.vue";
+import FormGroup from "@/components/forms/FormGroup.vue";
 
 const router = useRouter()
 const user = useUserStore()
@@ -14,8 +16,12 @@ const form = reactive({
 const error = ref('')
 
 function redirectAuthedHome() {
-  if (!user.isVerified) return router.push('/app/email-not-verified')
-  if (!user.user?.current_organization_id) return router.push('/app/welcome')
+  if (!user.isVerified) {
+    return router.push('/app/email-not-verified')
+  }
+  if (!user.user?.current_organization_id) {
+    return router.push('/app/welcome')
+  }
   return router.push('/app/returns')
 }
 
@@ -40,35 +46,35 @@ async function onSubmit() {
 
 <template>
   <div class="auth-page">
+
     <h1>Anmelden</h1>
+    <br/>
 
     <form class="auth-form" @submit.prevent="onSubmit">
-      <label class="field">
-        <span>Email</span>
-        <input
+      <FormGroup label="Email" name="email">
+        <FormFieldText
             v-model.trim="form.email"
             type="email"
+            name="email"
             autocomplete="email"
             inputmode="email"
             required
-        />
-      </label>
-
-      <label class="field">
-        <span>Passwort</span>
-        <input
+            />
+      </FormGroup>
+      <FormGroup label="Passwort" name="email">
+        <FormFieldText
             v-model="form.password"
+            name="password"
             type="password"
             autocomplete="current-password"
             required
         />
-      </label>
-
+      </FormGroup>
       <button class="btn btn-primary" type="submit" :disabled="user.isLoading">
         {{ user.isLoading ? 'Anmeldung läuft…' : 'Anmelden' }}
       </button>
 
-      <p v-if="error" class="error">{{ error }}</p>
+      <p v-if="error" class="text-danger">{{ error }}</p>
     </form>
 
     <p class="hint">
@@ -87,43 +93,7 @@ async function onSubmit() {
 
 .auth-form {
   display: grid;
-  gap: 12px;
+  gap: 16px;
 }
 
-.field {
-  display: grid;
-  gap: 6px;
-}
-
-.field span {
-  font-size: 14px;
-  opacity: .8;
-}
-
-input {
-  padding: 10px 12px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-}
-
-.btn {
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 0;
-  cursor: pointer;
-}
-
-.btn:disabled {
-  opacity: .6;
-  cursor: not-allowed;
-}
-
-.error {
-  color: #b00020;
-  margin: 0;
-}
-
-.hint {
-  margin-top: 12px;
-}
 </style>

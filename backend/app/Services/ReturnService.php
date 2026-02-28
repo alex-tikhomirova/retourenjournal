@@ -27,11 +27,8 @@ class ReturnService
     {
         return DB::transaction(function () use ($payload) {
 
-            $orgId = Organization::currentOrgId();
-
             // check duplicate
             $exists = ReturnModel::query()
-                ->where('organization_id', $orgId)
                 ->where('return_number', $payload['return_number'])
                 ->exists();
             if ($exists) {
@@ -52,6 +49,23 @@ class ReturnService
 
             return $return;
         });
+    }
+
+    public function update(int $id, array $payload): ReturnModel
+    {
+        // check exists
+        /** @var ReturnModel $return */
+        $return = ReturnModel::find($id);
+        if (!$return) {
+            abort(409, 'Die Retourennummer existiert bereits');
+        }
+        $return->return_number = $payload['return_number'] ?? $return->return_number;
+        $return->status_id = $payload['status_id'] ?? $return->status_id;
+        $return->decision_id = $payload['decision_id'] ?? $return->decision_id;
+        $return->order_reference = $payload['order_reference'] ?? $return->order_reference;
+        $return->reason = $payload['reason'] ?? $return->reason;
+        $return->save();
+        return $return;
     }
 
     private function syncItems(ReturnModel $return, array $items): void
@@ -93,6 +107,5 @@ class ReturnService
             throw new Exception("Der Kunde konnte nicht gespeichert werden.");
         }
         return $customer;
-
     }
 }

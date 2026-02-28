@@ -8,6 +8,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\OrganizationScope;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -150,6 +151,8 @@ class ReturnModel extends Model
                 }
             }
         });
+
+        static::addGlobalScope(new OrganizationScope);
     }
 
     // ---------------------------------------------------------
@@ -246,6 +249,6 @@ class ReturnModel extends Model
      */
     public function events(): HasMany
     {
-        return $this->hasMany(ReturnEvent::class, 'return_id');
+        return $this->hasMany(ReturnEvent::class, 'return_id')->orderBy('created_at', 'desc');
     }
 }

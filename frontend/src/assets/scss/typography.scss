@@ -22,9 +22,7 @@ h3,.h3{
 h4,.h4{
   font-weight: 500;
 }
-.text-muted{
-  color: color.adjust(variables.$text-color, $lightness: +40%);
-}
+
 a,
 .router-link-active,
 .router-link-exact-active {
@@ -42,4 +40,14 @@ a:not(.btn) {
   &:active {
     opacity: 0.7;
   }
+}
+
+.text-success{
+  color: variables.$color-success;
+}
+.text-danger{
+  color: variables.$color-danger;
+}
+.text-muted{
+  color: color.adjust(variables.$text-color, $lightness: +40%);
 }

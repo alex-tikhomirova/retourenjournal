@@ -6,15 +6,17 @@ import {api} from "@/api/api.js";
 import PageCard from "@/components/PageCard.vue";
 import ReturnEvent from "@/pages/app/return/ReturnEvent.vue";
 
-import {Check, X, Pencil} from "lucide-vue-next";
+import {Pencil} from "lucide-vue-next";
 import ReturnShipmentForm from "@/pages/app/return/ReturnShipmentForm.vue";
+import ReturnDecisionForm from "@/pages/app/return/ReturnDecisionForm.vue";
+import StateSwitch from "@/pages/app/return/StateSwitch.vue";
 
 const router = useRouter()
 const route = useRoute()
 
 const returnId = computed(() => route.params.id);
 
-const returnData = ref()
+const returnData = ref(null)
 const state = ref(0)
 const shippingForm = ref(false)
 async function load() {
@@ -23,40 +25,47 @@ async function load() {
   try {
     const { data } = await api.get(`/api/returns/${returnId.value}`);
     returnData.value = data.data
+
   } catch (e) {
-    //state.error = e;
-    // опционально: редирект на 404
     // router.replace("/app/returns");
   } finally {
     state.value = 0
   }
 }
 
+const save = async () => {
+  const {data} = await api.patch(`/api/returns/${returnId.value}`, returnData.value);
+  returnData.value = data?.data ?? returnData.value
+}
+
+
 watch(returnId, () => {
   if (!returnId.value) return
   load()
 }, { immediate: true })
+
 
 const subtitle = computed(() => {
   return `Status: ${returnData.value.status.name} · Zuletzt aktualisiert: ${returnData.value.updated_at}`
 })
 
 
-const save = () => {}
 </script>
 
 <template>
 
   <ToolBar v-if="returnData" :on-back="() => router.push('/app/returns')" :title="`Retoure ${returnData.return_number}`" :subtitle="subtitle">
     <template #right>
-      <button class="btn btn-outline-primary" @click="router.push('/app/returns')"><X /> Abbrechen</button>
-      <button class="btn btn-primary" @click="save"><Check/> Speichern</button>
+      <StateSwitch v-model="returnData.status_id" :returnModel="returnData" @update:modelValue="save" />
+
     </template>
   </ToolBar>
 
   <div v-if="returnData" class="flex gap-30 return-data items-start">
     <div class="left">
-
+      <PageCard title="Entscheidung" class="block-decision">
+        <ReturnDecisionForm v-model="returnData.decision_id" @update:modelValue="save"/>
+      </PageCard>
       <PageCard title="Kunde" class="block-customer">
         <template #title>
           <button class="btn btn-sm btn-outline-secondary"><Pencil />Bearbeiten</button>

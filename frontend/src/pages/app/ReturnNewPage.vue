@@ -44,11 +44,11 @@ const removeItem = (idx) => {
 }
 addItem()
 
-const save = () => {
-
-  api.post('/api/returns/store', formData.value).then((r) => {
-    console.log(r)
-  })
+const save = async () => {
+  const {data} = await api.post('/api/returns/store', formData.value);
+  if (data?.data?.id ?? null){
+    router.push('/app/returns')
+  }
 }
 
 

@@ -12,25 +12,37 @@ async function resend() {
   error.value = ''
   try {
     await auth.resendVerification()
-    status.value = 'Verification email sent.'
+    status.value = 'Bestätigungs-E-Mail wurde versendet.'
   } catch (e) {
-    error.value = 'Failed to send verification email.'
+    error.value = 'Bestätigungs-E-Mail konnte nicht versendet werden.'
   }
 }
 </script>
 
 <template>
   <div style="padding: 24px">
-    <h1>Please verify your email</h1>
-    <p>Check your inbox and click the verification link.</p>
+    <h1>Bitte bestätigen Sie Ihre E-Mail-Adresse</h1>
+    <p class="text-muted">Überprüfen Sie Ihr Postfach und klicken Sie auf den Bestätigungslink.</p>
 
-    <button @click="resend">Resend verification email</button>
+    <button class="btn btn-outline-primary resend" @click="resend">
+      Bestätigungs-E-Mail erneut senden
+    </button>
 
-    <p v-if="status">{{ status }}</p>
-    <p v-if="error">{{ error }}</p>
+    <div class="messages">
+      <span v-if="status" class="text-success">{{ status }}</span>
+      <span v-if="error" class="text-danger">{{ error }}</span>
+    </div>
 
-    <p v-if="userStore.user && userStore.user.email">
-      Logged in as: {{ userStore.user.email }}
+    <p class="status" v-if="userStore.user && userStore.user.email">
+      Angemeldet als: {{ userStore.user.email }}
     </p>
   </div>
 </template>
+<style scoped>
+.resend{
+  margin: 24px  0 4px 0;
+}
+.messages{
+  margin-bottom: 24px;
+}
+</style>

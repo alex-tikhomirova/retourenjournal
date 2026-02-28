@@ -12,6 +12,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Return\ReturnListRequest;
 use App\Http\Requests\Return\ReturnStoreRequest;
+use App\Http\Requests\Return\ReturnUpdateRequest;
 use App\Http\Resources\ReturnResource;
 use App\Models\ReturnModel;
 use App\Models\User;
@@ -30,30 +31,26 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 class ReturnController extends Controller
 {
 
-/*    private Builder $query;*/
-    private function buildQuery(string $modelClass, ReturnListRequest $request)
+    private function itemRelations(): array
     {
-        $user = $request->user();
-        $orgId = (int) $user->current_organization_id;
-        /** @var Model $model */
-        $model = new $modelClass();
-        $self = new self();
-        $query = $model->newQuery();
-        $validData = $request->validated();
-
-
+        return [
+            'status:id,code,name',
+            'customer:id,organization_id,name,email,phone',
+            'items:id,return_id,line_no,sku,item_name,quantity,unit_price_cents,currency',
+            'shipments.status:id,code,name',
+            'shipments.createdBy' => fn ($q) => $q->select('id', 'name'),
+            'refunds.status:id,code,name',
+            'notes',
+            'decision',
+            'events.createdBy' => fn ($q) => $q->select('id', 'name'),
+        ];
     }
+
     public function list(ReturnListRequest $request): AnonymousResourceCollection
     {
-        $user = $request->user();
-         $orgId = (int) $user->current_organization_id;
-
-
-
         $p = $request->validated();
 
         $query = ReturnModel::query()
-            ->where('organization_id', $orgId)
             ->with([
                 'customer:id,organization_id,name,email,phone',
                 'status:id,code,name',
@@ -95,9 +92,8 @@ class ReturnController extends Controller
 
         if (!empty($p['tracking_number'])) {
             $tn = trim($p['tracking_number']);
-            $query->whereHas('shipments', function ($q) use ($orgId, $tn) {
-                $q->where('organization_id', $orgId)
-                    ->where('tracking_number', 'ilike', "%{$tn}%"); // Postgres
+            $query->whereHas('shipments', function ($q) use ($tn) {
+                $q->where('tracking_number', 'ilike', "%{$tn}%"); // Postgres
             });
         }
 
@@ -105,15 +101,13 @@ class ReturnController extends Controller
         if (!empty($p['q'])) {
             $q = trim($p['q']);
 
-            $query->where(function ($qq) use ($q, $orgId) {
+            $query->where(function ($qq) use ($q) {
                 $qq->where('return_number', 'ilike', "%{$q}%")
                     ->orWhere('order_reference', 'ilike', "%{$q}%")
                     ->orWhereHas('customer', fn($c) => $c
-                        ->where('organization_id', $orgId)
                         ->where('name', 'ilike', "%{$q}%")
                     )
                     ->orWhereHas('items', fn($i) => $i
-                        ->where('organization_id', $orgId)
                         ->where(function ($x) use ($q) {
                             $x->where('sku', 'ilike', "%{$q}%")
                                 ->orWhere('item_name', 'ilike', "%{$q}%");
@@ -132,33 +126,28 @@ class ReturnController extends Controller
 
     public function item(Request $request, int $id): ReturnResource
     {
-        /** @var User $user */
-        $user = auth()->user();
-
         $return = ReturnModel::query()
-            ->where('organization_id', $user->current_organization_id)
             ->where('id', $id)
-            ->with([
-                'status:id,code,name',
-                'customer:id,organization_id,name,email,phone',
-                'items:id,return_id,line_no,sku,item_name,quantity,unit_price_cents,currency',
-                'shipments.status:id,code,name',
-                'shipments.createdBy' => fn ($q) => $q->select('id', 'name'),
-                'refunds.status:id,code,name',
-                'notes',
-                'events.createdBy' => fn ($q) => $q->select('id', 'name'),
-            ])
-
+            ->with($this->itemRelations())
             ->firstOrFail();
 
         return (new ReturnResource($return));
     }
 
+
     public function store(ReturnStoreRequest $request): JsonResponse
     {
         $service = new ReturnService();
-        $return = $service->create($request->validated());
+        $return = $service->create($request->validated())->refresh()->load($this->itemRelations());
         return (new ReturnResource($return))->response()->setStatusCode(201);
     }
+
+    public function update(ReturnUpdateRequest $request, int $id): JsonResponse
+    {
+        $service = new ReturnService();
+        $return = $service->update($id, $request->validated())->refresh()->load($this->itemRelations());
+        return (new ReturnResource($return))->response()->setStatusCode(201);
+    }
+
 
 }

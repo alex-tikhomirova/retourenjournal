@@ -12,8 +12,10 @@ const inputId = computed(() => `field-${props.name}`)
 
 <template>
   <div class="form-group" :class="`group-${name}`">
-    <label :for="inputId">{{ label }}</label>
-    <slot/>
+    <label>
+      <span class="text-muted label-text">{{ label }}</span>
+      <slot/>
+    </label>
     <p
         v-if="error"
         class="error"
@@ -23,3 +25,12 @@ const inputId = computed(() => `field-${props.name}`)
     </p>
   </div>
 </template>
+<style scoped lang="scss">
+.form-group{
+
+  label{
+    display: grid;
+    gap: 4px;
+  }
+}
+</style>
