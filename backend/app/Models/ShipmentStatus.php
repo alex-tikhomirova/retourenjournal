@@ -27,6 +27,9 @@ use Illuminate\Support\Carbon;
  * @property string $name
  *     Human‑readable label shown in the UI.
  *
+ * @property string $description
+ *     Short description
+ *
  * @property int $sort_order
  *     Sorting priority for UI ordering.
  *
@@ -50,6 +53,7 @@ class ShipmentStatus extends Model
     protected $fillable = [
         'code',
         'name',
+        'description',
         'sort_order',
         'is_terminal',
     ];

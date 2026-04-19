@@ -24,10 +24,29 @@ class ReturnStoreRequest extends FormRequest
         return (bool) $this->user()?->current_organization_id;
     }
 
+    // convert prices before validation
+    protected function prepareForValidation(): void
+    {
+        $items = collect($this->items ?? [])->map(function (array $item) {
+            $item['currency'] ??= 'EUR';
+
+            if (isset($item['unit_price'])) {
+                $item['unit_price_cents'] = (int) round($item['unit_price'] * 100);
+            }
+
+            return $item;
+        })->all();
+
+        $this->merge(['items' => $items]);
+        $this->merge([
+            'return_number' => $this->return_number ?? $this->generateReturnNumber(),
+        ]);
+    }
+
     public function rules(): array
     {
         return [
-            'return_number' => ['required', 'nullable', 'string', 'max:60'], // если пришло — используем
+            'return_number' => ['nullable', 'string', 'max:60'], // если пришло — используем
             'order_reference' => ['sometimes', 'nullable', 'string', 'max:60'], // если пришло — используем
             'reason' => ['sometimes', 'nullable', 'string', 'max:2000'],
 
@@ -47,5 +66,11 @@ class ReturnStoreRequest extends FormRequest
             'items.*.unit_price_cents' => ['nullable','integer','min:0'],
             'items.*.currency' => ['sometimes','string', Rule::in(['EUR'])],
         ];
+    }
+
+    private function generateReturnNumber(): string
+    {
+        return 'RET-' . strtoupper(uniqid());
+        // или через БД — RET-000123 и т.д.
     }
 }

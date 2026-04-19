@@ -134,23 +134,84 @@ $input-sizes: (
 }
 
 // --------------------------
-// Input with icon
+// Input group (addons/buttons)
 // --------------------------
 .input-group {
-  position: relative;
+  display: flex;
+  align-items: stretch;
   width: 100%;
 
-  .input {
-    padding-left: 36px;
+  > * {
+    position: relative;
+    margin: 0;
   }
 
-  .input__icon {
-    position: absolute;
-    left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: v.$text-color-light;
-    pointer-events: none;
+  // Keep controls flexible inside a group chain.
+  > .input,
+  > .select,
+  > .textarea {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  // Collapse internal corners for all middle items.
+  > :not(:first-child):not(:last-child) {
+    border-radius: 0;
+  }
+
+  // Preserve only outer left corners.
+  > :first-child {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  // Preserve only outer right corners.
+  > :last-child {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+
+  // Avoid double borders between adjacent items.
+  > :not(:first-child) {
+    margin-left: -1px;
+  }
+
+  // Active element should render above neighbors on shared borders.
+  > *:focus,
+  > *:focus-within {
+    z-index: 1;
+  }
+
+  // Compact addon wrapper for icons/text/buttons around controls.
+  > .input-group__addon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding-inline: 10px;
+    white-space: nowrap;
+    border: 1px solid $input-border;
+    background: $input-bg-disabled;
+    color: $input-text;
+  }
+
+  // Input with icon inside input area (legacy mode).
+  &.has-icon {
+    position: relative;
+
+    > .input,
+    > .select,
+    > .textarea {
+      padding-left: 36px;
+    }
+
+    .input__icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: v.$text-color-light;
+      pointer-events: none;
+    }
   }
 }
 

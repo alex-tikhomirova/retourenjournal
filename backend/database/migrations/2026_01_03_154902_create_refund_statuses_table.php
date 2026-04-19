@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('refund_statuses', function (Blueprint $table) {
             $table->smallIncrements('id');
-            $table->string('code')->unique();
-            $table->string('name');
+            $table->string('code', 50)->unique();
+            $table->string('name', 120);
+            $table->string('description', 120)->nullable();
             $table->boolean('is_counted')->default(true);
             $table->unsignedSmallInteger('sort_order')->default(0);
         });

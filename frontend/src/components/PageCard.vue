@@ -21,7 +21,7 @@
 </template>
 
 <style lang="scss">
-@use "@/assets/scss/variables";
+@use "./../assets/scss/variables";
   .page-card{
     border: 1px solid variables.$border-color;
     border-radius: variables.$border-radius;

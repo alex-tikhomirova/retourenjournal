@@ -1,12 +1,18 @@
+@use "sass:color";
+
 // Base colors
 $text-color: #171717;
 $text-color-light: #dddddd;
+$text-color-muted: color.adjust($text-color, $lightness: +40%);
+$background-color: #ffffff;
 
 $color-primary: #256FA8;
 $color-secondary: #6B7280;
 
 $color-success: #16A34A;
 $color-danger: #DC2626;
+
+$bg-color-primary: color.adjust($color-primary, $lightness: +55%);
 
 // Disabled
 $color-disabled-bg: #E5E7EB;

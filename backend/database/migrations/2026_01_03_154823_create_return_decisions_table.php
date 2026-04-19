@@ -23,7 +23,8 @@ return new class extends Migration
                 ->cascadeOnDelete();
 
             $table->string('code', 50);
-            $table->string('name', 255);
+            $table->string('name', 120);
+            $table->string('description', 120)->nullable();
             $table->unsignedSmallInteger('sort_order')->default(0);
 
             $table->string('outcome', 20); // approve|reject
@@ -48,6 +49,7 @@ return new class extends Migration
                 'organization_id' => null,
                 'code' => 'refund_full',
                 'name' => 'Vollerstattung (Geld zurück)',
+                'description' => 'Gesamter Betrag wird zurückerstattet',
                 'sort_order' => 10,
                 'outcome' => 'approve',
                 'requires_inbound_item' => true,
@@ -59,6 +61,7 @@ return new class extends Migration
                 'organization_id' => null,
                 'code' => 'refund_partial',
                 'name' => 'Teilerstattung',
+                'description' => 'Teilbetrag wird an Kunden erstattet',
                 'sort_order' => 20,
                 'outcome' => 'approve',
                 'requires_inbound_item' => true,
@@ -70,6 +73,7 @@ return new class extends Migration
                 'organization_id' => null,
                 'code' => 'replacement',
                 'name' => 'Ersatzlieferung (Umtausch)',
+                'description' => 'Neue Ware wird an Kunden gesendet',
                 'sort_order' => 30,
                 'outcome' => 'approve',
                 'requires_inbound_item' => true,
@@ -81,6 +85,7 @@ return new class extends Migration
                 'organization_id' => null,
                 'code' => 'refund_no_return',
                 'name' => 'Erstattung ohne Rücksendung',
+                'description' => 'Rückerstattung ohne Rückversand der Ware',
                 'sort_order' => 40,
                 'outcome' => 'approve',
                 'requires_inbound_item' => false,
@@ -92,6 +97,7 @@ return new class extends Migration
                 'organization_id' => null,
                 'code' => 'reject_out_of_policy',
                 'name' => 'Abgelehnt (außerhalb der Rückgabebedingungen)',
+                'description' => 'Frist oder Bedingungen nicht erfüllt',
                 'sort_order' => 90,
                 'outcome' => 'reject',
                 'requires_inbound_item' => false,
@@ -103,6 +109,7 @@ return new class extends Migration
                 'organization_id' => null,
                 'code' => 'reject_condition',
                 'name' => 'Abgelehnt (Ware unvollständig/beschädigt)',
+                'description' => 'Ware beschädigt oder nicht vollständig',
                 'sort_order' => 100,
                 'outcome' => 'reject',
                 'requires_inbound_item' => true,

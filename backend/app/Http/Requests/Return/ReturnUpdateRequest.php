@@ -30,7 +30,7 @@ class ReturnUpdateRequest extends FormRequest
             'return_number' => ['required', 'nullable', 'string', 'max:60'],
             'order_reference' => ['sometimes', 'nullable', 'string', 'max:60'],
             'status_id' => ['required', 'nullable', 'integer',],
-            'decision_id' => ['required', 'nullable', 'integer',],
+            'decision_id' => ['sometimes', 'nullable', 'integer',],
             'reason' => ['sometimes', 'nullable', 'string', 'max:2000'],
 
         ];

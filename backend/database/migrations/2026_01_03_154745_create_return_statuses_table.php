@@ -22,10 +22,12 @@ return new class extends Migration
                 ->cascadeOnDelete();
 
             // Stable key for seeds / API / internal logic
-            $table->string('code');
+            $table->string('code', 50);
+            $table->string('color', 20)->default('#E9EDF2');;
 
             // Label shown in UI
-            $table->string('name');
+            $table->string('name', 120);
+            $table->string('description', 120)->nullable();
 
             $table->unsignedSmallInteger('sort_order')->default(0);
 

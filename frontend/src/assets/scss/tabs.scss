@@ -1,0 +1,31 @@
+@use "variables";
+
+.tabs{
+  display: flex;
+  >div{
+    border: 1px solid variables.$border-color;
+    padding: 6px 12px;
+    flex: 1;
+    display: flex;
+    gap: 6px;
+    color: variables.$text-color-muted;
+    justify-content: center;
+    background-color: variables.$head-bg-color;
+    border-top-left-radius: variables.$border-radius;
+    border-top-right-radius: variables.$border-radius;
+    cursor: pointer;
+    &:not(:last-child){
+      border-right-width: 0;
+
+    }
+    &:hover{
+
+    }
+    &.active{
+      color: variables.$text-color;
+      border-left-width: 1px;
+      border-bottom: none;
+      background-color: #ffffff;
+    }
+  }
+}

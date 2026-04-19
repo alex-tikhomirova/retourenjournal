@@ -1,4 +1,8 @@
 <script setup>
+import {dateTimeStr} from "@/helpers/datetime.js";
+import ReturnStatusLabel from "@/components/ui/return/ReturnStatusLabel.vue";
+import ShipmentStatusLabel from "@/components/ui/shipment/ShipmentStatusLabel.vue";
+
   defineProps({
     event: Object
   })
@@ -6,23 +10,32 @@
 
 <template>
   <div class="return-event">
-    <div v-if="event.created_by">
-      {{event.created_by.name}}
-    </div>
-    <div v-else>-</div>
-    <div>{{event.created_at}}</div>
+
     <div>{{event.event_title}}</div>
 
 
     <div v-if="event.ref_type === 'status' && event.event_ref">
-      {{event.event_ref.name}}
+      <ReturnStatusLabel :status="event.event_ref"/>
+    </div>
+    <div v-else-if="event.ref_type === 'shipmentstatus' && event.event_ref">
+      <ShipmentStatusLabel :status="event.event_ref"/>
     </div>
     <div v-else>
       {{event.value}}
     </div>
+    <div class="text-muted stams">
+      <span>{{dateTimeStr(event.created_at, false)}}</span>
+      <span class="font-500">{{event.created_by?event.created_by.name:'-'}}</span>
+    </div>
   </div>
 </template>
 
-<style scoped lang="scss">
-
+<style  lang="scss">
+  .return-event{
+    .stams{
+      font-size: 90%;
+      display: flex;
+      gap: 12px;
+    }
+  }
 </style>

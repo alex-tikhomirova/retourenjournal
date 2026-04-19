@@ -13,11 +13,11 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 /**
- * StoreShipmentRequest
+ * ShipmentUpdateRequest
  *
  * @author Alexandra Tikhomirova
  */
-class ShipmentStoreRequest extends FormRequest
+class ShipmentUpdateRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -27,16 +27,18 @@ class ShipmentStoreRequest extends FormRequest
     // convert prices before validation
     protected function prepareForValidation(): void
     {
-        $this->merge([
-            'cost_cents' =>  $this->get('cost') * 100,
-        ]);
+        if ($this->has('cost')) {
+            $this->merge([
+                'cost_cents' =>  $this->get('cost') * 100,
+            ]);
+        }
     }
 
     public function rules(): array
     {
         return [
-            'direction' => ['required', 'integer', Rule::in([1, 2])],
-            'payer' => ['required', 'integer', Rule::in([1,2,3,4,5])],
+            'direction' => ['nullable', 'integer', Rule::in([1, 2])],
+            'payer' => ['nullable', 'integer', Rule::in([1, 2, 3, 4, 5])],
             'carrier' => ['nullable', 'string', 'max:255'],
             'tracking_number' => ['nullable', 'string', 'max:255'],
             'label_ref' => ['nullable', 'string', 'max:255'],
@@ -45,3 +47,4 @@ class ShipmentStoreRequest extends FormRequest
         ];
     }
 }
+

@@ -116,6 +116,26 @@ class ReturnShipment extends Model
             }
         });
 
+        static::saved(function (self $model) {
+            $eventFields = ReturnEvent::eventFields('shipment');
+
+            $dirtyAttributes = $model->getDirty();
+            foreach ($eventFields as $field => $eventField) {
+                if (isset($dirtyAttributes[$field])) {
+                    $model->return->events()->save(
+                        new ReturnEvent([
+                            'action' => (int) $model->wasRecentlyCreated,
+                            'return_id' => $model->return->id,
+                            'field' => "shipment.$field",
+                            'ref_type' => $eventField['ref_type']??null,
+                            'ref_id' => isset($eventField['ref_type'])?$model->getAttributeValue($field):null,
+                            'value' => $model->getAttributeValue($field),
+                        ])
+                    );
+                }
+            }
+        });
+
         static::addGlobalScope(new OrganizationScope);
 
     }

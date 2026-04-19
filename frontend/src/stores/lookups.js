@@ -8,6 +8,24 @@ export const useLookupStore = defineStore('lookups', {
         returnDecisions: [],
         shipmentStatuses: [],
         refundStatuses: [],
+        shipmentPayerOptions: [
+            { value: 1, label: 'Kunde' },
+            { value: 2, label: 'Händler' },
+            { value: 3, label: 'Plattform / Marktplatz' },
+            { value: 4, label: 'Geteilt (anteilig)' },
+            { value: 5, label: 'Unbekannt' },
+        ],
+        shipmentCarrierOptions: [
+            { value: 'DHL', label: 'DHL' },
+            { value: 'DPD', label: 'DPD' },
+            { value: 'Hermes', label: 'Hermes' },
+            { value: 'UPS', label: 'UPS' },
+            { value: 'Other', label: 'Other' },
+        ],
+        shipmentDirectionOptions: [
+            { value: 1, label: 'Rücksendung vom Kunden' },
+            { value: 2, label: 'Versand an den Kunden' },
+        ]
     }),
 
     actions: {

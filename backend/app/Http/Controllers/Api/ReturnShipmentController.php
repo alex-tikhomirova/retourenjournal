@@ -11,6 +11,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Shipping\ShipmentStoreRequest;
+use App\Http\Requests\Shipping\ShipmentUpdateRequest;
 use App\Http\Resources\ReturnShipmentResource;
 use App\Models\ReturnModel;
 use App\Services\ShipmentService;
@@ -28,6 +29,14 @@ class ReturnShipmentController extends Controller
         $service = new ShipmentService();
         $shipment = $service->create($return, $request->validated());
         return (new ReturnShipmentResource($shipment))->response()->setStatusCode(201);
+    }
+
+    public function update(ShipmentUpdateRequest $request, ReturnModel $return, int $shipment): JsonResponse
+    {
+        // $return нужен для route model binding и проверки tenant-доступа через OrganizationScope.
+        $service = new ShipmentService();
+        $updatedShipment = $service->update($shipment, $request->validated());
+        return (new ReturnShipmentResource($updatedShipment))->response()->setStatusCode(201);
     }
 
 

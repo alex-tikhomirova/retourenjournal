@@ -53,7 +53,7 @@ class ReturnController extends Controller
         $query = ReturnModel::query()
             ->with([
                 'customer:id,organization_id,name,email,phone',
-                'status:id,code,name',
+                'status',
             ])
             ->withCount(['items', 'shipments', 'refunds']);
 

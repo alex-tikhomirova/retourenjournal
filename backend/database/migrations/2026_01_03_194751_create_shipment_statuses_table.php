@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id(); // bigint
 
             // Keep it stable for seeds / internal logic
-            $table->string('code')->unique(); // created, shipped, in_transit, delivered, returned, cancelled
-            $table->string('name');           // label for UI
-
+            $table->string('code', 50)->unique(); // created, shipped, in_transit, delivered, returned, cancelled
+            $table->string('name', 120);           // label for UI
+            $table->string('description', 120)->nullable();
             $table->unsignedSmallInteger('sort_order')->default(0);
             $table->boolean('is_terminal')->default(false);
 

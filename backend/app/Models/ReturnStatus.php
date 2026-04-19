@@ -12,6 +12,7 @@ use App\Models\Scopes\OrganizationScope;
 use App\Models\Support\ReturnEventRefLoadable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Carbon;
 
 /**
@@ -34,6 +35,12 @@ use Illuminate\Support\Carbon;
  *
  * @property string $name
  *     Human‑readable label shown in the UI.
+ *
+ * @property string $description
+ *      Short description
+ *
+ * @property string $color
+ *      Icon color
  *
  * @property int $sort_order
  *     Sorting priority within the organization.
@@ -63,13 +70,21 @@ class ReturnStatus extends Model
      * @var string[]
      */
     protected $fillable = [
-        'organization_id',
         'code',
         'name',
+        'color',
         'kind',
+        'description',
         'sort_order',
         'is_active',
     ];
+
+    /**
+     * Cached statuses keyed by id.
+     *
+     * @var Collection<int, self>|null
+     */
+    private static ?Collection $states = null;
 
     public function tenantMode(): string
     {
@@ -96,18 +111,50 @@ class ReturnStatus extends Model
     }
 
     /**
-     * @param int|null $orgId
-     * @return ReturnStatus
+     * @return Collection<int, self>
      */
-    public static function initialReturnStatus(?int $orgId = null): ReturnStatus
+    public static function allStates(): Collection
     {
-/*        if ($orgId !== null) {
-            $orgInititalStatus = ReturnStatus::query()->where('kind', 1)->where('organization_id', $orgId)->first();
-            if ($orgInititalStatus) {
-                return $orgInititalStatus;
-            }
-        }*/
-        return static::query()->where('kind', 1)->firstOrFail();
+        if (null === self::$states) {
+            static::$states = static::all()->keyBy('id');
+        }
+        return self::$states;
+    }
+
+    /**
+     * Returns state by code from static storage
+     *
+     * @param string $code
+     * @return static|null
+     */
+    public static function byCode(string $code): ?ReturnStatus
+    {
+        /** @var self|null $state */
+        $state = static::allStates()->firstWhere('code', $code);
+
+        return $state;
+    }
+
+    /**
+     * Returns state by id from static storage
+     *
+     * @param int $id
+     * @return static|null
+     */
+    public static function byId(int $id): ?self
+    {
+        /** @var self|null $state */
+        $state = static::allStates()->get($id);
+
+        return $state;
+    }
+
+    /**
+     * @return ReturnStatus|null
+     */
+    public static function initialReturnStatus(): ?self
+    {
+        return static::byCode('created');
 
     }
 }

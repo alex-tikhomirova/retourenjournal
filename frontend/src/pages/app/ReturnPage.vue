@@ -7,9 +7,12 @@ import PageCard from "@/components/PageCard.vue";
 import ReturnEvent from "@/pages/app/return/ReturnEvent.vue";
 
 import {Pencil} from "lucide-vue-next";
-import ReturnShipmentForm from "@/pages/app/return/ReturnShipmentForm.vue";
-import ReturnDecisionForm from "@/pages/app/return/ReturnDecisionForm.vue";
+import ReturnDecision from "@/pages/app/return/ReturnDecision.vue";
 import StateSwitch from "@/pages/app/return/StateSwitch.vue";
+import ItemsList from "@/pages/app/return/ItemsList.vue";
+import CustomerInfo from "@/pages/app/return/CustomerInfo.vue";
+import {dateTimeStr} from "@/helpers/datetime.js";
+import ShipmentList from "@/pages/app/return/shipment/ShipmentList.vue";
 
 const router = useRouter()
 const route = useRoute()
@@ -46,7 +49,7 @@ watch(returnId, () => {
 
 
 const subtitle = computed(() => {
-  return `Status: ${returnData.value.status.name} · Zuletzt aktualisiert: ${returnData.value.updated_at}`
+  return `Status: ${returnData.value.status.name} · Zuletzt aktualisiert: ${dateTimeStr(returnData.value.updated_at, false)}`
 })
 
 
@@ -63,67 +66,38 @@ const subtitle = computed(() => {
 
   <div v-if="returnData" class="flex gap-30 return-data items-start">
     <div class="left">
-      <PageCard title="Entscheidung" class="block-decision">
-        <ReturnDecisionForm v-model="returnData.decision_id" @update:modelValue="save"/>
-      </PageCard>
-      <PageCard title="Kunde" class="block-customer">
-        <template #title>
-          <button class="btn btn-sm btn-outline-secondary"><Pencil />Bearbeiten</button>
-        </template>
-        <div>{{ returnData.customer.name }}</div>
-        <div>{{ returnData.customer.phone }}</div>
-        <div>{{ returnData.customer.email }}</div>
-      </PageCard>
-      <PageCard title="Artikel" class="block-items">
-        <table class="table grid-table">
-          <thead>
-          <tr>
-            <th class="pos">Pos.</th>
-            <th class="sku">SKU</th>
-            <th class="name">Artikel</th>
-            <th class="qty">Menge</th>
-            <th class="price">Preis</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr v-for="item in returnData.items">
-            <td>{{item.line_no}}</td>
-            <td>{{item.sku}}</td>
-            <td>{{item.item_name}}</td>
-            <td>{{item.quantity}}</td>
-            <td>{{item.unit_price_cents}}</td>
-          </tr>
-          </tbody>
-        </table>
+      <div class="row-top">
+        <div class="customer-items">
+          <PageCard title="Kunde" class="block-customer">
+            <template #title>
+              <button class="btn btn-sm btn-outline-secondary"><Pencil />Bearbeiten</button>
+            </template>
+            <CustomerInfo :customer="returnData.customer"/>
+          </PageCard>
 
-      </PageCard>
-      <PageCard title="Versand & Logistik" class="block-shipping">
-        <ReturnShipmentForm
-            :return_id="returnData.id"
-            v-if="shippingForm"
-            @close="shippingForm = false"
-            @saved="load"
-        />
-        <div>
+            <ItemsList :items="returnData.items" class="block-items"/>
 
-          <div v-for="item in returnData.shipments">
-            {{item.id}}
-            {{item.direction}}
-            {{item.carrier}}
-            {{item.payer}}
-            {{item.cost_cents}}
-            {{item.status.name}}
-            {{item.created_by.name}}
-            {{item.updated_at}}
-          </div>
         </div>
-        <button class="btn btn-primary" v-if="!shippingForm" @click="shippingForm = true">Versand anlegen</button>
+
+        <PageCard title="Entscheidung" class="block-decision">
+          <ReturnDecision
+              v-model="returnData.decision_id"
+              @update:modelValue="save"
+              :returnData="returnData"
+          />
+        </PageCard>
+      </div>
+
+      <PageCard title="Versand & Logistik" class="block-shipping">
+        <ShipmentList :return_id="returnData.id" :items="returnData.shipments" @updated="load"/>
       </PageCard>
       <PageCard title="Erstattungen" class="block-refund"></PageCard>
 
     </div>
     <PageCard title="Akivitäten" class="history">
-      <ReturnEvent v-for="event in returnData.events" :event="event"/>
+      <div class="history-items">
+        <ReturnEvent v-for="event in returnData.events" :event="event"/>
+      </div>
     </PageCard>
   </div>
 </template>
@@ -133,12 +107,39 @@ const subtitle = computed(() => {
     .left{
       flex: 1;
       display: flex;
-      flex-direction: column;
-      gap: 16px;
+      gap: 24px;
+      flex-wrap: wrap;
+      .row-top{
+        width: 100%;
+        display: flex;
+        gap: 24px;
+        flex-wrap: wrap;
+      }
+      .customer-items{
+        flex: 3 1 0;
+        display: flex;
+        gap: 24px;
+        flex-direction: column;
+      }
+      .block-decision{
+        flex: 4 1 0;
+      }
+      .block-shipping{
+        flex: 1;
+      }
+      .block-refund{
+        flex: 1;
+      }
     }
     .history{
       width: 20%;
       min-width: 300px;
+
+      .history-items{
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
     }
   }
 </style>

@@ -159,7 +159,7 @@ class ReturnEvent extends Model
         }
 
         // fallback (если вдруг без трейта)
-        return $modelClass::query()->where((int)$this->ref_id)->first();
+        return $modelClass::query()->findOrFail((int) $this->ref_id);
     }
     public static function eventFields(?string $domain = null): ?array
     {
@@ -168,10 +168,16 @@ class ReturnEvent extends Model
 
         $fields = [
             'return' => [
-                'status_id' => ["title" => "Status geändert", 'ref_type' => 'status',],
+                'id' => ["title" => "Retoure erstellt", 'ref_type' => 'return',],
+                'status_id' => ["title" => "Retourenstatus geändert", 'ref_type' => 'status',],
                 'decision_id' => ["title" => "Entscheidung gesetzt", 'ref_type' => 'decision'],
                 'order_reference' => ["title" => "Bestellnummer geändert"],
                 'reason' => ["title" => "Grund geändert"],
+            ],
+            'shipment' => [
+                'id' => ["title" => "Versand erstellt", 'ref_type' => 'shipment',],
+                'status_id' => ["title" => "Versandstatus geändert", 'ref_type' => 'shipmentstatus',],
+                'tracking_number' => ["title" => "Sendungsnummer geändert"],
             ],
         ];
 

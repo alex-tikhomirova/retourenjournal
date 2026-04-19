@@ -30,7 +30,15 @@ const inputId = computed(() => `field-${props.name}`)
 
   label{
     display: grid;
-    gap: 4px;
+    gap: 6px;
+  }
+
+  &.horizontal {
+    label{
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      align-items: center;
+    }
   }
 }
 </style>

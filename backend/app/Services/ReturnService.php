@@ -76,9 +76,7 @@ class ReturnService
             $item->sku = $it['sku'] ?? null;
             $item->item_name = $it['item_name'];
             $item->quantity = (int) $it['quantity'];
-            $item->unit_price_cents = isset($it['cost'])
-                ? (int) round($it['cost'] * 100)
-                : null;
+            $item->unit_price_cents = $it['unit_price_cents'] ?? null;
             $item->currency = $it['currency'] ?? 'EUR';
 
             $return->items()->save($item);

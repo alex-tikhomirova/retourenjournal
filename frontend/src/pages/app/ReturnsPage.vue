@@ -2,6 +2,8 @@
   import {api} from "@/api/api.js";
   import {ref} from "vue";
   import ToolBar from "@/components/ToolBar.vue";
+  import ReturnStatusLabel from "@/components/ui/return/ReturnStatusLabel.vue";
+  import {dateTimeStr} from "@/helpers/datetime.js";
   const returns = ref([])
   api.post('/api/returns/list').then((resp) => {
     returns.value = resp.data.data
@@ -39,12 +41,10 @@
         </div>
       </td>
       <td>
-        <div v-if="item.status">
-          {{item.status.name}}
-        </div>
+        <ReturnStatusLabel v-if="item.status" :status="item.status"/>
       </td>
-      <td>{{item.created_at}}</td>
-      <td>{{item.updated_at}}</td>
+      <td>{{dateTimeStr(item.created_at)}}</td>
+      <td>{{dateTimeStr(item.updated_at)}}</td>
     </tr>
     </tbody>
   </table>

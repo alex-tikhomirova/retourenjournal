@@ -1,12 +1,7 @@
 @use "variables";
 @use "sass:color";
 
-body{
-  color: variables.$text-color;
-}
-.font-bold{
-  font-weight: bold;
-}
+
 h1,.h1{
   font-size: 2rem;
   font-weight: 500;
@@ -49,5 +44,23 @@ a:not(.btn) {
   color: variables.$color-danger;
 }
 .text-muted{
-  color: color.adjust(variables.$text-color, $lightness: +40%);
+  color: variables.$text-color-muted;
+}
+.text-small{
+  font-size: 90%;
+}
+.text-center{
+  text-align: center;
+}
+.text-right{
+  text-align: right;
+}
+.font-bold{
+  font-weight: bold;
+}
+.font-500{
+  font-weight: 500;
+}
+.ws-nowrap{
+  white-space: nowrap;
 }

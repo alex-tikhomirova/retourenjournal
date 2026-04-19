@@ -27,6 +27,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $name
  *     Human‑readable label of the refund status.
  *
+ * @property string $description
+ *     Short description
+ *
  * @property bool $is_counted
  *     Indicates whether this status should be included in refund statistics.
  *
@@ -50,6 +53,7 @@ class RefundStatus extends Model
     protected $fillable = [
         'code',
         'name',
+        'description',
         'is_counted',
         'sort_order',
     ];

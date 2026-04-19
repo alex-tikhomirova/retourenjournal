@@ -18,7 +18,7 @@ Route::middleware(['auth:sanctum', 'org.current'])->group(function () {
     Route::patch('/returns/{id}', [ReturnController::class, 'update']);
     Route::post('/returns/store', [ReturnController::class, 'store']);
     Route::post('/returns/{return}/shipments', [ReturnShipmentController::class, 'store']);
-    Route::patch('/returns/{return}/shipments/{shipment}', [ReturnShipmentController::class, 'store']);
+    Route::patch('/returns/{return}/shipments/{shipment}', [ReturnShipmentController::class, 'update']);
 });
 
 Route::middleware(['auth:sanctum', 'org.current'])->group(function () {

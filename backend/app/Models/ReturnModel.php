@@ -123,7 +123,7 @@ class ReturnModel extends Model
                 $model->organization_id = $user->current_organization_id;
                 $model->created_by_user_id = $user->id;
                 $model->updated_by_user_id = $user->id;
-                $model->status_id = ReturnStatus::initialReturnStatus($user->current_organization_id)->id;
+                $model->status_id = ReturnStatus::initialReturnStatus()->id;
             }
         });
 
@@ -135,9 +135,9 @@ class ReturnModel extends Model
 
         static::saved(function (self $model) {
             $eventFields = ReturnEvent::eventFields('return');
-            foreach ($model->getDirty() as $field => $value) {
-                if (isset($eventFields[$field])) {
-                    $eventField = $eventFields[$field];
+            $dirtyAttributes = $model->getDirty();
+            foreach ($eventFields as $field => $eventField) {
+                if (isset($dirtyAttributes[$field])) {
                     $model->events()->save(
                         new ReturnEvent([
                             'action' => (int) $model->wasRecentlyCreated,
@@ -217,7 +217,7 @@ class ReturnModel extends Model
      */
     public function items(): HasMany
     {
-        return $this->hasMany(ReturnItem::class, 'return_id');
+        return $this->hasMany(ReturnItem::class, 'return_id')->orderBy('line_no');
     }
 
     /**
@@ -225,7 +225,7 @@ class ReturnModel extends Model
      */
     public function notes(): HasMany
     {
-        return $this->hasMany(ReturnNote::class, 'return_id');
+        return $this->hasMany(ReturnNote::class, 'return_id')->orderBy('created_at', 'desc');
     }
 
     /**
@@ -233,7 +233,7 @@ class ReturnModel extends Model
      */
     public function refunds(): HasMany
     {
-        return $this->hasMany(ReturnRefund::class, 'return_id');
+        return $this->hasMany(ReturnRefund::class, 'return_id')->orderBy('created_at', 'desc');
     }
 
     /**
@@ -241,7 +241,7 @@ class ReturnModel extends Model
      */
     public function shipments(): HasMany
     {
-        return $this->hasMany(ReturnShipment::class, 'return_id');
+        return $this->hasMany(ReturnShipment::class, 'return_id')->orderBy('created_at', 'desc');
     }
 
     /**

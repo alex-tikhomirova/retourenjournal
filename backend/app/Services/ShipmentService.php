@@ -39,11 +39,38 @@ class ShipmentService
 
             // TODO: Логирование
 
-
             // TODO: Пересчёт статуса возврата
-
 
             return $shipment;
         });
+    }
+
+    public function update(int $id, array $payload): ReturnShipment
+    {
+        // check exists
+        /** @var ReturnShipment $shipment */
+        $shipment = ReturnShipment::find($id);
+        if (!$shipment) {
+            abort(404, 'Die Sendung existiert nicht');
+        }
+
+        $shipment->direction = $payload['direction'] ?? $shipment->direction;
+        $shipment->currency = $payload['currency'] ?? $shipment->currency;
+        $shipment->payer = $payload['payer'] ?? $shipment->payer;
+        $shipment->carrier = $payload['carrier'] ?? $shipment->carrier;
+        $shipment->tracking_number = $payload['tracking_number'] ?? $shipment->tracking_number;
+        $shipment->label_ref = $payload['label_ref'] ?? $shipment->label_ref;
+
+        if (isset($payload['cost'])) {
+            $shipment->cost_cents = (int) round($payload['cost'] * 100);
+        }
+
+        $shipment->save();
+
+        // TODO: Логирование
+
+        // TODO: Пересчёт статуса возврата
+
+        return $shipment;
     }
 }

@@ -44,6 +44,10 @@ const setState = (code) => {
         Ablehnen
       </button>
     </template>
+    <button v-if="['closed', 'cancelled'].includes(status.code)" class="btn btn-outline-primary"
+            @click="() => setState('in_review')">
+      Wiederherstellen
+    </button>
   </div>
 </template>
 

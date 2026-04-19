@@ -35,7 +35,7 @@ const addItem = () => {
     sku: '',
     item_name: '',
     quantity: '1',
-    price: '',
+    unit_price: '',
     currency: 'EUR',
   })
 }
@@ -118,7 +118,7 @@ const save = async () => {
             <FormFieldText v-model="item.quantity" type="number" :name="`quantity-${idx}`"/>
           </td>
           <td>
-            <FormFieldText v-model="item.price" :name="`price-${idx}`"/>
+            <FormFieldText v-model="item.unit_price" :name="`price-${idx}`"/>
           </td>
           <td>
             <FormFieldText v-model="item.currency" :name="`currency-${idx}`" disabled/>
