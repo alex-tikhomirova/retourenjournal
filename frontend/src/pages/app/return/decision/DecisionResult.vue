@@ -1,15 +1,15 @@
 <script setup>
-import {CircleCheck, Truck, BanknoteArrowUp, CircleArrowRight, Check, Pencil, Info} from "lucide-vue-next";
+import {Truck, BanknoteArrowUp, Check, Pencil} from "lucide-vue-next";
 import FormFieldText from "@/components/forms/FormFieldText.vue";
 import {ref} from "vue";
 import {useCurrencyStore} from "@/stores/currency.js";
 import DecisionBadges from "@/pages/app/return/decision/DecisionBadges.vue";
-import ReturnStatusLabel from "@/components/ui/return/ReturnStatusLabel.vue";
 import CheckBox from "@/components/forms/CheckBox.vue";
 import FormFieldSelect from "@/components/forms/FormFieldSelect.vue";
 import {useLookupStore} from "@/stores/lookups.js";
 import FormGroup from "@/components/forms/FormGroup.vue";
 import {api} from "@/api/api.js";
+import DecisionNextStatus from "./DecisionNextStatus.vue";
 
 const props = defineProps({
   decision: Object,
@@ -31,7 +31,7 @@ const formData = ref({
   shipment: {
     auto: true,
     direction: 1,
-    carrier: '',
+    carrier: 'DHL',
     payer: 2,
     amount: '0',
   }
@@ -41,10 +41,10 @@ const saving = ref(false)
 
 const save =  async () => {
   saving.value = true
-  if (formData.value.refund.auto){
-    //save new refund
+  if (props.decision.requires_refund && formData.value.refund.auto){
+    await api.post(`/api/returns/${props.returnData.id}/refunds`, formData.value.refund)
   }
-  if (formData.value.shipment.auto){
+  if (props.decision.requires_outbound_shipment && formData.value.shipment.auto){
     await api.post(`/api/returns/${props.returnData.id}/shipments`, formData.value.shipment)
   }
   emit('confirm')
@@ -55,67 +55,45 @@ const save =  async () => {
 <template>
 
 
-  <div class="decision-result">
-    <h3>Ausgewählte Entscheidung</h3>
+  <div class="decision-result" :class="{danger: decision.outcome === 'reject', primary: decision.outcome === 'approve'}">
+    <div class="title flex justify-between">Ausgewählte Entscheidung</div>
 
-    <div class="selected-decision entity">
-      <h4 class="e-title text-muted">
-        <CircleCheck /> Du hast gewählt:
-      </h4>
-      <div class="e-content">
-        <div class="d-name">{{ decision.name }}</div>
+    <div class="selected-decision ">
+      <span class="text-muted text-small">Du hast gewählt:</span>
+        <div class="name">{{ decision.name }}</div>
         <DecisionBadges :decision="decision"/>
-      </div>
     </div>
 
-    <div class="next-status entity" v-if="decision.nextStatus">
-      <h4 class="e-title text-muted">
-        <CircleArrowRight /> Nächster Status:
-      </h4>
-      <div class="e-content">
-        <ReturnStatusLabel :status="decision.nextStatus"/> -
-        <span class="text-muted">{{decision.nextStatus.description}}</span>
-      </div>
-    </div>
+    <DecisionNextStatus :status="decision.nextStatus"/>
 
-    <div class="refund entity"  v-if="decision.requires_refund">
-      <h4 class="e-title text-muted">
-        <BanknoteArrowUp /> Rückerstattung
+    <div class="refund color-card danger "  v-if="decision.requires_refund">
+      <h4 class="e-title text-muted flex gap-6 font-bold">
+        <CheckBox v-model="formData.refund.auto"/> <BanknoteArrowUp /> Rückerstattung
       </h4>
       <div class="e-content">
         <div class="refund-form">
-          <CheckBox v-model="formData.refund.auto">
-            Rückgeldbetrag erstellen
-          </CheckBox>
           <FormFieldText name="refund_amount" v-model="formData.refund.amount"/>
           <div class="refund-descr text-muted text-small">Basierend auf {{ props.returnData.items.length }} Artikeln</div>
         </div>
-        <div class="tip">
-          <Info size="12" /> Der Kunde erhält {{ refundValue.toFixed(2) }} {{ currency.activeCurrency.symbol }} zurückerstattet.
+        <div class="color-card compact danger-danger text-danger text-small">
+          Der Kunde erhält {{ refundValue.toFixed(2) }} {{ currency.activeCurrency.symbol }} zurückerstattet.
         </div>
       </div>
     </div>
 
 
-    <div class="return-shipment entity" v-if="decision.requires_outbound_shipment">
-      <h4 class="e-title text-muted">
-        <Truck /> Rücksendung
-      </h4>
+    <div class="return-shipment color-card success" v-if="decision.requires_outbound_shipment">
+      <label class="e-title text-muted flex gap-6 font-bold ">
+        <CheckBox v-model="formData.shipment.auto" /> <Truck /> Rücksendung erstellen
+      </label>
       <div class="e-content">
-        <div class="return-form first">
-          <CheckBox v-model="formData.shipment.auto">
-            Rücksendesendung erstellen
-          </CheckBox>
+
+        <div class="return-form">
           <FormFieldSelect
               v-model="formData.shipment.carrier"
               :options="lookup.shipmentCarrierOptions"
               placeholder="Versanddienstleister auswählen"
           />
-        </div>
-        <div class="return-form second">
-          <FormGroup name="cost" label="Versandkosten" class="horizontal">
-            <FormFieldText name="shipment_amount" v-model="formData.shipment.amount"/>
-          </FormGroup>
           <FormFieldSelect
               name="payer"
               v-model="formData.shipment.payer"
@@ -123,13 +101,20 @@ const save =  async () => {
               placeholder="Zahlungspflichtigen auswählen"
           />
         </div>
-        <div class="tip">
-          <Info size="12"/> Versandlabel wird nach Bestätigung erstellt.
+        <div class="return-form">
+          <FormGroup name="cost" label="Versandkosten" class="horizontal">
+            <FormFieldText name="shipment_amount" v-model="formData.shipment.amount"/>
+          </FormGroup>
+
         </div>
+        <div class="color-card success-success compact text-success text-small">
+          Versandlabel wird nach Bestätigung erstellt.
+        </div>
+
       </div>
     </div>
 
-    <div class="buttons">
+    <div class="buttons flex flex-col">
       <button class="btn btn-primary btn-block" @click="save">
         <Check/>
         Entscheidung bestätigen
@@ -148,65 +133,46 @@ const save =  async () => {
 </template>
 
 <style scoped lang="scss">
-@use "@/assets/scss/variables" ;
-.entity{
+@use "./../../../../assets/scss/colored-cards";
+@use "./../../../../assets/scss/variables";
+
+.decision-result{
   border: 1px solid variables.$border-color;
   padding: 12px;
   border-radius: variables.$border-radius;
-  margin: 12px 0;
-  .e-title{
-    display: flex;
-    gap: 6px;
-    margin-bottom: 12px;
+  &.primary{
+    border-color: variables.$color-primary;
+    background-color: variables.$bg-color-primary;
   }
-  .e-content{
+  &.danger{
+    border-color: variables.$color-danger;
+    background-color: variables.$bg-color-danger;
+  }
 
-    .tip{
-      margin-top: 12px;
+  >.title{
+
+    font-weight: 500;
+  }
+
+  .selected-decision{
+    margin: 12px 0;
+    .name{
+      font-weight: bold;
     }
   }
-
-  .d-name{
-    font-weight: 500;
-    font-size: 1rem;
-  }
-
 }
 
-.refund-form{
-  display: flex;
-  gap: 12px;
-  .input {
-    width: 80px;
-  }
-}
-.return-form{
+
+.refund-form, .return-form{
   display: flex;
   gap: 12px;
   margin: 6px 0;
-  &.first >*{
-    flex: 1 1 0;
-  }
-  &.second{
-    input[type="text"]{
-      width: 80px;
-    }
-  }
 }
 
-.tip{
-  background-color: variables.$bg-color-primary;
-  color: variables.$color-primary;
-  display: flex;
-  gap: 6px;
-  row-gap: 6px;
-  column-gap: 6px;
-  padding: 6px 12px;
-  border-radius: variables.$border-radius;
-}
 .buttons{
-  .btn{
-    margin: 6px 0;
-  }
+  margin: 12px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 </style>

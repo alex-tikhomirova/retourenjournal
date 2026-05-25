@@ -1,7 +1,7 @@
 <script setup>
-import ShipmentItem from "./ShipmentItem.vue";
-import ReturnShipmentForm from "@/pages/app/return/shipment/ReturnShipmentForm.vue";
 import {ref} from "vue";
+import RefundItem from "@/pages/app/return/refund/RefundItem.vue";
+import RefundForm from "@/pages/app/return/refund/RefundForm.vue";
 
 const props = defineProps({
   return_id: {
@@ -16,29 +16,24 @@ const props = defineProps({
 
 defineEmits(["updated"])
 
-const shippingForm = ref(false)
-
-
+const showForm = ref(false)
 </script>
 
 <template>
-  <div class="shipment-list">
-    <table class="shipment-table table">
+  <div class="refund-list">
+    <table class="refund-table table">
       <thead>
       <tr>
-
-        <th>Richtung</th>
-        <th>Payer</th>
-        <th>Preis</th>
+        <th>Referenz</th>
+        <th>Betrag</th>
         <th>Status</th>
-        <th>Carrier</th>
-        <th>Tracking</th>
         <th>Erstellt</th>
+        <th>Verarbeitet</th>
       </tr>
       </thead>
 
       <tbody>
-      <ShipmentItem
+      <RefundItem
         v-for="item in props.items"
         :key="item.id"
         :item="item"
@@ -46,26 +41,24 @@ const shippingForm = ref(false)
       />
       </tbody>
     </table>
-    <div class="add-shipment">
-      <ReturnShipmentForm
-          v-if="shippingForm"
+    <div class="add-refund">
+      <RefundForm
+          v-if="showForm"
           :return_id="return_id"
           @saved="$emit('updated')"
-          @close="shippingForm = false"
+          @close="showForm = false"
       />
       <div v-else class="add-button text-right">
-        <button class="btn btn-primary" @click="shippingForm = true">Versand anlegen</button>
+        <button class="btn btn-primary" @click="showForm = true">Rückerstattung anlegen</button>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-.shipment-list {
-  .add-shipment {
-    margin: 12px;
+  .refund-list{
+    .add-refund{
+      margin: 12px;
+    }
   }
-}
-
 </style>
-

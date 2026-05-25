@@ -92,6 +92,22 @@ class ReturnRefund extends Model
      */
     protected static function booted(): void
     {
+        static::creating(function (self $model) {
+            /** @var User $user */
+            if ($user = auth()->user()) {
+                $model->organization_id = $user->current_organization_id;
+                $model->created_by_user_id = $user->id;
+                $model->updated_by_user_id = $user->id;
+                $model->status_id = 2;
+            }
+        });
+
+        static::updating(function (self $model) {
+            if ($userId = auth()->id()) {
+                $model->updated_by_user_id = $userId;
+            }
+        });
+
         static::addGlobalScope(new OrganizationScope);
     }
 

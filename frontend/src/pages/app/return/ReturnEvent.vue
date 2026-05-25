@@ -2,6 +2,7 @@
 import {dateTimeStr} from "@/helpers/datetime.js";
 import ReturnStatusLabel from "@/components/ui/return/ReturnStatusLabel.vue";
 import ShipmentStatusLabel from "@/components/ui/shipment/ShipmentStatusLabel.vue";
+import DecisionType from "../../../components/ui/return/DecisionType.vue";
 
   defineProps({
     event: Object
@@ -11,17 +12,20 @@ import ShipmentStatusLabel from "@/components/ui/shipment/ShipmentStatusLabel.vu
 <template>
   <div class="return-event">
 
-    <div>{{event.event_title}}</div>
-
-
+    <div class="flex gap-6">
+      <div class="title">{{event.event_title}}: </div>
     <div v-if="event.ref_type === 'status' && event.event_ref">
       <ReturnStatusLabel :status="event.event_ref"/>
     </div>
     <div v-else-if="event.ref_type === 'shipmentstatus' && event.event_ref">
       <ShipmentStatusLabel :status="event.event_ref"/>
     </div>
+    <div v-else-if="event.ref_type === 'decision' && event.event_ref">
+      <DecisionType :decision="event.event_ref"/>
+    </div>
     <div v-else>
       {{event.value}}
+    </div>
     </div>
     <div class="text-muted stams">
       <span>{{dateTimeStr(event.created_at, false)}}</span>
@@ -32,6 +36,9 @@ import ShipmentStatusLabel from "@/components/ui/shipment/ShipmentStatusLabel.vu
 
 <style  lang="scss">
   .return-event{
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
     .stams{
       font-size: 90%;
       display: flex;

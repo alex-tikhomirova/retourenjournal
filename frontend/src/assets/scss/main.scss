@@ -14,7 +14,7 @@ body{
   background-color: variables.$background-color;
 }
 
-.grid-table, .table{
+.table{
   width: 100%;
   th{
     text-align: left;
@@ -22,8 +22,16 @@ body{
     background-color: variables.$head-bg-color;
     padding: 8px 10px;
   }
-  tbody > tr > td, thead > tr > td, thead > tr > th{
-    border-top: 1px solid variables.$border-color;
+  tbody > tr > td, thead > tr > td, thead > tr > th {
+    border-bottom: 1px solid variables.$border-color;
     padding: 8px 10px;
   }
+  &.grid-table{
+    tbody > tr > td, thead > tr > td, thead > tr > th{
+      border-top: 1px solid variables.$border-color;
+      border-bottom:none;
+    }
+  }
+
+
 }

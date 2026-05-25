@@ -28,7 +28,7 @@ class ShipmentStoreRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'cost_cents' =>  $this->get('cost') * 100,
+            'cost_cents' =>  $this->get('amount') * 100,
         ]);
     }
 

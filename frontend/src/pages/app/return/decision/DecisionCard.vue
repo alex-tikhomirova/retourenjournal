@@ -14,14 +14,17 @@ const model = defineModel({
 </script>
 
 <template>
-  <div class="decision-card" @click="model = item.id">
+  <div class="decision-card"
+       @click="model = item.id"
+       :class="{active: model === item.id, reject: item.outcome === 'reject'}"
+  >
     <div class="radio">
       <RadioButton v-model="model" :value="item.id" name="decision"/>
     </div>
     <div class="info">
       <div class="title">{{ item.name }}</div>
-      <div class="description text-muted text-small">{{ item.description }}</div>
-      <DecisionBadges :decision="item"/>
+      <div class="description text-muted text-small" >{{ item.description }}</div>
+      <DecisionBadges :decision="item" v-if="!model"/>
     </div>
   </div>
 </template>
@@ -36,7 +39,15 @@ const model = defineModel({
     gap: 12px;
     align-items: center;
     cursor: pointer;
-    margin: 6px 0;
+
+    &.active:not(.reject){
+      border-color: variables.$color-primary;
+      background-color: variables.$bg-color-primary;
+    }
+    &.active.reject{
+      border-color: variables.$color-danger;
+      background-color: variables.$bg-color-danger;
+    }
     .title{
       font-weight: 500;
     }

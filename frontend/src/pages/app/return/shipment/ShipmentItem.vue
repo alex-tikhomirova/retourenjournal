@@ -52,7 +52,7 @@ const saveTrackingNumber = async (trackingNumber) => {
     </td>
 
     <td>
-      {{currency.toActiveString(item.cost_cents)}}
+      <span class="ws-nowrap font-bold">{{ currency.toActiveString(item.cost_cents) }}</span>
     </td>
 
     <td>

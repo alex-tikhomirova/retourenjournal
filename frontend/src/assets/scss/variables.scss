@@ -12,7 +12,12 @@ $color-secondary: #6B7280;
 $color-success: #16A34A;
 $color-danger: #DC2626;
 
-$bg-color-primary: color.adjust($color-primary, $lightness: +55%);
+$bg-color-primary: color.adjust($color-primary, $lightness: +58%);
+$bg-color-primary-primary: color.adjust($color-primary, $lightness: +54%);
+$bg-color-success: color.adjust($color-success, $lightness: +58%);
+$bg-color-success-success: color.adjust($color-success, $lightness: +54%);
+$bg-color-danger: color.adjust($color-danger, $lightness: +48%);
+$bg-color-danger-danger: color.adjust($color-danger, $lightness: +44%);
 
 // Disabled
 $color-disabled-bg: #E5E7EB;
@@ -22,5 +27,7 @@ $color-disabled-border: #D1D5DB;
 // UI
 $border-color: #DDDDDD;
 $head-bg-color: #F9FAFB;
+
+//f3f4f6
 
 $border-radius: 5px;

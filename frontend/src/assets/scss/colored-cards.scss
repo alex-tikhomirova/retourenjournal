@@ -1,0 +1,31 @@
+@use "variables";
+
+.color-card{
+  border: 1px solid variables.$border-color;
+  padding: 12px;
+  border-radius: variables.$border-radius;
+  margin-top: 6px;
+  &.compact{
+    padding: 4px 6px;
+  }
+  &.primary{
+    border-color: variables.$color-primary;
+    background-color: variables.$bg-color-primary-primary;
+  }
+  &.success{
+    border-color: variables.$color-success;
+    background-color: variables.$bg-color-success;
+  }
+  &.success-success{
+    border-color: variables.$color-success;
+    background-color: variables.$bg-color-success-success;
+  }
+  &.danger{
+    border-color: variables.$color-danger;
+    background-color: variables.$bg-color-danger;
+  }
+  &.danger-danger{
+    border-color: variables.$color-danger;
+    background-color: variables.$bg-color-danger-danger;
+  }
+}

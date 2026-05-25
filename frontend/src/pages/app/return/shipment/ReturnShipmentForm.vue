@@ -29,7 +29,7 @@ const formData = ref(
         carrier: "",
         tracking_number: "",
         payer: 2,
-        cost: "",
+        amount: "",
       }
 )
 
@@ -57,8 +57,8 @@ const save = async () => {
                 placeholder="Zahler auswaehlen"
             />
           </FormGroup>
-          <FormGroup name="cost" label="Preis">
-            <FormFieldText name="cost" v-model="formData.cost" />
+          <FormGroup name="amount" label="Preis">
+            <FormFieldText name="amount" v-model="formData.amount" />
           </FormGroup>
         </div>
         <div class="second-row flex gap-24">

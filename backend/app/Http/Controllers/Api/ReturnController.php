@@ -40,6 +40,7 @@ class ReturnController extends Controller
             'shipments.status:id,code,name',
             'shipments.createdBy' => fn ($q) => $q->select('id', 'name'),
             'refunds.status:id,code,name',
+            'refunds.createdBy' => fn ($q) => $q->select('id', 'name'),
             'notes',
             'decision',
             'events.createdBy' => fn ($q) => $q->select('id', 'name'),

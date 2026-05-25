@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\OrganizationController;
 use App\Http\Controllers\Api\ReturnController;
+use App\Http\Controllers\Api\ReturnRefundController;
 use App\Http\Controllers\Api\ReturnShipmentController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,6 +20,8 @@ Route::middleware(['auth:sanctum', 'org.current'])->group(function () {
     Route::post('/returns/store', [ReturnController::class, 'store']);
     Route::post('/returns/{return}/shipments', [ReturnShipmentController::class, 'store']);
     Route::patch('/returns/{return}/shipments/{shipment}', [ReturnShipmentController::class, 'update']);
+    Route::post('/returns/{return}/refunds', [ReturnRefundController::class, 'store']);
+    Route::patch('/returns/{return}/refund/{refund}', [ReturnRefundController::class, 'update']);
 });
 
 Route::middleware(['auth:sanctum', 'org.current'])->group(function () {

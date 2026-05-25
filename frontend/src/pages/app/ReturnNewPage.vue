@@ -6,7 +6,7 @@ import FormFieldText from "@/components/forms/FormFieldText.vue";
 import {computed, ref} from "vue";
 import {api} from "@/api/api.js";
 import {useRouter} from "vue-router";
-import {Plus, Minus} from "lucide-vue-next";
+import {Plus} from "lucide-vue-next";
 import ToolBar from "@/components/ToolBar.vue";
 
 const router = useRouter()
@@ -65,7 +65,7 @@ const save = async () => {
 
 
   <div class="return-form-page">
-    <PageCard class="customer" title="Kunde">
+    <PageCard class="customer padded" title="Kunde">
       <FormGroup name="customer.name" label="Name">
         <FormFieldText v-model="formData.customer.name" name="customer.name"/>
       </FormGroup>
@@ -79,7 +79,7 @@ const save = async () => {
         <FormFieldText v-model="formData.customer.address_text" name="customer.address_text"/>
       </FormGroup>
     </PageCard>
-    <PageCard class="return" title="Grundinformationen">
+    <PageCard class="return padded" title="Grundinformationen">
       <FormGroup name="return_number" label="Retourennummer">
         <FormFieldText v-model="formData.return_number" name="return_number"/>
       </FormGroup>
@@ -90,7 +90,7 @@ const save = async () => {
         <FormFieldText v-model="formData.reason" name="reason"/>
       </FormGroup>
     </PageCard>
-    <PageCard class="items" title="Artikel">
+    <PageCard class="items padded" title="Artikel">
       <table class="table grid-table">
         <thead>
         <tr>
@@ -108,23 +108,23 @@ const save = async () => {
           <td>
             <FormFieldText v-model="item.line_no" type="number" :name="`line_no-${idx}`"/>
           </td>
-          <td>
+          <td class="sku">
             <FormFieldText v-model="item.sku" :name="`sku-${idx}`"/>
           </td>
           <td>
             <FormFieldText v-model="item.item_name" :name="`item_name-${idx}`"/>
           </td>
-          <td>
+          <td class="qty">
             <FormFieldText v-model="item.quantity" type="number" :name="`quantity-${idx}`"/>
           </td>
-          <td>
+          <td class="price">
             <FormFieldText v-model="item.unit_price" :name="`price-${idx}`"/>
           </td>
           <td>
             <FormFieldText v-model="item.currency" :name="`currency-${idx}`" disabled/>
           </td>
           <td>
-            <button class="btn  btn-outline-primary" @click="() => removeItem(idx)"><Minus/></button>
+            <button class="btn  btn-outline-primary" @click="() => removeItem(idx)"> - </button>
           </td>
         </tr>
         </tbody>
@@ -142,20 +142,22 @@ const save = async () => {
   gap: 30px;
 
   .customer {
-
-  }
-
-  .return {
     flex: 1;
   }
 
+  .return {
+    flex: 2;
+  }
+
   .items {
-    .pos, .qty, .currency {
+    flex: 5;
+    .pos, .qty, .currency, .price {
       width: 90px;
     }
-    .name{
-      width: 400px;
+    .sku{
+      width: 200px;
     }
+
   }
 }
 </style>

@@ -7,12 +7,16 @@ import PageCard from "@/components/PageCard.vue";
 import ReturnEvent from "@/pages/app/return/ReturnEvent.vue";
 
 import {Pencil} from "lucide-vue-next";
-import ReturnDecision from "@/pages/app/return/ReturnDecision.vue";
+import ReturnDecision from "./return/decision/ReturnDecision.vue";
 import StateSwitch from "@/pages/app/return/StateSwitch.vue";
 import ItemsList from "@/pages/app/return/ItemsList.vue";
 import CustomerInfo from "@/pages/app/return/CustomerInfo.vue";
 import {dateTimeStr} from "@/helpers/datetime.js";
 import ShipmentList from "@/pages/app/return/shipment/ShipmentList.vue";
+import RefundList from "@/pages/app/return/refund/RefundList.vue";
+import { Truck, Euro } from "lucide-vue-next";
+import NumberBadge from "@/components/ui/NumberBadge.vue";
+import DecisionTypeIcon from "@/components/ui/return/DecisionTypeIcon.vue";
 
 const router = useRouter()
 const route = useRoute()
@@ -70,16 +74,23 @@ const subtitle = computed(() => {
         <div class="customer-items">
           <PageCard title="Kunde" class="block-customer">
             <template #title>
-              <button class="btn btn-sm btn-outline-secondary"><Pencil />Bearbeiten</button>
+              <button class="btn btn-sm btn-link"><Pencil />Bearbeiten</button>
             </template>
             <CustomerInfo :customer="returnData.customer"/>
           </PageCard>
 
-            <ItemsList :items="returnData.items" class="block-items"/>
+          <ItemsList :items="returnData.items" class="block-items"/>
 
         </div>
 
-        <PageCard title="Entscheidung" class="block-decision">
+        <PageCard  class="block-decision">
+          <template #title>
+            <div class="page-card-title">
+              <DecisionTypeIcon :item="returnData.decision"/>
+              {{returnData.decision ? 'Entscheidung bestätigt' : 'Entscheidung'}}
+            </div>
+            <button class="btn btn-sm btn-link" @click="returnData.decision_id = null"><Pencil /> Ändern</button>
+          </template>
           <ReturnDecision
               v-model="returnData.decision_id"
               @update:modelValue="save"
@@ -88,12 +99,30 @@ const subtitle = computed(() => {
         </PageCard>
       </div>
 
-      <PageCard title="Versand & Logistik" class="block-shipping">
-        <ShipmentList :return_id="returnData.id" :items="returnData.shipments" @updated="load"/>
-      </PageCard>
-      <PageCard title="Erstattungen" class="block-refund"></PageCard>
 
-    </div>
+        <PageCard class="block-shipping">
+          <template #title>
+            <div class="page-card-title">
+              <Truck :size="18"/>
+              Versand & Logistik
+              <NumberBadge :value="returnData.shipments.length"/>
+            </div>
+          </template>
+          <ShipmentList :return_id="returnData.id" :items="returnData.shipments" @updated="load"/>
+        </PageCard>
+        <PageCard class="block-refund">
+          <template #title>
+            <div class="page-card-title">
+              <Euro :size="18"/>
+              Erstattungen
+              <NumberBadge :value="returnData.refunds.length"/>
+            </div>
+          </template>
+          <RefundList :return_id="returnData.id" :items="returnData.refunds" @updated="load"/>
+        </PageCard>
+      </div>
+
+
     <PageCard title="Akivitäten" class="history">
       <div class="history-items">
         <ReturnEvent v-for="event in returnData.events" :event="event"/>
@@ -109,6 +138,7 @@ const subtitle = computed(() => {
       display: flex;
       gap: 24px;
       flex-wrap: wrap;
+      align-items: flex-start;
       .row-top{
         width: 100%;
         display: flex;
@@ -136,6 +166,7 @@ const subtitle = computed(() => {
       min-width: 300px;
 
       .history-items{
+        margin: 18px;
         display: flex;
         flex-direction: column;
         gap: 12px;

@@ -16,7 +16,7 @@
       <RouterLink class="btn btn-primary" to="/app/returns/new">Neue Rückgabe</RouterLink>
     </template>
   </ToolBar>
-  <table v-if="returns.length" class="grid-table">
+  <table v-if="returns.length" class="table grid-table">
     <thead>
     <tr>
       <th>Retourennummer</th>

@@ -26,9 +26,7 @@ class ShipmentService
 
             $shipment = new ReturnShipment();
             $shipment->direction = $payload['direction'];
-            $shipment->cost_cents = isset($payload['cost'])
-                ? (int) round($payload['cost'] * 100)
-                : null;
+            $shipment->cost_cents = $payload['cost_cents']??null;
             $shipment->currency = $payload['currency']??'EUR';
             $shipment->payer = $payload['payer'];
             $shipment->carrier = $payload['carrier'];

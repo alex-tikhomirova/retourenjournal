@@ -1,7 +1,8 @@
 <script setup>
 import {computed} from "vue";
-import {useCurrencyStore} from "./../../../stores/currency.js";
+import {useCurrencyStore} from "@/stores/currency.js";
 import PageCard from "./../../../components/PageCard.vue";
+import NumberBadge from "../../../components/ui/NumberBadge.vue";
 
 const props = defineProps({
   items: Array
@@ -13,9 +14,13 @@ const sum = computed(() => props.items.reduce((total, i) => total + currency.toA
 </script>
 
 <template>
-  <PageCard :title="`Artikel (${items.length})`" >
+  <PageCard  >
     <template #title>
-      <strong>{{ currency.toActiveString(sum) }}</strong>
+      <div class="page-card-title">
+        Artikel
+        <NumberBadge :value="props.items.length"/>
+      </div>
+      <span class="font-bold">{{ currency.toActiveString(sum) }}</span>
     </template>
   <table class="table grid-table items-list-table">
     <tbody>

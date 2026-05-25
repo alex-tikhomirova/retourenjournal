@@ -7,7 +7,7 @@
 <template>
   <div class="page-card">
     <div class="page-card-header">
-      <div class="page-card-title">
+      <div v-if="title" class="page-card-title">
         {{ title }}
       </div>
       <slot name="title"/>
@@ -25,26 +25,28 @@
   .page-card{
     border: 1px solid variables.$border-color;
     border-radius: variables.$border-radius;
+
     .page-card-header{
-      background-color: variables.$head-bg-color;
       border-bottom: 1px solid variables.$border-color;
       border-top-right-radius: variables.$border-radius;
       border-top-left-radius: variables.$border-radius;
-      height: 40px;
-      padding-left: 20px;
-      padding-right: 20px;
+      padding: 12px 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       .page-card-title{
         font-weight: 500;
-        font-size: 1rem;
-
+        font-size: 0.875rem;
+        display: flex;
+        gap: 7px;
+        align-items: center;
+      }
+    }
+    &.padded{
+      .page-card-slot{
+        padding: 18px;
       }
     }
 
-    .page-card-slot{
-      padding: 20px;
-    }
   }
 </style>
