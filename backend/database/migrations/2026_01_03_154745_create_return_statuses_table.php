@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('return_statuses', function (Blueprint $table) {
-            $table->id(); // bigint PK
+            $table->id()->from(10001); // bigint PK
 
             // NULL = global default status
             // NOT NULL = organization-specific custom status

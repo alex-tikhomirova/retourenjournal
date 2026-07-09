@@ -23,7 +23,7 @@ import DecisionType from "../../../components/ui/return/DecisionType.vue";
     <div v-else-if="event.ref_type === 'decision' && event.event_ref">
       <DecisionType :decision="event.event_ref"/>
     </div>
-    <div v-else>
+    <div v-else class="font-bold">
       {{event.value}}
     </div>
     </div>

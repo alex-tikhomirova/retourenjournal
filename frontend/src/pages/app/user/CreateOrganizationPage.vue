@@ -51,7 +51,7 @@ const onSubmit = async () => {
  .create-organization-page{
    max-width: 420px;
    margin: 40px auto;
-   padding: 16px;
+   padding: 18px;
  }
  .create-organization-form{
    display: grid;

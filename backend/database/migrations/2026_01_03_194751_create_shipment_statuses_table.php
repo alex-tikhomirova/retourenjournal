@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('shipment_statuses', function (Blueprint $table) {
-            $table->id(); // bigint
+            $table->id()->from(10001); // bigint
 
             // Keep it stable for seeds / internal logic
             $table->string('code', 50)->unique(); // created, shipped, in_transit, delivered, returned, cancelled

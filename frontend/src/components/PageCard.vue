@@ -6,7 +6,7 @@
 
 <template>
   <div class="page-card">
-    <div class="page-card-header">
+    <div class="page-card-header" v-if="$slots.title || title">
       <div v-if="title" class="page-card-title">
         {{ title }}
       </div>
@@ -25,7 +25,7 @@
   .page-card{
     border: 1px solid variables.$border-color;
     border-radius: variables.$border-radius;
-
+    background: variables.$background-color;
     .page-card-header{
       border-bottom: 1px solid variables.$border-color;
       border-top-right-radius: variables.$border-radius;

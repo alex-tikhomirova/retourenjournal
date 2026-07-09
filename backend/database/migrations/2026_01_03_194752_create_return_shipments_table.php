@@ -13,7 +13,7 @@ return new class extends Migration
     {
 
         Schema::create('return_shipments', function (Blueprint $table) {
-            $table->id();
+            $table->id()->from(10001);
 
             $table->foreignId('organization_id')
                 ->constrained()

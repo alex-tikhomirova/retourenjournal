@@ -29,11 +29,11 @@ const shippingForm = ref(false)
 
         <th>Richtung</th>
         <th>Payer</th>
-        <th>Preis</th>
         <th>Status</th>
         <th>Carrier</th>
         <th>Tracking</th>
         <th>Erstellt</th>
+        <th>ID</th>
       </tr>
       </thead>
 

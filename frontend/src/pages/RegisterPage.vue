@@ -101,7 +101,7 @@ async function onSubmit() {
 </template>
 
 <style scoped>
-.auth-page { max-width: 420px; margin: 40px auto; padding: 16px; }
+.auth-page { max-width: 420px; margin: 40px auto; padding: 18px; }
 .auth-form { display: grid; gap: 12px; }
 .field { display: grid; gap: 6px; }
 .field span { font-size: 14px; opacity: .8; }

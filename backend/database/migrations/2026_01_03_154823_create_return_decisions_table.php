@@ -13,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('return_decisions', function (Blueprint $table) {
-            $table->smallIncrements('id');
+            $table->smallIncrements('id')->from(10001);
 
             // NULL = global default decision
             // NOT NULL = organization-specific custom decision

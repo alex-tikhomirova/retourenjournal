@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('refund_statuses', function (Blueprint $table) {
-            $table->smallIncrements('id');
+            $table->smallIncrements('id')->from(10001);
             $table->string('code', 50)->unique();
             $table->string('name', 120);
             $table->string('description', 120)->nullable();

@@ -11,7 +11,7 @@
 
 body{
   color: variables.$text-color;
-  background-color: variables.$background-color;
+  background-color: variables.$background-body-color;
 }
 
 .table{
@@ -25,6 +25,15 @@ body{
   tbody > tr > td, thead > tr > td, thead > tr > th {
     border-bottom: 1px solid variables.$border-color;
     padding: 8px 10px;
+  }
+  tbody > tr{
+    &:hover{
+      background-color: variables.$table-row-hover-bg;
+
+    }
+    &.clickable{
+      cursor: pointer;
+    }
   }
   &.grid-table{
     tbody > tr > td, thead > tr > td, thead > tr > th{

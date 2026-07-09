@@ -48,11 +48,8 @@ const saveTrackingNumber = async (trackingNumber) => {
     <td class="shipment-row__direction">{{ directionLabel }}</td>
 
     <td>
-      {{payerLabel}}
-    </td>
-
-    <td>
-      <span class="ws-nowrap font-bold">{{ currency.toActiveString(item.cost_cents) }}</span>
+      <span class="text-small">{{ payerLabel }}</span>
+      <div class="ws-nowrap font-bold">{{ currency.toActiveString(item.cost_cents) }}</div>
     </td>
 
     <td>
@@ -84,6 +81,7 @@ const saveTrackingNumber = async (trackingNumber) => {
       <div>{{ item?.created_by?.name || '-' }}</div>
       <div>{{ item.created_at?dateTimeStr(item.created_at, false):'-'}}</div>
     </td>
+    <td><span class="text-small">{{ item.id }}</span></td>
   </tr>
 </template>
 

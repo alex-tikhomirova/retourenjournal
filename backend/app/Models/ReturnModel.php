@@ -249,6 +249,6 @@ class ReturnModel extends Model
      */
     public function events(): HasMany
     {
-        return $this->hasMany(ReturnEvent::class, 'return_id')->orderBy('created_at', 'desc');
+        return $this->hasMany(ReturnEvent::class, 'return_id')->orderBy('id', 'desc');
     }
 }

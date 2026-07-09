@@ -168,7 +168,7 @@ class ReturnEvent extends Model
 
         $fields = [
             'return' => [
-                'id' => ["title" => "Retoure erstellt", 'ref_type' => 'return',],
+                'return_number' => ["title" => "Retoure erstellt", 'ref_type' => 'return',],
                 'status_id' => ["title" => "Retourenstatus geändert", 'ref_type' => 'status',],
                 'decision_id' => ["title" => "Entscheidung gesetzt", 'ref_type' => 'decision'],
                 'order_reference' => ["title" => "Bestellnummer geändert"],

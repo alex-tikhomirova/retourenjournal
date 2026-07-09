@@ -8,11 +8,16 @@
 
 namespace App\Http\Requests\Concerns;
 
+use App\Models\ReturnModel;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
 
 /**
  * List queries trait for universal params
+ *
+ * Expects payload shape:
+ *   { filter: {...}, sort: "field|-field", page: { current_page: int|null, per_page: int } }
  *
  * @author Alexandra Tikhomirova
  *
@@ -21,22 +26,26 @@ use Illuminate\Validation\ValidationException;
 trait HasListQueryParams
 {
 
-    public function perPage(int $default = 25, int $max = 200): int
+    public function perPage(int $default = 20, int $max = 200): int
     {
-        $pp = (int) $this->input('per_page', $default);
-        if ($pp < 1) {
-            $pp = $default;
-        }
-        if ($pp > $max) {
-            $pp = $max;
-        }
+        $pp = (int) $this->input('pagination.per_page', $default);
+        if ($pp < 1) $pp = $default;
+        if ($pp > $max) $pp = $max;
         return $pp;
     }
 
+    public function currentPage(): ?int
+    {
+        $p = $this->input('pagination.current_page');
+        if ($p === null) return null;
+        $p = (int) $p;
+        return $p >= 1 ? $p : null;
+    }
+
     /**
-     * sort="-created_at,return_number"
-     * sortMap: ['created_at' => 'created_at', 'return_number' => 'return_number']
-     * -> [['created_at','desc'], ['return_number','asc']]
+     * sort="-created_at" or "return_number"
+     * sortMap: ['created_at' => 'created_at', ...]
+     * -> [['created_at','desc']]
      *
      * @throws ValidationException
      */
@@ -74,13 +83,41 @@ trait HasListQueryParams
         return $out ?: $default;
     }
 
+    /**
+     * Apply whitelisted sort fields, including belongsTo relation fields like `customer.name`.
+     *
+     * @throws ValidationException
+     */
+    public function applySort(Builder $query): void
+    {
+        foreach ($this->parsedSort($this->sortMap()) as [$column, $direction]) {
+            if (!str_contains($column, '.')) {
+                $query->orderBy($query->getModel()->qualifyColumn($column), $direction);
+                continue;
+            }
+
+            [$relationName, $relationColumn] = explode('.', $column, 2);
+            $relation = $query->getModel()->{$relationName}();
+            $query
+                ->select($query->getModel()->qualifyColumn('*'))
+                ->leftJoin(
+                    $relation->getRelated()->getTable(),
+                    $relation->getQualifiedOwnerKeyName(),
+                    '=',
+                    $relation->getQualifiedForeignKeyName()
+                )
+                ->orderBy($relation->getRelated()->qualifyColumn($relationColumn), $direction);
+        }
+    }
+
     public function listBaseRules(): array
     {
         return [
-            'page'     => ['sometimes','integer','min:1'],
-            'per_page' => ['sometimes','integer','min:1','max:200'],
-            'sort'     => ['sometimes','string','max:200'],
-            'q'        => ['sometimes','string','max:200'],
+            'filter'            => ['sometimes', 'array'],
+            'sort'              => ['sometimes', 'string', 'max:200'],
+            'pagination'              => ['sometimes', 'array'],
+            'pagination.current_page' => ['sometimes', 'nullable', 'integer', 'min:1'],
+            'pagination.per_page'     => ['sometimes', 'integer', 'min:1', 'max:200'],
         ];
     }
 }

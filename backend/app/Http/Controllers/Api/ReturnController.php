@@ -15,9 +15,7 @@ use App\Http\Requests\Return\ReturnStoreRequest;
 use App\Http\Requests\Return\ReturnUpdateRequest;
 use App\Http\Resources\ReturnResource;
 use App\Models\ReturnModel;
-use App\Models\User;
 use App\Services\ReturnService;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -49,8 +47,8 @@ class ReturnController extends Controller
 
     public function list(ReturnListRequest $request): AnonymousResourceCollection
     {
-        $p = $request->validated();
 
+        $filter = $request->filter();
         $query = ReturnModel::query()
             ->with([
                 'customer:id,organization_id,name,email,phone',
@@ -58,69 +56,59 @@ class ReturnController extends Controller
             ])
             ->withCount(['items', 'shipments', 'refunds']);
 
-        // --- filters ---
-        if (!empty($p['status_id'])) {
-            $query->where('status_id', (int) $p['status_id']);
+        // filters
+        if (!empty($filter['status_id'])) {
+            $query->whereIn('status_id', $filter['status_id']);
         }
 
-        if (!empty($p['decision_id'])) {
-            $query->where('decision_id', (int) $p['decision_id']);
+        if (!empty($filter['decision_id'])) {
+            $query->where('decision_id', $filter['decision_id']);
         }
 
-        if (!empty($p['customer_id'])) {
-            $query->where('customer_id', (int) $p['customer_id']);
+        if (!empty($filter['customer_id'])) {
+            $query->where('customer_id', (int) $filter['customer_id']);
         }
 
-        if (!empty($p['created_from'])) {
-            $query->whereDate('created_at', '>=', $p['created_from']);
+        if (!empty($filter['return_number'])) {
+            $query->where('return_number', 'ilike', '%' . $filter['return_number'] . '%');
         }
 
-        if (!empty($p['created_to'])) {
-            $query->whereDate('created_at', '<=', $p['created_to']);
+        if (!empty($filter['order_reference'])) {
+            $query->where('order_reference', 'ilike', '%' . $filter['order_reference'] . '%');
         }
 
-        if (array_key_exists('has_shipments', $p)) {
-            $p['has_shipments']
-                ? $query->whereHas('shipments')
-                : $query->whereDoesntHave('shipments');
+        if (!empty($filter['created_at'])) {
+            $query->whereDate('created_at', '>=', $filter['created_at'][0]);
+            if (isset($filter['created_at'][1])) {
+                $query->whereDate('created_at', '<=', $filter['created_at'][1]);
+            }
         }
-
-        if (array_key_exists('has_refunds', $p)) {
-            $p['has_refunds']
-                ? $query->whereHas('refunds')
-                : $query->whereDoesntHave('refunds');
+        if (!empty($filter['updated_at'])) {
+            $query->whereDate('updated_at', '>=', $filter['updated_at'][0]);
+            if (isset($filter['updated_at'][1])) {
+                $query->whereDate('updated_at', '<=', $filter['updated_at'][1]);
+            }
         }
-
-        if (!empty($p['tracking_number'])) {
-            $tn = trim($p['tracking_number']);
-            $query->whereHas('shipments', function ($q) use ($tn) {
-                $q->where('tracking_number', 'ilike', "%{$tn}%"); // Postgres
-            });
-        }
-
-        // общий поиск (return_number / order_reference / customer.name / sku / item_name)
-        if (!empty($p['q'])) {
-            $q = trim($p['q']);
-
+        // search
+        $q = trim((string) ($filter['q']??''));
+        if ($q !== '') {
             $query->where(function ($qq) use ($q) {
-                $qq->where('return_number', 'ilike', "%{$q}%")
-                    ->orWhere('order_reference', 'ilike', "%{$q}%")
-                    ->orWhereHas('customer', fn($c) => $c
-                        ->where('name', 'ilike', "%{$q}%")
-                    )
-                    ->orWhereHas('items', fn($i) => $i
-                        ->where(function ($x) use ($q) {
-                            $x->where('sku', 'ilike', "%{$q}%")
-                                ->orWhere('item_name', 'ilike', "%{$q}%");
-                        })
-                    );
+                $qq->where('return_number',   'ilike', "%$q%")
+                    ->orWhere('order_reference', 'ilike', "%$q%")
+                    ->orWhereHas('customer', fn($c) => $c->where('name', 'ilike', "%{$q}%"))
+                    ->orWhereHas('items', fn($i) => $i->where(function ($x) use ($q) {
+                        $x->where('sku',       'ilike', "%$q%")
+                            ->orWhere('item_name','ilike', "%$q%");
+                    }));
             });
         }
 
-        // --- sorting (whitelist уже провалидирован) ---
-        $query->orderBy('created_at', 'desc');
+        $request->applySort($query);
 
-        $result = $query->paginate(10)->withQueryString();
+        $result = $query->paginate(
+            perPage: $request->perPage(),
+            page:    $request->currentPage(),
+        )->withQueryString();
 
         return ReturnResource::collection($result);
     }

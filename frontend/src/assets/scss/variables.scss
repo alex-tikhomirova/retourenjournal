@@ -5,6 +5,7 @@ $text-color: #171717;
 $text-color-light: #dddddd;
 $text-color-muted: color.adjust($text-color, $lightness: +40%);
 $background-color: #ffffff;
+$background-body-color: #F4F6F9;
 
 $color-primary: #256FA8;
 $color-secondary: #6B7280;
@@ -27,7 +28,7 @@ $color-disabled-border: #D1D5DB;
 // UI
 $border-color: #DDDDDD;
 $head-bg-color: #F9FAFB;
-
+$table-row-hover-bg: $bg-color-primary;
 //f3f4f6
 
 $border-radius: 5px;

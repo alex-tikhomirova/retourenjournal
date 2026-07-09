@@ -88,12 +88,12 @@ async function onSubmit() {
 .auth-page {
   max-width: 420px;
   margin: 40px auto;
-  padding: 16px;
+  padding: 18px;
 }
 
 .auth-form {
   display: grid;
-  gap: 16px;
+  gap: 18px;
 }
 
 </style>
