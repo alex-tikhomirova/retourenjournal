@@ -44,4 +44,17 @@ class ShipmentStoreRequest extends FormRequest
             'currency' => ['nullable', 'string', 'size:3'],
         ];
     }
+
+    public function attributes(): array
+    {
+        return [
+            'direction' => 'Richtung',
+            'payer' => 'Zahler',
+            'carrier' => 'Versanddienstleister',
+            'tracking_number' => 'Trackingnummer',
+            'label_ref' => 'Label-Referenz',
+            'cost_cents' => 'Kosten',
+            'currency' => 'Währung',
+        ];
+    }
 }

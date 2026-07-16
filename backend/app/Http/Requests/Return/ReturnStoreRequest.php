@@ -38,16 +38,13 @@ class ReturnStoreRequest extends FormRequest
         })->all();
 
         $this->merge(['items' => $items]);
-        $this->merge([
-            'return_number' => $this->return_number ?? $this->generateReturnNumber(),
-        ]);
     }
 
     public function rules(): array
     {
         return [
-            'return_number' => ['nullable', 'string', 'max:60'], // если пришло — используем
-            'order_reference' => ['sometimes', 'nullable', 'string', 'max:60'], // если пришло — используем
+            'return_number' => ['required', 'string', 'max:60'],
+            'order_reference' => ['sometimes', 'nullable', 'string', 'max:60'],
             'reason' => ['sometimes', 'nullable', 'string', 'max:2000'],
 
             'customer' => ['required', 'array'],
@@ -61,6 +58,7 @@ class ReturnStoreRequest extends FormRequest
             'items' => ['required','array','min:1','max:500'],
             'items.*.line_no' => ['required','integer','min:1','max:32000'],
             'items.*.sku' => ['nullable','string','max:80'],
+            'items.*.serial' => ['nullable','string','max:255'],
             'items.*.item_name' => ['required','string','max:255'],
             'items.*.quantity' => ['required','integer','min:1','max:100000'],
             'items.*.unit_price_cents' => ['nullable','integer','min:0'],
@@ -68,9 +66,32 @@ class ReturnStoreRequest extends FormRequest
         ];
     }
 
+    public function attributes(): array
+    {
+        return [
+            'return_number' => 'Retourennummer',
+            'order_reference' => 'Bestellnummer / Referenz',
+            'reason' => 'Rücksendegrund',
+            'customer' => 'Kunde',
+            'customer.id' => 'Kunde',
+            'customer.name' => 'Name',
+            'customer.email' => 'E-Mail',
+            'customer.phone' => 'Telefonnummer',
+            'customer.address_text' => 'Adresse',
+            'items' => 'Artikel',
+            'items.*.line_no' => 'Positionsnummer',
+            'items.*.sku' => 'SKU',
+            'items.*.serial' => 'Seriennummer',
+            'items.*.item_name' => 'Artikelname',
+            'items.*.quantity' => 'Menge',
+            'items.*.unit_price_cents' => 'Stückpreis',
+            'items.*.currency' => 'Währung',
+        ];
+    }
+
     private function generateReturnNumber(): string
     {
         return 'RET-' . strtoupper(uniqid());
-        // или через БД — RET-000123 и т.д.
+        // or from DB — RET-000123 и etc.
     }
 }

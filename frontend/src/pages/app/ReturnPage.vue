@@ -5,18 +5,17 @@ import {computed, ref, watch} from "vue";
 import {api} from "@/api/api.js";
 import PageCard from "@/components/PageCard.vue";
 import ReturnEvent from "@/pages/app/return/ReturnEvent.vue";
-
-import {Pencil} from "lucide-vue-next";
 import ReturnDecision from "./return/decision/ReturnDecision.vue";
 import StateSwitch from "@/pages/app/return/StateSwitch.vue";
 import ItemsList from "@/pages/app/return/ItemsList.vue";
 import CustomerInfo from "@/pages/app/return/CustomerInfo.vue";
-import {dateTimeStr} from "@/helpers/datetime.js";
+import {dateTimeStr} from "@/utils/datetime.js";
 import ShipmentList from "@/pages/app/return/shipment/ShipmentList.vue";
 import RefundList from "@/pages/app/return/refund/RefundList.vue";
 import { Truck, Euro } from "lucide-vue-next";
 import NumberBadge from "@/components/ui/NumberBadge.vue";
-import DecisionTypeIcon from "@/components/ui/return/DecisionTypeIcon.vue";
+import ReturnStatusLabel from "@/components/ui/return/ReturnStatusLabel.vue";
+import {useLookupStore} from "@/stores/lookups.js";
 
 const router = useRouter()
 const route = useRoute()
@@ -52,55 +51,49 @@ watch(returnId, () => {
 }, { immediate: true })
 
 
-const subtitle = computed(() => {
-  return `Status: ${returnData.value.status.name} · Zuletzt aktualisiert: ${dateTimeStr(returnData.value.updated_at, false)}`
-})
+const opened = computed(() => returnData.value?.status?.kind !== 9)
 
+const lookup = useLookupStore()
 
 </script>
 
 <template>
 
-  <ToolBar v-if="returnData" :on-back="() => router.push('/app/returns')" :title="`Retoure ${returnData.return_number}`" :subtitle="subtitle">
+  <ToolBar v-if="returnData" :on-back="() => router.push('/app/returns')" >
+    <template #left>
+      <div class="">
+        <h3>{{ `Retoure ${returnData.return_number}` }}</h3>
+        <div class="sub-title text-muted flex gap-6">
+          <ReturnStatusLabel :status="returnData.status" mode="bulb"/>
+          ·
+          <span class="flex">Zuletzt aktualisiert: {{ returnData.updated_at ? dateTimeStr(returnData.updated_at, false) : '—' }}</span>
+        </div>
+      </div>
+    </template>
     <template #right>
       <StateSwitch v-model="returnData.status_id" :returnModel="returnData" @update:modelValue="save" />
 
     </template>
   </ToolBar>
 
-  <div v-if="returnData" class="flex gap-30 return-data items-start">
+  <div v-if="returnData" class="flex return-data items-start">
     <div class="left">
       <div class="row-top">
         <div class="customer-items">
-          <PageCard title="Kunde" class="block-customer">
-            <template #title>
-              <button class="btn btn-sm btn-link"><Pencil />Bearbeiten</button>
-            </template>
-            <CustomerInfo :customer="returnData.customer"/>
-          </PageCard>
-
+          <CustomerInfo v-model="returnData.customer" :editable="opened"/>
           <ItemsList :items="returnData.items" class="block-items"/>
-
         </div>
 
-        <PageCard  class="block-decision">
-          <template #title>
-            <div class="page-card-title">
-              <DecisionTypeIcon :item="returnData.decision"/>
-              {{returnData.decision ? 'Entscheidung bestätigt' : 'Entscheidung'}}
-            </div>
-            <button class="btn btn-sm btn-link" @click="returnData.decision_id = null"><Pencil /> Ändern</button>
-          </template>
+        <div class="block-decision">
           <ReturnDecision
-              v-model="returnData.decision_id"
-              @update:modelValue="save"
               :returnData="returnData"
+              @updated="load"
+              :editable="opened"
           />
-        </PageCard>
+        </div>
       </div>
 
-
-        <PageCard class="block-shipping">
+        <PageCard class="block-shipping" >
           <template #title>
             <div class="page-card-title">
               <Truck :size="18"/>
@@ -108,7 +101,7 @@ const subtitle = computed(() => {
               <NumberBadge :value="returnData.shipments.length"/>
             </div>
           </template>
-          <ShipmentList :return_id="returnData.id" :items="returnData.shipments" @updated="load"/>
+          <ShipmentList  :return_id="returnData.id" :items="returnData.shipments" @updated="load" :editable="opened"/>
         </PageCard>
         <PageCard class="block-refund">
           <template #title>
@@ -118,12 +111,12 @@ const subtitle = computed(() => {
               <NumberBadge :value="returnData.refunds.length"/>
             </div>
           </template>
-          <RefundList :return_id="returnData.id" :items="returnData.refunds" @updated="load"/>
+          <RefundList :return_id="returnData.id" :items="returnData.refunds" @updated="load" :editable="opened"/>
         </PageCard>
       </div>
 
 
-    <PageCard title="Akivitäten" class="history">
+    <PageCard title="Historie" class="history">
       <div class="history-items">
         <ReturnEvent v-for="event in returnData.events" :event="event"/>
       </div>
@@ -132,23 +125,25 @@ const subtitle = computed(() => {
 </template>
 
 <style lang="scss">
+  @use "@/assets/scss/variables" ;
   .return-data{
+    gap: variables.$module-gap;
     .left{
       flex: 1;
       display: flex;
-      gap: 24px;
+      gap: variables.$module-gap;
       flex-wrap: wrap;
       align-items: flex-start;
       .row-top{
         width: 100%;
         display: flex;
-        gap: 24px;
+        gap: variables.$module-gap;
         flex-wrap: wrap;
       }
       .customer-items{
         flex: 3 1 0;
         display: flex;
-        gap: 24px;
+        gap: variables.$module-gap;;
         flex-direction: column;
       }
       .block-decision{

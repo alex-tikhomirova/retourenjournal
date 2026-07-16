@@ -3,9 +3,9 @@ import {computed} from 'vue'
 
 const props = defineProps({
   name: String,
-  type: {
-    type: String,
-    default: "text"
+  rows: {
+    type: [Number, String],
+    default: 2
   },
   invalid: {
     type: Boolean,
@@ -22,13 +22,13 @@ const inputId = computed(() => `field-${props.name}`)
 </script>
 
 <template>
-  <input
-      :type="type"
+  <textarea
       :name="name"
       :id="inputId"
       :value="value"
+      :rows="rows"
       @input="$emit('update:modelValue', $event.target.value)"
-      class="input"
+      class="textarea"
       :class="[`input-${name}`, { 'is-invalid': invalid }]"
       :aria-invalid="invalid"
       :aria-describedby="`${inputId}-error`"

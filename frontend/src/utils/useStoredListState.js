@@ -1,5 +1,16 @@
 import {ref, watch} from 'vue'
 
+/**
+ * @template {Record<string, any>} T
+ * @typedef {import('vue').Ref<T> & {reset: () => void}} StoredListState
+ */
+
+/**
+ * @template {Record<string, any>} T
+ * @param {string} storageKey
+ * @param {T} defaults
+ * @returns {StoredListState<T>}
+ */
 export function useStoredListState(storageKey, defaults) {
   const state = ref(loadStoredState(storageKey, defaults))
 
@@ -27,6 +38,12 @@ export function useStoredListState(storageKey, defaults) {
   return state
 }
 
+/**
+ * @template {Record<string, any>} T
+ * @param {string} storageKey
+ * @param {T} defaults
+ * @returns {T}
+ */
 const loadStoredState = (storageKey, defaults) => {
   const defaultState = clone(defaults)
 
@@ -47,7 +64,12 @@ const loadStoredState = (storageKey, defaults) => {
 }
 
 
-
+/**
+ * @template {Record<string, any>} T
+ * @param {import('vue').Ref<T>} filters
+ * @param {T} defaults
+ * @returns {void}
+ */
 const resetFilters = (filters, defaults) => {
   for (const key of Object.keys(filters.value)) {
     delete filters.value[key]
@@ -55,6 +77,12 @@ const resetFilters = (filters, defaults) => {
   Object.assign(filters.value, clone(defaults))
 }
 
+/**
+ * @template {Record<string, any>} T
+ * @param {T} defaults
+ * @param {unknown} stored
+ * @returns {T}
+ */
 const mergeFilters = (defaults, stored) => {
   if (!isPlainObject(defaults) || !isPlainObject(stored)) {
     return defaults
@@ -72,6 +100,11 @@ const mergeFilters = (defaults, stored) => {
   return result
 }
 
+/**
+ * @param {unknown} defaultValue
+ * @param {unknown} storedValue
+ * @returns {unknown}
+ */
 const mergeValue = (defaultValue, storedValue) => {
   if (isPlainObject(defaultValue) && isPlainObject(storedValue)) {
     return mergeFilters(defaultValue, storedValue)
@@ -80,6 +113,11 @@ const mergeValue = (defaultValue, storedValue) => {
   return storedValue
 }
 
+/**
+ * @template T
+ * @param {T} value
+ * @returns {T}
+ */
 const clone = (value) => {
   if (typeof structuredClone === 'function') {
     return structuredClone(value)
@@ -87,4 +125,8 @@ const clone = (value) => {
   return JSON.parse(JSON.stringify(value))
 }
 
+/**
+ * @param {unknown} value
+ * @returns {value is Record<string, any>}
+ */
 const isPlainObject = (value) => Object.prototype.toString.call(value) === '[object Object]'

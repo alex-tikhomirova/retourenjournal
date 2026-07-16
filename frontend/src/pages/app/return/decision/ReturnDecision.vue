@@ -2,33 +2,50 @@
 
 import {useLookupStore} from "@/stores/lookups.js";
 import {computed, ref} from "vue";
-import {Check, X, ChevronDown, ChevronUp} from "lucide-vue-next";
+import {Check, X, ChevronDown, ChevronUp, Pencil} from "lucide-vue-next";
 import DecisionCard from "./DecisionCard.vue";
 import DecisionResult from "./DecisionResult.vue";
 import CurrentDecision from "@/pages/app/return/decision/CurrentDecision.vue";
+import DecisionTypeIcon from "@/components/ui/return/DecisionTypeIcon.vue";
+import PageCard from "@/components/PageCard.vue";
 
-
-const value = defineModel({
-  type: Number
-})
+const emit = defineEmits(['updated'])
 
 const props = defineProps({
   returnData: Object,
+  editable: {
+    type: Boolean,
+    default: false,
+  }
 })
 
 const lookup = useLookupStore()
 
-
 const selected = ref(0)
 const selectedGroup = ref('')
-
 const current = computed(() => lookup.returnDecision(selected.value))
 
+const opened = ref(false)
+opened.value = !props.returnData.decision_id
+const update = () => {
+  selected.value = 0
+  opened.value = false
+  emit('updated')
+}
 </script>
 
 <template>
+  <PageCard class="">
+    <template #title>
+      <div class="page-card-title">
+        <DecisionTypeIcon :item="returnData.decision"/>
+        {{returnData.decision ? 'Entscheidung bestätigt' : 'Entscheidung'}}
+      </div>
+      <button class="btn btn-sm btn-link" v-if="editable && !opened" @click="opened = true"><Pencil /> Ändern</button>
+      <button class="btn btn-sm btn-link" v-else-if="opened && returnData.decision_id" @click="opened = false"><X /> Abbrechen</button>
+    </template>
   <div class="return-decision">
-    <CurrentDecision v-if="returnData.decision_id" :decision_id="returnData.decision_id"/>
+    <CurrentDecision v-if="returnData.decision_id && !opened" :decision_id="returnData.decision_id"/>
     <div class="decision-select" v-else>
       <div class="decision-accordeon" :class="{wide: !selected}">
         <div class="group">
@@ -77,14 +94,14 @@ const current = computed(() => lookup.returnDecision(selected.value))
         </div>
       </div>
       <div class="result-area" v-if="current">
-        <DecisionResult  :decision="current" :returnData="returnData" @reset="selected = 0" @confirm="value = selected"/>
+        <DecisionResult  :decision="current" :returnData="returnData" @reset="selected = 0" @confirm="update"/>
       </div>
     </div>
 
 
 
   </div>
-
+  </PageCard>
 </template>
 
 <style scoped lang="scss">
@@ -93,7 +110,7 @@ const current = computed(() => lookup.returnDecision(selected.value))
 .decision-select {
   display: flex;
   .decision-accordeon {
-    padding: 18px;
+    padding: variables.$module-padding;
     display: flex;
     flex-direction: column;
     gap: 6px;
@@ -142,7 +159,7 @@ const current = computed(() => lookup.returnDecision(selected.value))
   .result-area{
     flex: 4;
     border-left: 1px solid variables.$border-color;
-    padding: 18px;
+    padding: variables.$module-padding;
   }
 
 }

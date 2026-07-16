@@ -1,10 +1,14 @@
 <script setup>
 
 import {computed} from "vue";
-import {hexToHsl, hslToCss} from "./../../../helpers/colors.js";
+import {hexToHsl, hslToCss} from "@/utils/colors.js";
 
 const props = defineProps({
-  status: Object
+  status: Object,
+  mode: {
+    type: String,
+    default: 'label'
+  }
 })
 
 const deriveBadgeColorsFromHsl = (h, s, l) => {
@@ -51,21 +55,34 @@ const styles = computed(() => {
 </script>
 
 <template>
-  <div class="return-status-label" :style="styles">
-    {{status.name}}
+  <div class="return-status return-status-label" :style="styles" v-if="mode === 'label'" title="Status">
+    <span class="bulb" :style="{backgroundColor: styles.borderColor}"></span> {{status.name}}
+  </div>
+  <div class="return-status "  v-if="mode === 'bulb'" :style="{color: styles.color}">
+    <span class="bulb" :style="{backgroundColor: styles.borderColor}"></span> {{status.name}}
   </div>
 </template>
 
 <style scoped lang="scss">
 @use "./../../../assets/scss/variables" ;
-  .return-status-label{
+
+  .return-status{
     display: inline-flex;
     gap: 6px;
-    font-size: 0.8rem;
-    border: 1px solid;
-    border-radius: 14px;
-    padding: 2px 12px;
-    font-weight: 500;
-
+    align-items: center;
+    &.return-status-label{
+      font-size: 0.8rem;
+      border: 1px solid;
+      border-radius: variables.$border-radius;
+      padding: 2px 12px;
+      font-weight: 500;
+    }
+    .bulb{
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
   }
+
+
 </style>

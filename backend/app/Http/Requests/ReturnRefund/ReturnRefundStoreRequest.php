@@ -27,4 +27,13 @@ class ReturnRefundStoreRequest extends FormRequest
             'currency' => ['nullable', 'string', 'size:3'],
         ];
     }
+
+    public function attributes(): array
+    {
+        return [
+            'reference' => 'Referenz',
+            'amount_cents' => 'Erstattungsbetrag',
+            'currency' => 'Währung',
+        ];
+    }
 }

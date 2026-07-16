@@ -2,7 +2,7 @@
 import {computed, ref} from "vue";
 import {api} from "@/api/api.js";
 import {useLookupStore} from "@/stores/lookups.js";
-import {dateTimeStr} from "@/helpers/datetime.js";
+import {dateTimeStr} from "@/utils/datetime.js";
 import {FilePenLine} from "lucide-vue-next";
 import {useCurrencyStore} from "@/stores/currency.js";
 import ShipmentStatusLabel from "@/components/ui/shipment/ShipmentStatusLabel.vue";

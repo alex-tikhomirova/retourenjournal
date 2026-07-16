@@ -3,11 +3,17 @@
 import PageCard from "@/components/PageCard.vue";
 import FormGroup from "@/components/forms/FormGroup.vue";
 import FormFieldText from "@/components/forms/FormFieldText.vue";
-import {computed, ref} from "vue";
+import {ref} from "vue";
 import {api} from "@/api/api.js";
 import {useRouter} from "vue-router";
-import {Plus} from "lucide-vue-next";
+import {X, Save} from "lucide-vue-next";
 import ToolBar from "@/components/ToolBar.vue";
+import FormFieldTextArea from "@/components/forms/FormFieldTextArea.vue";
+import {useFormErrors} from "@/utils/useFormErrors.js";
+import {useLookupStore} from "@/stores/lookups.js";
+import ReturnStatusLabel from "@/components/ui/return/ReturnStatusLabel.vue";
+import ReturnItemsForm from "@/pages/app/return-new/ReturnItemsForm.vue";
+import ReturnCustomerForm from "@/pages/app/return-new/ReturnCustomerForm.vue";
 
 const router = useRouter()
 
@@ -25,139 +31,127 @@ const formData = ref({
   items: [],
 })
 
-const lastLine = computed(() => formData.value.items.reduce(
-    (last, current) => Math.max(last, Number(current.line_no)),
-    0)
-)
-const addItem = () => {
-  formData.value.items.push({
-    line_no: lastLine.value + 1,
-    sku: '',
-    item_name: '',
-    quantity: '1',
-    unit_price: '',
-    currency: 'EUR',
-  })
-}
-const removeItem = (idx) => {
-  formData.value.items.splice(idx,1)
-}
-addItem()
+const {
+  getError,
+  hasError,
+  clearError,
+  setErrorsFromResponse,
+} = useFormErrors()
+
+api.get('api/returns/next-number').then(res => formData.value.return_number = res.data?.data?.return_number ?? '')
+
+const lookup = useLookupStore()
+const initialStatus = lookup.returnStatuses.reduce((initial, status) => (status.kind !== 1 ? initial : status), null)
 
 const save = async () => {
-  const {data} = await api.post('/api/returns/store', formData.value);
-  if (data?.data?.id ?? null){
-    router.push('/app/returns')
+  try {
+    const {data} = await api.post('/api/returns/store', formData.value);
+    if (data?.data?.id ?? null) {
+      await router.push(`/app/returns/${data.data.id}`)
+    }
+  } catch (error) {
+    if (error.response?.status === 422) {
+      setErrorsFromResponse(error.response)
+      return
+    }
+    throw error
   }
-}
 
+}
 
 </script>
 
 <template>
 
-  <ToolBar :on-back="() => router.push('/app/returns')" title="Neue Retoure erstellen" subtitle="Erfassen Sie die Retourendaten">
+  <ToolBar :on-back="() => router.push('/app/returns')" title="Neue Retoure erstellen"
+           subtitle="Erfassen Sie die Retourendaten">
     <template #right>
-      <button class="btn btn-outline-primary" @click="router.push('/app/returns')">Abbrechen</button>
-      <button class="btn btn-primary" @click="save">Speichern</button>
+      <button class="btn btn-outline-primary" @click="router.push('/app/returns')">
+        <X/>
+        Abbrechen
+      </button>
+      <button class="btn btn-primary" @click="save">
+        <Save/>
+        Speichern
+      </button>
     </template>
   </ToolBar>
+  <div class="return-form-page container">
 
+    <PageCard class="return padded" title="Retourdaten">
+      <template #title>
+        <ReturnStatusLabel :status="initialStatus"/>
+      </template>
+      <div class="flex gap-24">
+        <FormGroup name="return_number" label="Retourennummer" class="flex-1" :error="getError('return_number')"
+                   required>
+          <FormFieldText
+              v-model="formData.return_number"
+              name="return_number"
+              placeholder="z.B. RET-69C7BD7B"
+              :invalid="hasError('return_number')"
+              @update:modelValue="() => clearError('return_number')"
+          />
+        </FormGroup>
+        <FormGroup name="order_reference" label="Bestellnummer / Referenz" class="flex-1">
+          <FormFieldText v-model="formData.order_reference" name="order_reference" placeholder="z.B. ORD-12345"/>
+        </FormGroup>
+      </div>
+    </PageCard>
 
-  <div class="return-form-page">
-    <PageCard class="customer padded" title="Kunde">
-      <FormGroup name="customer.name" label="Name">
-        <FormFieldText v-model="formData.customer.name" name="customer.name"/>
-      </FormGroup>
-      <FormGroup name="customer.email" label="E-mail">
-        <FormFieldText v-model="formData.customer.email" name="customer.email"/>
-      </FormGroup>
-      <FormGroup name="customer.phone" label="Telefonnummer">
-        <FormFieldText v-model="formData.customer.phone" name="customer.phone"/>
-      </FormGroup>
-      <FormGroup name="customer.address_text" label="Adresse">
-        <FormFieldText v-model="formData.customer.address_text" name="customer.address_text"/>
-      </FormGroup>
-    </PageCard>
-    <PageCard class="return padded" title="Grundinformationen">
-      <FormGroup name="return_number" label="Retourennummer">
-        <FormFieldText v-model="formData.return_number" name="return_number"/>
-      </FormGroup>
-      <FormGroup name="order_reference" label="Bestellnummer">
-        <FormFieldText v-model="formData.order_reference" name="order_reference"/>
-      </FormGroup>
-      <FormGroup name="reason" label="reason">
-        <FormFieldText v-model="formData.reason" name="reason"/>
-      </FormGroup>
-    </PageCard>
-    <PageCard class="items padded" title="Artikel">
-      <table class="table grid-table">
-        <thead>
-        <tr>
-          <th class="pos">Pos.</th>
-          <th class="sku">SKU</th>
-          <th class="name">Artikel</th>
-          <th class="qty">Menge</th>
-          <th class="price">Preis</th>
-          <th class="currency">Währung</th>
-          <th class=""> </th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="(item, idx) in formData.items">
-          <td>
-            <FormFieldText v-model="item.line_no" type="number" :name="`line_no-${idx}`"/>
-          </td>
-          <td class="sku">
-            <FormFieldText v-model="item.sku" :name="`sku-${idx}`"/>
-          </td>
-          <td>
-            <FormFieldText v-model="item.item_name" :name="`item_name-${idx}`"/>
-          </td>
-          <td class="qty">
-            <FormFieldText v-model="item.quantity" type="number" :name="`quantity-${idx}`"/>
-          </td>
-          <td class="price">
-            <FormFieldText v-model="item.unit_price" :name="`price-${idx}`"/>
-          </td>
-          <td>
-            <FormFieldText v-model="item.currency" :name="`currency-${idx}`" disabled/>
-          </td>
-          <td>
-            <button class="btn  btn-outline-primary" @click="() => removeItem(idx)"> - </button>
-          </td>
-        </tr>
-        </tbody>
-      </table>
+    <ReturnCustomerForm
+        v-model="formData.customer"
+        :get-error="getError"
+        :has-error="hasError"
+        :clear-error="clearError"
+    />
 
-      <button class="btn btn-primary" @click="addItem"><Plus  /></button>
+    <PageCard class="return-reason padded" title="Rücksendegrund">
+
+      <FormFieldTextArea v-model="formData.reason" name="reason" rows="3"
+                         placeholder="Begründen Sie die Rücksendung ..."/>
+
     </PageCard>
+
+    <ReturnItemsForm
+        v-model="formData.items"
+        :get-error="getError"
+        :has-error="hasError"
+        :clear-error="clearError"
+    />
+
+    <div class="flex gap-24 flex-1 justify-end">
+      <button class="btn btn-outline-primary" @click="router.push('/app/returns')">
+        <X/>
+        Abbrechen
+      </button>
+      <button class="btn btn-primary" @click="save">
+        <Save/>
+        Retoure speichern
+      </button>
+    </div>
 
   </div>
 </template>
 
 <style lang="scss">
+@use "@/assets/scss/variables";
+
 .return-form-page {
   display: flex;
-  gap: 30px;
-
-  .customer {
-    flex: 1;
-  }
+  flex-wrap: wrap;
+  gap: variables.$module-gap;
 
   .return {
-    flex: 2;
+    flex: 1 1 calc((100% - #{variables.$module-gap}) / 2);
+    min-width: 0;
+    @media (max-width: 768px) {
+      flex-basis: 100%;
+    }
   }
 
-  .items {
-    flex: 5;
-    .pos, .qty, .currency, .price {
-      width: 90px;
-    }
-    .sku{
-      width: 200px;
-    }
-
+  .return-reason {
+    flex: 1 1 100%;
   }
 }
 </style>

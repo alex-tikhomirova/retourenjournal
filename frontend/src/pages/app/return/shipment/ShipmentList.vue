@@ -2,6 +2,7 @@
 import ShipmentItem from "./ShipmentItem.vue";
 import ReturnShipmentForm from "@/pages/app/return/shipment/ReturnShipmentForm.vue";
 import {ref} from "vue";
+import { Plus } from "lucide-vue-next";
 
 const props = defineProps({
   return_id: {
@@ -11,6 +12,10 @@ const props = defineProps({
   items: {
     type: Array,
     default: () => [],
+  },
+  editable: {
+    type: Boolean,
+    default: true,
   },
 })
 
@@ -23,7 +28,7 @@ const shippingForm = ref(false)
 
 <template>
   <div class="shipment-list">
-    <table class="shipment-table table">
+    <table class="shipment-table table" v-if="props.items.length">
       <thead>
       <tr>
 
@@ -46,7 +51,8 @@ const shippingForm = ref(false)
       />
       </tbody>
     </table>
-    <div class="add-shipment">
+
+    <div class="add-shipment" v-if="editable">
       <ReturnShipmentForm
           v-if="shippingForm"
           :return_id="return_id"
@@ -54,7 +60,7 @@ const shippingForm = ref(false)
           @close="shippingForm = false"
       />
       <div v-else class="add-button text-right">
-        <button class="btn btn-primary" @click="shippingForm = true">Versand anlegen</button>
+        <button class="btn btn-primary btn-sm" @click="shippingForm = true"><Plus/> Versand anlegen</button>
       </div>
     </div>
   </div>

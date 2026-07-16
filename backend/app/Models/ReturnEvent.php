@@ -138,6 +138,7 @@ class ReturnEvent extends Model
         }
 
         $models = [
+           // 'return'   => ReturnModel::class,
             'status'   => ReturnStatus::class,
             'shipment' => ReturnShipment::class,
             'shipmentstatus' => ShipmentStatus::class,
@@ -168,11 +169,12 @@ class ReturnEvent extends Model
 
         $fields = [
             'return' => [
-                'return_number' => ["title" => "Retoure erstellt", 'ref_type' => 'return',],
-                'status_id' => ["title" => "Retourenstatus geändert", 'ref_type' => 'status',],
+                //'id' => ["title" => "Retoure erstellt", 'ref_type' => 'return',],
+                'return_number' => ["title" => "Retoure erstellt", ],
                 'decision_id' => ["title" => "Entscheidung gesetzt", 'ref_type' => 'decision'],
                 'order_reference' => ["title" => "Bestellnummer geändert"],
                 'reason' => ["title" => "Grund geändert"],
+                'status_id' => ["title" => "Retourenstatus geändert", 'ref_type' => 'status',],
             ],
             'shipment' => [
                 'id' => ["title" => "Versand erstellt", 'ref_type' => 'shipment',],

@@ -4,7 +4,7 @@ import { computed } from 'vue'
 import FormFieldText from '@/components/forms/FormFieldText.vue'
 import DateRangeFilter from '@/components/forms/filter/DateRangeFilter.vue'
 import StatusFilter from '@/components/forms/filter/StatusFilter.vue'
-import { debounce } from '@/helpers/debounce.js'
+import { debounce } from '@/utils/debounce.js'
 import { RotateCcw } from 'lucide-vue-next'
 
 const props = defineProps({

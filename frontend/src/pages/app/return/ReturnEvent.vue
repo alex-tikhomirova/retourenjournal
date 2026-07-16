@@ -1,5 +1,5 @@
 <script setup>
-import {dateTimeStr} from "@/helpers/datetime.js";
+import {dateTimeStr} from "@/utils/datetime.js";
 import ReturnStatusLabel from "@/components/ui/return/ReturnStatusLabel.vue";
 import ShipmentStatusLabel from "@/components/ui/shipment/ShipmentStatusLabel.vue";
 import DecisionType from "../../../components/ui/return/DecisionType.vue";
@@ -21,7 +21,7 @@ import DecisionType from "../../../components/ui/return/DecisionType.vue";
       <ShipmentStatusLabel :status="event.event_ref"/>
     </div>
     <div v-else-if="event.ref_type === 'decision' && event.event_ref">
-      <DecisionType :decision="event.event_ref"/>
+      <DecisionType :decision="event.event_ref" small/>
     </div>
     <div v-else class="font-bold">
       {{event.value}}
@@ -39,6 +39,10 @@ import DecisionType from "../../../components/ui/return/DecisionType.vue";
     display: flex;
     flex-direction: column;
     gap: 4px;
+    font-size: 0.74rem;
+    .title{
+      font-weight: 500;
+    }
     .stams{
       font-size: 90%;
       display: flex;

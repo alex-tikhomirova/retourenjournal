@@ -90,6 +90,32 @@ class ReturnListRequest extends FormRequest
         ]);
     }
 
+    public function attributes(): array
+    {
+        return [
+            'filter' => 'Filter',
+            'filter.status_id' => 'Retourenstatus',
+            'filter.status_id.*' => 'Retourenstatus',
+            'filter.decision_id' => 'Entscheidung',
+            'filter.decision_id.*' => 'Entscheidung',
+            'filter.created_at' => 'Erstellungsdatum',
+            'filter.created_at.*' => 'Erstellungsdatum',
+            'filter.updated_at' => 'Änderungsdatum',
+            'filter.updated_at.*' => 'Änderungsdatum',
+            'filter.return_number' => 'Retourennummer',
+            'filter.order_reference' => 'Bestellnummer / Referenz',
+            'filter.customer' => 'Kunde',
+            'filter.customer.name' => 'Name',
+            'filter.customer.email' => 'E-Mail',
+            'filter.customer.phone' => 'Telefonnummer',
+            'filter.q' => 'Suche',
+            'sort' => 'Sortierung',
+            'pagination' => 'Paginierung',
+            'pagination.current_page' => 'Seite',
+            'pagination.per_page' => 'Einträge pro Seite',
+        ];
+    }
+
     /** Shorthand for the controller. */
     public function filter(): array
     {

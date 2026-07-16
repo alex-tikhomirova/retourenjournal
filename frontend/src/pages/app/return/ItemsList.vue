@@ -10,7 +10,10 @@ const props = defineProps({
 
 const currency = useCurrencyStore()
 
-const sum = computed(() => props.items.reduce((total, i) => total + currency.toActive(i.unit_price_cents, i.currency), 0))
+const sum = computed(() => props.items.reduce(
+    (total, i) => (i.unit_price_cents !== null)?(Number(total) + currency.toActive(i.unit_price_cents, i.currency)):total
+    , null)
+)
 </script>
 
 <template>
@@ -25,8 +28,10 @@ const sum = computed(() => props.items.reduce((total, i) => total + currency.toA
   <table class="table grid-table items-list-table">
     <tbody>
     <tr v-for="item in items">
-      <td class="sku">{{item.sku}}</td>
-      <td class="name">{{item.item_name}} ({{item.quantity}})</td>
+      <td class="pos">{{item.line_no}}</td>
+      <td class="sku">{{item.sku ?? '—'}}</td>
+      <td class="name text-small">{{item.item_name}} ({{item.quantity}})</td>
+      <td class="serial text-small text-muted">{{item.serial ? `S/N: ${item.serial}`: '—'}}</td>
       <td class="price">{{currency.toActiveString(item.unit_price_cents, item.currency)}}</td>
     </tr>
     </tbody>

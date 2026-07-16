@@ -11,7 +11,7 @@ RUN apk add --no-cache \
 
 # PHP extensions
 RUN docker-php-ext-install \
-    intl mbstring zip \
+    intl mbstring zip bcmath \
     pdo pdo_pgsql
 
 # Composer (копируем из официального образа)

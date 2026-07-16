@@ -1,6 +1,6 @@
 <script setup>
 import {computed, ref} from "vue";
-import {Check, X} from "lucide-vue-next";
+import {Save, X} from "lucide-vue-next";
 import {api} from "@/api/api.js";
 import {useLookupStore} from "@/stores/lookups.js";
 import FormGroup from "@/components/forms/FormGroup.vue";
@@ -34,7 +34,7 @@ const formData = ref(
 )
 
 const isNew = computed(() => !props.shipment)
-const save = async () => {
+const saveShipment = async () => {
   await api.post(`/api/returns/${props.return_id}/shipments`, formData.value)
   emit("saved")
 }
@@ -78,11 +78,11 @@ const save = async () => {
 
       </div>
       <div class="form__actions flex gap-10 justify-end">
-        <button type="button" class="btn btn-outline-primary" @click="$emit('close')">
-          <X :size="14" /> Abbrechen
+        <button type="button" class="btn btn-outline-primary btn-sm" @click="$emit('close')">
+          <X /> Abbrechen
         </button>
-        <button type="button" class="btn btn-primary" @click="save">
-          <Check :size="14" /> Speichern
+        <button type="button" class="btn btn-primary btn-sm" @click="saveShipment">
+          <Save /> Speichern
         </button>
       </div>
     </div>

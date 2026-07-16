@@ -2,6 +2,7 @@
 import {ref} from "vue";
 import RefundItem from "@/pages/app/return/refund/RefundItem.vue";
 import RefundForm from "@/pages/app/return/refund/RefundForm.vue";
+import {Plus} from "lucide-vue-next";
 
 const props = defineProps({
   return_id: {
@@ -12,6 +13,10 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+  editable: {
+    type: Boolean,
+    default: true,
+  }
 })
 
 defineEmits(["updated"])
@@ -21,7 +26,7 @@ const showForm = ref(false)
 
 <template>
   <div class="refund-list">
-    <table class="refund-table table">
+    <table class="refund-table table" v-if="props.items.length">
       <thead>
       <tr>
         <th>Referenz</th>
@@ -33,6 +38,7 @@ const showForm = ref(false)
       </thead>
 
       <tbody>
+
       <RefundItem
         v-for="item in props.items"
         :key="item.id"
@@ -41,7 +47,7 @@ const showForm = ref(false)
       />
       </tbody>
     </table>
-    <div class="add-refund">
+    <div class="add-refund" v-if="editable">
       <RefundForm
           v-if="showForm"
           :return_id="return_id"
@@ -49,7 +55,7 @@ const showForm = ref(false)
           @close="showForm = false"
       />
       <div v-else class="add-button text-right">
-        <button class="btn btn-primary" @click="showForm = true">Rückerstattung anlegen</button>
+        <button class="btn btn-primary btn-sm" @click="showForm = true"><Plus/> Rückerstattung anlegen</button>
       </div>
     </div>
   </div>

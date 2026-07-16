@@ -1,5 +1,5 @@
 <script setup>
-import {Truck, BanknoteArrowUp, Check, Pencil} from "lucide-vue-next";
+import {Truck, BanknoteArrowUp, Check} from "lucide-vue-next";
 import FormFieldText from "@/components/forms/FormFieldText.vue";
 import {ref} from "vue";
 import {useCurrencyStore} from "@/stores/currency.js";
@@ -38,16 +38,24 @@ const formData = ref({
 })
 
 const saving = ref(false)
-
 const save =  async () => {
   saving.value = true
-  if (props.decision.requires_refund && formData.value.refund.auto){
-    await api.post(`/api/returns/${props.returnData.id}/refunds`, formData.value.refund)
+  try {
+    const {data} = await api.patch(`/api/returns/${props.returnData.id}/decision`, {decision_id: props.decision.id})
+    if (data.data?.decision_id === props.decision.id){
+      if (props.decision.requires_refund && formData.value.refund.auto){
+        await api.post(`/api/returns/${props.returnData.id}/refunds`, formData.value.refund)
+      }
+      if (props.decision.requires_outbound_shipment && formData.value.shipment.auto){
+        await api.post(`/api/returns/${props.returnData.id}/shipments`, formData.value.shipment)
+      }
+      emit('confirm')
+    }
+
+  }catch (error) {
+
   }
-  if (props.decision.requires_outbound_shipment && formData.value.shipment.auto){
-    await api.post(`/api/returns/${props.returnData.id}/shipments`, formData.value.shipment)
-  }
-  emit('confirm')
+
 }
 
 </script>
@@ -55,18 +63,20 @@ const save =  async () => {
 <template>
 
 
-  <div class="decision-result" :class="{danger: decision.outcome === 'reject', primary: decision.outcome === 'approve'}">
-    <div class="title flex justify-between">Ausgewählte Entscheidung</div>
+  <div class="decision-result flex flex-col gap-12 items-stretch" :class="{danger: decision.outcome === 'reject', primary: decision.outcome === 'approve'}">
+    <div class=" flex justify-between"><span class="title">Ausgewählte Entscheidung</span> <a href="#" @click.prevent="$emit('reset')" class="text-small">Zurücksetzen</a></div>
 
     <div class="selected-decision ">
       <span class="text-muted text-small">Du hast gewählt:</span>
+      <div class="flex flex-col gap-6 items-start">
         <div class="name">{{ decision.name }}</div>
         <DecisionBadges :decision="decision"/>
+      </div>
     </div>
 
     <DecisionNextStatus :status="decision.nextStatus"/>
 
-    <div class="refund color-card danger "  v-if="decision.requires_refund">
+    <div class="refund color-card danger" v-if="decision.requires_refund">
       <h4 class="e-title text-muted flex gap-6 font-bold">
         <CheckBox v-model="formData.refund.auto"/> <BanknoteArrowUp /> Rückerstattung
       </h4>
@@ -114,15 +124,13 @@ const save =  async () => {
       </div>
     </div>
 
-    <div class="buttons flex flex-col">
-      <button class="btn btn-primary btn-block" @click="save">
+    <div class="buttons flex gap-24 ">
+
+      <button class="btn btn-primary btn-block " @click="save">
         <Check/>
         Entscheidung bestätigen
       </button>
-      <button class="btn btn-outline-secondary btn-block" @click="$emit('reset')">
-        <Pencil/>
-        Andere Option wahlen
-      </button>
+
     </div>
 
   </div>
@@ -149,13 +157,13 @@ const save =  async () => {
     background-color: variables.$bg-color-danger;
   }
 
-  >.title{
+  .title{
 
     font-weight: 500;
   }
 
   .selected-decision{
-    margin: 12px 0;
+
     .name{
       font-weight: bold;
     }
@@ -167,12 +175,5 @@ const save =  async () => {
   display: flex;
   gap: 12px;
   margin: 6px 0;
-}
-
-.buttons{
-  margin: 12px 0;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
 }
 </style>

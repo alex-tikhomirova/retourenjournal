@@ -26,4 +26,12 @@ class ReturnRefundUpdateRequest extends FormRequest
             'status_id' => ['required', 'integer',],
         ];
     }
+
+    public function attributes(): array
+    {
+        return [
+            'reference' => 'Referenz',
+            'status_id' => 'Erstattungsstatus',
+        ];
+    }
 }

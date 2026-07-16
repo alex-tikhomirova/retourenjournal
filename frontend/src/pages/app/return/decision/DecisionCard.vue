@@ -23,8 +23,10 @@ const model = defineModel({
     </div>
     <div class="info">
       <div class="title">{{ item.name }}</div>
-      <div class="description text-muted text-small" >{{ item.description }}</div>
-      <DecisionBadges :decision="item" v-if="!model"/>
+      <div class="flex flex-col items-start gap-12">
+        <div class="description text-muted text-small">{{ item.description }}</div>
+        <DecisionBadges :decision="item" v-if="!model"/>
+      </div>
     </div>
   </div>
 </template>

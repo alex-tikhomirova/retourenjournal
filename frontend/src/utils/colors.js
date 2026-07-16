@@ -1,3 +1,11 @@
+/**
+ * @typedef {[number, number, number]} HslTuple
+ */
+
+/**
+ * @param {string} hex
+ * @returns {HslTuple}
+ */
 const hexToHsl = (hex) => {
     hex = hex.replace('#', '').trim();
 
@@ -45,6 +53,12 @@ const hexToHsl = (hex) => {
     ];
 }
 
+/**
+ * @param {number} h
+ * @param {number} s
+ * @param {number} l
+ * @returns {string}
+ */
 const hslToCss = (h, s, l) => `hsl(${h}, ${s}%, ${l}%)`;
 
 export {hexToHsl, hslToCss}

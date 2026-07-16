@@ -23,7 +23,7 @@ return new class extends Migration
 
             // Stable key for seeds / API / internal logic
             $table->string('code', 50);
-            $table->string('color', 20)->default('#E9EDF2');;
+            $table->string('color', 20)->default('#E0F2FE');;
 
             // Label shown in UI
             $table->string('name', 120);

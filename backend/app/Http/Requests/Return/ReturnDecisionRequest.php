@@ -6,34 +6,34 @@
  * @license Proprietary
  */
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Return;
 
 
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * OrganizationStoreRequest
+ * ReturnStoreRequest
  *
  * @author Alexandra Tikhomirova
  */
-class OrganizationStoreRequest extends FormRequest
+class ReturnDecisionRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return (bool) $this->user();
+        return (bool) $this->user()?->current_organization_id;
     }
 
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'min:2', 'max:255'],
+            'decision_id' => ['required', 'nullable', 'integer',],
         ];
     }
 
     public function attributes(): array
     {
         return [
-            'name' => 'Organisationsname',
+            'decision_id' => 'Entscheidung',
         ];
     }
 }

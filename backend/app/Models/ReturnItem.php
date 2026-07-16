@@ -36,6 +36,9 @@ use Illuminate\Support\Carbon;
  * @property string|null $sku
  *     Optional SKU of the returned product.
  *
+ * @property string|null $serial
+ *     Optional serial number of the returned product.
+ *
  * @property string $item_name
  *     Human‑readable name of the returned item.
  *
@@ -65,6 +68,7 @@ class ReturnItem extends Model
         'return_id',
         'line_no',
         'sku',
+        'serial',
         'item_name',
         'quantity',
         'unit_price_cents',

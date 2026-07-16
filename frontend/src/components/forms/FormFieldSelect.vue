@@ -1,5 +1,5 @@
 <script setup>
-import {computed, ref, watch} from 'vue'
+import {computed} from 'vue'
 
 const props = defineProps({
   name: String,
@@ -16,6 +16,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  invalid: {
+    type: Boolean,
+    default: false,
+  }
 })
 
 const model = defineModel({
@@ -23,6 +27,16 @@ const model = defineModel({
 });
 
 const inputId = computed(() => `field-${props.name}`)
+
+const normalizedOptions = computed(() => props.options.map((option) => {
+  if (option !== null && typeof option === 'object') {
+    return option
+  }
+  return {
+    label: option,
+    value: option,
+  }
+}))
 
 </script>
 
@@ -33,8 +47,8 @@ const inputId = computed(() => `field-${props.name}`)
       :name="name"
       :disabled="disabled"
       class="input"
-      :class="`input-${name}`"
-      :aria-invalid="false"
+      :class="[`input-${name}`, { 'is-invalid': invalid }]"
+      :aria-invalid="invalid"
       :aria-describedby="`${inputId}-error`"
   >
     <option v-if="placeholder" disabled value="">
@@ -42,7 +56,7 @@ const inputId = computed(() => `field-${props.name}`)
     </option>
 
     <option
-        v-for="option in options"
+        v-for="option in normalizedOptions"
         :key="option.value"
         :value="option.value"
     >

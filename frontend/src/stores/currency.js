@@ -16,7 +16,9 @@ export const useCurrencyStore = defineStore('currency', {
         },
         toActiveString: (state) => (amount, currency = state.activeCurrency.code) => {
             const { rates, activeCurrency } = state
-            return (amount * (rates[activeCurrency.code] / rates[currency]) / 100).toFixed(2) + ` ${activeCurrency.symbol }`
+            return (amount !== null) ?
+                (amount * (rates[activeCurrency.code] / rates[currency]) / 100).toFixed(2) + ` ${activeCurrency.symbol }` :
+                '—';
         }
     },
 })

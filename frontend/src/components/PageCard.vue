@@ -36,7 +36,6 @@
       justify-content: space-between;
       .page-card-title{
         font-weight: 500;
-        font-size: 0.875rem;
         display: flex;
         gap: 7px;
         align-items: center;
@@ -44,7 +43,7 @@
     }
     &.padded{
       .page-card-slot{
-        padding: 18px;
+        padding: variables.$module-padding;
       }
     }
 

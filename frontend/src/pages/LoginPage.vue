@@ -84,11 +84,12 @@ async function onSubmit() {
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+@use "@/assets/scss/variables" ;
 .auth-page {
   max-width: 420px;
   margin: 40px auto;
-  padding: 18px;
+  padding: variables.$module-padding;
 }
 
 .auth-form {

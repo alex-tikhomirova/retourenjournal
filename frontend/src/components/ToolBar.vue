@@ -33,8 +33,13 @@ const props = defineProps({
 </template>
 
 <style lang="scss">
-
+@use "@/assets/scss/variables.scss";
 .tool-bar{
+/*  background: variables.$background-body-color;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid variables.$border-color;*/
   margin-bottom: 16px;
   .left-side{
 

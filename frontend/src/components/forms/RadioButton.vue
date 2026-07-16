@@ -14,7 +14,11 @@ defineProps({
     type: String,
     default: ''
   },
-  disabled: Boolean
+  disabled: Boolean,
+  invalid: {
+    type: Boolean,
+    default: false,
+  }
 })
 </script>
 

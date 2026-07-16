@@ -154,7 +154,6 @@ class ReturnStatus extends Model
      */
     public static function initialReturnStatus(): ?self
     {
-        return static::byCode('created');
-
+        return static::allStates()->firstWhere('kind', 1);
     }
 }

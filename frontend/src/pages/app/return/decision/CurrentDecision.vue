@@ -1,10 +1,9 @@
 <script setup>
 
-import DecisionBadges from "@/pages/app/return/decision/DecisionBadges.vue";
 import {computed} from "vue";
 import {useLookupStore} from "@/stores/lookups.js";
 import DecisionNextStatus from "@/pages/app/return/decision/DecisionNextStatus.vue";
-import {Truck, BanknoteArrowUp, PackageCheck} from "lucide-vue-next";
+import {Truck, BanknoteArrowUp, PackagePlus, Plus} from "lucide-vue-next";
 import DecisionType from "@/components/ui/return/DecisionType.vue";
 
 const props = defineProps({
@@ -23,18 +22,27 @@ const decision = computed(() => lookup.returnDecision(props.decision_id))
         <div class="font-bold">{{ decision.name }}</div>
         <div class=" text-muted text-small">{{ decision.description }}</div>
       </div>
-      <DecisionBadges :decision="decision"/>
+
     </div>
     <div class="decision-actions">
       <DecisionNextStatus :status="decision?.nextStatus"/>
-      <div v-if="decision.requires_inbound_item" class="color-card compact primary text-primary text-small flex gap-6">
-        <PackageCheck  :size="14"/> Wareneingang erforderlich
-      </div>
-      <div v-if="decision.requires_refund" class="color-card compact danger-danger text-danger text-small flex gap-6">
-        <BanknoteArrowUp/> Rückerstattung erforderlich
-      </div>
-      <div v-if="decision.requires_outbound_shipment" class="color-card compact success text-success text-small flex gap-6">
-        <Truck :size="14"/> Ersatzversand erforderlich
+      <div class="flex justify-between gap-6">
+        <div v-if="decision.requires_inbound_item"
+             class="color-card compact primary text-primary text-small flex gap-6">
+          <PackagePlus :size="14"/>
+          Wareneingang erforderlich
+        </div>
+        <Plus color="#9CA3AF" size="14" v-if="decision.requires_refund" />
+        <div v-if="decision.requires_refund" class="color-card compact danger-danger text-danger text-small flex gap-6">
+          <BanknoteArrowUp :size="14"/>
+          Rückerstattung erforderlich
+        </div>
+        <Plus color="#9CA3AF"  size="14" v-if="decision.requires_outbound_shipment" />
+        <div v-if="decision.requires_outbound_shipment"
+             class="color-card compact success text-success text-small flex gap-6">
+          <Truck :size="14"/>
+          Ersatzversand erforderlich
+        </div>
       </div>
     </div>
   </div>
@@ -56,14 +64,12 @@ const decision = computed(() => lookup.returnDecision(props.decision_id))
       gap: 12px;
       align-items: flex-start;
     }
-    .decison-type{
-      display: inline;
-      font-weight: 500;
-    }
+
   }
 .decision-actions{
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 12px;
+
 }
 </style>

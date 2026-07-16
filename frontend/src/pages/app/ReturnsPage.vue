@@ -3,9 +3,9 @@
   import {computed, ref, watch} from "vue";
   import ToolBar from "@/components/ToolBar.vue";
   import ReturnStatusLabel from "@/components/ui/return/ReturnStatusLabel.vue";
-  import {dateTimeStr} from "@/helpers/datetime.js";
+  import {dateTimeStr} from "@/utils/datetime.js";
   import ReturnsFilters from "@/components/returns/ReturnsFilters.vue";
-  import {useStoredListState} from "@/helpers/useStoredListState.js";
+  import {useStoredListState} from "@/utils/useStoredListState.js";
   import PageCard from "@/components/PageCard.vue";
   import {useRouter} from "vue-router";
   const router = useRouter()
@@ -61,7 +61,6 @@
 <template>
   <div class="returns-page">
   <ToolBar title="Retouren" subtitle="Verwalten, prüfen und abschließen Sie Ihre Retouren.">
-
     <template #right>
       <RouterLink class="btn btn-primary" to="/app/returns/new"><Plus/> Neue Rückgabe</RouterLink>
     </template>
@@ -70,11 +69,11 @@
   <ReturnsFilters v-model="listState.filter" :loading="loadingState === 'loading'" @reset="listState.filter = defaultFilter"/>
   </PageCard>
   <PageCard class="returns">
-    <table class="table grid-table">
+    <table class="table returns-table">
       <thead>
       <tr>
         <th><ColumnSortLink field="return_number" v-model="listState.sort">Retourennummer</ColumnSortLink></th>
-        <th><ColumnSortLink field="order_reference" v-model="listState.sort">Bestellnummer</ColumnSortLink></th>
+        <th><ColumnSortLink field="order_reference" v-model="listState.sort">Referenz</ColumnSortLink></th>
         <th><ColumnSortLink field="customer.name" v-model="listState.sort">Kunde</ColumnSortLink></th>
         <th><ColumnSortLink field="status_id" v-model="listState.sort">Status</ColumnSortLink></th>
         <th><ColumnSortLink field="created_at" v-model="listState.sort">Erstellt am</ColumnSortLink></th>
@@ -117,7 +116,10 @@
         <td>
           {{item.return_number}}
         </td>
-        <td>{{item.order_reference}}</td>
+        <td>
+          <span v-if="item.order_reference">{{item.order_reference}}</span>
+          <span v-else class="text-muted text-small">—</span>
+        </td>
         <td>
           <div v-if="item.customer">
             {{item.customer.name}}
@@ -139,18 +141,41 @@
 
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+@use "@/assets/scss/variables" ;
   .returns-page {
 
     .filters{
-      margin-bottom: 18px;
-      padding: 18px;
+      margin-bottom: variables.$module-padding;
+      padding: variables.$module-padding;
     }
     .returns{
       margin-bottom: 18px;
 
+      .returns-table{
+          thead tr:first-child{
+            th:first-child{
+              border-top-left-radius: variables.$border-radius;
+            }
+            th:last-child{
+              border-top-right-radius: variables.$border-radius;
+            }
+          }
+        tbody tr:last-child{
+          td{
+            border-bottom: none;
+            &:first-child{
+              border-bottom-left-radius: variables.$border-radius;
+            }
+            &:last-child{
+              border-bottom-right-radius: variables.$border-radius;
+            }
+          }
+
+        }
+      }
       .loading-state{
-        padding: 18px;
+        padding: variables.$module-padding;
         display: flex;
         flex-direction: column;
         align-items: center;

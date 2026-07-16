@@ -10,6 +10,7 @@ namespace App\Http\Controllers\Api;
 
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Return\ReturnDecisionRequest;
 use App\Http\Requests\Return\ReturnListRequest;
 use App\Http\Requests\Return\ReturnStoreRequest;
 use App\Http\Requests\Return\ReturnUpdateRequest;
@@ -19,6 +20,7 @@ use App\Services\ReturnService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Throwable;
 
 
 /**
@@ -29,12 +31,17 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 class ReturnController extends Controller
 {
 
+    /**
+     * Relations required to render a full return detail response.
+     *
+     * @return array<int|string, mixed>
+     */
     private function itemRelations(): array
     {
         return [
-            'status:id,code,name',
-            'customer:id,organization_id,name,email,phone',
-            'items:id,return_id,line_no,sku,item_name,quantity,unit_price_cents,currency',
+            'status:id,code,color,name,description,kind,is_active',
+            'customer:id,organization_id,name,email,phone,address_text',
+            'items:id,return_id,line_no,sku,serial,item_name,quantity,unit_price_cents,currency',
             'shipments.status:id,code,name',
             'shipments.createdBy' => fn ($q) => $q->select('id', 'name'),
             'refunds.status:id,code,name',
@@ -45,6 +52,12 @@ class ReturnController extends Controller
         ];
     }
 
+    /**
+     * Return a paginated list of returns with filters, search and sorting.
+     *
+     * @param ReturnListRequest $request
+     * @return AnonymousResourceCollection
+     */
     public function list(ReturnListRequest $request): AnonymousResourceCollection
     {
 
@@ -113,6 +126,13 @@ class ReturnController extends Controller
         return ReturnResource::collection($result);
     }
 
+    /**
+     * Return one return with all detail relations loaded.
+     *
+     * @param Request $request
+     * @param int $id
+     * @return ReturnResource
+     */
     public function item(Request $request, int $id): ReturnResource
     {
         $return = ReturnModel::query()
@@ -123,7 +143,30 @@ class ReturnController extends Controller
         return (new ReturnResource($return));
     }
 
+    /**
+     * Suggest the next available return number.
+     *
+     * @return JsonResponse
+     */
+    public function nextNumber(): JsonResponse
+    {
+        $service = new ReturnService();
 
+        return response()->json([
+            'data' => [
+                'return_number' => $service->nextReturnNumber(),
+            ],
+        ]);
+    }
+
+
+    /**
+     * Create a return with customer data and return items.
+     *
+     * @param ReturnStoreRequest $request
+     * @return JsonResponse
+     * @throws Throwable
+     */
     public function store(ReturnStoreRequest $request): JsonResponse
     {
         $service = new ReturnService();
@@ -131,10 +174,24 @@ class ReturnController extends Controller
         return (new ReturnResource($return))->response()->setStatusCode(201);
     }
 
+    /**
+     * Update editable return fields.
+     *
+     * @param ReturnUpdateRequest $request
+     * @param int $id
+     * @return JsonResponse
+     */
     public function update(ReturnUpdateRequest $request, int $id): JsonResponse
     {
         $service = new ReturnService();
         $return = $service->update($id, $request->validated())->refresh()->load($this->itemRelations());
+        return (new ReturnResource($return))->response()->setStatusCode(201);
+    }
+
+    public function decision(ReturnDecisionRequest $request, int $id)
+    {
+        $service = new ReturnService();
+        $return = $service->updateDecision($id, $request->decision_id);
         return (new ReturnResource($return))->response()->setStatusCode(201);
     }
 

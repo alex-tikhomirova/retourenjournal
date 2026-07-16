@@ -26,6 +26,7 @@ return new class extends Migration
             $table->unsignedSmallInteger('line_no');
 
             $table->string('sku')->nullable();
+            $table->string('serial')->nullable();
             $table->string('item_name');
             $table->unsignedInteger('quantity')->default(1);
 
