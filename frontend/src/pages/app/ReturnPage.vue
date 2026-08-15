@@ -16,9 +16,12 @@ import { Truck, Euro } from "lucide-vue-next";
 import NumberBadge from "@/components/ui/NumberBadge.vue";
 import ReturnStatusLabel from "@/components/ui/return/ReturnStatusLabel.vue";
 import {useLookupStore} from "@/stores/lookups.js";
+import {useCurrencyStore} from "@/stores/currency.js";
+import ReturnInfo from "@/pages/app/return/ReturnInfo.vue";
 
 const router = useRouter()
 const route = useRoute()
+const currency = useCurrencyStore()
 
 const returnId = computed(() => route.params.id);
 
@@ -54,6 +57,7 @@ watch(returnId, () => {
 const opened = computed(() => returnData.value?.status?.kind !== 9)
 
 const lookup = useLookupStore()
+const refundsSum = computed(() => (returnData.value?.refunds || []).reduce((sum, r) => sum + ((r.status?.is_counted)?r.amount_cents:0), 0))
 
 </script>
 
@@ -79,17 +83,18 @@ const lookup = useLookupStore()
   <div v-if="returnData" class="flex return-data items-start">
     <div class="left">
       <div class="row-top">
-        <div class="customer-items">
-          <CustomerInfo v-model="returnData.customer" :editable="opened"/>
-          <ItemsList :items="returnData.items" class="block-items"/>
+        <div class="first">
+          <ReturnInfo :item="returnData" :editable="opened" @updated="load"/>
+          <CustomerInfo v-model="returnData.customer" :editable="opened" @updated="load"/>
         </div>
 
-        <div class="block-decision">
+        <div class="second">
           <ReturnDecision
               :returnData="returnData"
               @updated="load"
               :editable="opened"
           />
+          <ItemsList :items="returnData.items" class="block-items"/>
         </div>
       </div>
 
@@ -110,6 +115,7 @@ const lookup = useLookupStore()
               Erstattungen
               <NumberBadge :value="returnData.refunds.length"/>
             </div>
+            <span class="font-bold">{{ currency.toActiveString(refundsSum) }}</span>
           </template>
           <RefundList :return_id="returnData.id" :items="returnData.refunds" @updated="load" :editable="opened"/>
         </PageCard>
@@ -140,20 +146,23 @@ const lookup = useLookupStore()
         gap: variables.$module-gap;
         flex-wrap: wrap;
       }
-      .customer-items{
-        flex: 3 1 0;
+      .first{
+        flex: 2 1 0;
         display: flex;
         gap: variables.$module-gap;;
         flex-direction: column;
       }
-      .block-decision{
+      .second{
         flex: 4 1 0;
+        display: flex;
+        gap: variables.$module-gap;;
+        flex-direction: column;
       }
       .block-shipping{
-        flex: 1;
+        flex: 4;
       }
       .block-refund{
-        flex: 1;
+        flex: 3;
       }
     }
     .history{
@@ -165,6 +174,8 @@ const lookup = useLookupStore()
         display: flex;
         flex-direction: column;
         gap: 12px;
+        overflow-y: auto;
+        max-height: 100vh;
       }
     }
   }

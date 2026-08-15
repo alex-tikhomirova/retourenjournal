@@ -12,7 +12,7 @@ const props = defineProps({
 </script>
 
 <template>
-  <StatusLabel class="shipment-status" :title="status?.name" :color="status?.color" marker="truck">
+  <StatusLabel class="refund-status" :title="status?.name" :color="status?.color" marker="euro">
     <slot/>
   </StatusLabel>
 </template>

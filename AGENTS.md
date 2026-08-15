@@ -34,4 +34,5 @@
 ## Verification
 
 - Run the smallest relevant check for the changed code when possible.
+- Run npm, PHP, and PostgreSQL commands only through Docker for this project; do not run local host npm, PHP, psql, or other PostgreSQL tools.
 - If a check cannot run because of the local environment, report the reason clearly.

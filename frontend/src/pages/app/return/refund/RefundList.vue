@@ -19,9 +19,14 @@ const props = defineProps({
   }
 })
 
-defineEmits(["updated"])
+const emit = defineEmits(["updated"])
 
 const showForm = ref(false)
+
+const updated = () => {
+  showForm.value = false
+  emit('updated')
+}
 </script>
 
 <template>
@@ -29,11 +34,12 @@ const showForm = ref(false)
     <table class="refund-table table" v-if="props.items.length">
       <thead>
       <tr>
-        <th>Referenz</th>
+
         <th>Betrag</th>
         <th>Status</th>
         <th>Erstellt</th>
-        <th>Verarbeitet</th>
+        <th>Erstattet am</th>
+        <th>#</th>
       </tr>
       </thead>
 
@@ -47,16 +53,15 @@ const showForm = ref(false)
       />
       </tbody>
     </table>
-    <div class="add-refund" v-if="editable">
+    <div class="add-refund" v-if="editable && showForm">
       <RefundForm
-          v-if="showForm"
           :return_id="return_id"
-          @saved="$emit('updated')"
+          @saved="updated"
           @close="showForm = false"
       />
-      <div v-else class="add-button text-right">
-        <button class="btn btn-primary btn-sm" @click="showForm = true"><Plus/> Rückerstattung anlegen</button>
-      </div>
+    </div>
+    <div v-else-if="editable" class="add-button text-right">
+      <button class="btn btn-primary btn-sm" @click="showForm = true"><Plus/> Rückerstattung anlegen</button>
     </div>
   </div>
 </template>
@@ -64,7 +69,11 @@ const showForm = ref(false)
 <style scoped lang="scss">
   .refund-list{
     .add-refund{
-      margin: 12px;
+      background-color: #F9FAFB;
+
+    }
+    .add-button{
+      padding: 12px;
     }
   }
 </style>

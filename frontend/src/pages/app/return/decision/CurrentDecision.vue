@@ -2,12 +2,16 @@
 
 import {computed} from "vue";
 import {useLookupStore} from "@/stores/lookups.js";
-import DecisionNextStatus from "@/pages/app/return/decision/DecisionNextStatus.vue";
 import {Truck, BanknoteArrowUp, PackagePlus, Plus} from "lucide-vue-next";
 import DecisionType from "@/components/ui/return/DecisionType.vue";
+import ReturnStatusLabel from "@/components/ui/return/ReturnStatusLabel.vue";
 
 const props = defineProps({
   decision_id: Number,
+  status: {
+    type: Object,
+    required: true
+  }
 })
 const lookup = useLookupStore()
 const decision = computed(() => lookup.returnDecision(props.decision_id))
@@ -25,7 +29,15 @@ const decision = computed(() => lookup.returnDecision(props.decision_id))
 
     </div>
     <div class="decision-actions">
-      <DecisionNextStatus :status="decision?.nextStatus"/>
+      <div class=" color-card primary flex flex-col items-start gap-12" v-if="status">
+        <div class="e-title">
+           Aktueller Status:
+        </div>
+        <div class="flex flex-col items-start gap-6">
+          <ReturnStatusLabel :status="status"/>
+          <div class="text-muted text-small">{{status.description}}</div>
+        </div>
+      </div>
       <div class="flex justify-between gap-6">
         <div v-if="decision.requires_inbound_item"
              class="color-card compact primary text-primary text-small flex gap-6">
@@ -33,7 +45,7 @@ const decision = computed(() => lookup.returnDecision(props.decision_id))
           Wareneingang erforderlich
         </div>
         <Plus color="#9CA3AF" size="14" v-if="decision.requires_refund" />
-        <div v-if="decision.requires_refund" class="color-card compact danger-danger text-danger text-small flex gap-6">
+        <div v-if="decision.requires_refund" class="color-card compact warning-warning text-warning text-small flex gap-6">
           <BanknoteArrowUp :size="14"/>
           Rückerstattung erforderlich
         </div>

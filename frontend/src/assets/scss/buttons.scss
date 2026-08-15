@@ -61,6 +61,7 @@ $btn-transition: 140ms ease !default;
   padding: $py $px;
   gap: $py;
   svg{
+    min-width: $fs;
     width: $fs;
     height: $fs;
   }

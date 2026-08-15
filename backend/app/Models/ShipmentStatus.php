@@ -9,7 +9,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Carbon;
+use League\CommonMark\Exception\LogicException;
 
 /**
  * Class ShipmentStatus
@@ -29,6 +31,9 @@ use Illuminate\Support\Carbon;
  *
  * @property string $description
  *     Short description
+ *
+ * @property string $color
+ *     UI badge color.
  *
  * @property int $sort_order
  *     Sorting priority for UI ordering.
@@ -58,4 +63,43 @@ class ShipmentStatus extends Model
         'is_terminal',
     ];
 
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var string[]
+     */
+    protected $appends = [
+        'color',
+    ];
+
+    /**
+     * Get the UI color for this shipment status.
+     *
+     * @return Attribute<string, never>
+     */
+    protected function color(): Attribute
+    {
+        return Attribute::get(fn (): string => match ($this->code) {
+            'created' => '#E0F2FE',
+            'shipped' => '#DBEAFE',
+            'in_transit' => '#E0E7FF',
+            'delivered' => '#D1FAE5',
+            'returned' => '#FFE4E6',
+            'cancelled' => '#E7E5E4',
+            default => '#E7E5E4',
+        });
+    }
+
+    /**
+     * Return the required initial shipment status.
+     */
+    public static function initialShipmentStatus(): self
+    {
+        return static::query()
+            ->where('code', 'created')
+            ->first()
+            ?? throw new LogicException(
+                'Initial shipment status "created" is not configured.'
+            );
+    }
 }

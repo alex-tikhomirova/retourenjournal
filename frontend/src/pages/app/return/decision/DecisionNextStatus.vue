@@ -8,7 +8,7 @@
 
 <template>
   <div class="next-status color-card primary" v-if="status">
-    <div class="e-title text-muted">
+    <div class="e-title">
       <ArrowRight  size="14"/> Nächster Status:
     </div>
     <div class="e-content">

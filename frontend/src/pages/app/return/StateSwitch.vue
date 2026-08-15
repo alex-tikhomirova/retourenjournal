@@ -15,7 +15,7 @@ const value = defineModel({
 
 const status = computed(() => props.returnModel.status)
 const setState = (code) => {
-  const newState = lookup.returnStatuses.find((st) => st.code === code)
+  const newState = lookup.returnStatus(code, 'code')
   if (newState){
     value.value = newState.id
   }

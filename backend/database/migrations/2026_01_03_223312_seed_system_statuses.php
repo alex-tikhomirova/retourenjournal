@@ -61,7 +61,7 @@ return new class extends Migration
                 'organization_id' => null,
                 'code' => 'rejected',
                 'color' => '#E9E2F8',
-                'name' => 'FFE4E6',
+                'name' => 'Abgelehnt',
                 'description' => 'Rückgabe nicht akzeptiert',
                 'kind' => 2,
                 'sort_order' => 50,
@@ -92,13 +92,6 @@ return new class extends Migration
         // REFUND STATUSES
         DB::table('refund_statuses')->insert([
             [
-                'code' => 'not_required',
-                'name' => 'Keine Erstattung erforderlich',
-                'description' => 'Keine Rückzahlung für diesen Fall nötig',
-                'is_counted' => true,
-                'sort_order' => 10,
-            ],
-            [
                 'code' => 'pending',
                 'name' => 'Ausstehend',
                 'description' => 'Erstattung geplant, noch nicht gestartet',
@@ -125,6 +118,13 @@ return new class extends Migration
                 'description' => 'Erstattung fehlgeschlagen, erneuter Versuch nötig',
                 'is_counted' => false,
                 'sort_order' => 100,
+            ],
+            [
+                'code' => 'cancelled',
+                'name' => 'Storniert',
+                'description' => 'Erstattung wurde storniert und wird nicht ausgeführt',
+                'is_counted' => false,
+                'sort_order' => 110,
             ],
         ]);
 

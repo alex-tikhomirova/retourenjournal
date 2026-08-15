@@ -25,8 +25,14 @@ body{
   tbody > tr > td, thead > tr > td, thead > tr > th {
     border-bottom: 1px solid variables.$border-color;
     padding: 8px 10px;
+    .table-subrow-message{
+      position: absolute;
+      left: 10px;
+      bottom: 2px;
+    }
   }
   tbody > tr{
+    position: relative;
     &:hover{
       background-color: variables.$table-row-hover-bg;
 

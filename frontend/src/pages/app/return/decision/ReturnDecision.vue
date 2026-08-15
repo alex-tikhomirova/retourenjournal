@@ -24,6 +24,7 @@ const lookup = useLookupStore()
 const selected = ref(0)
 const selectedGroup = ref('')
 const current = computed(() => lookup.returnDecision(selected.value))
+const status = computed(() => lookup.returnStatus(props.returnData.status_id))
 
 const opened = ref(false)
 opened.value = !props.returnData.decision_id
@@ -45,7 +46,7 @@ const update = () => {
       <button class="btn btn-sm btn-link" v-else-if="opened && returnData.decision_id" @click="opened = false"><X /> Abbrechen</button>
     </template>
   <div class="return-decision">
-    <CurrentDecision v-if="returnData.decision_id && !opened" :decision_id="returnData.decision_id"/>
+    <CurrentDecision v-if="returnData.decision_id && !opened" :decision_id="returnData.decision_id" :status="status"/>
     <div class="decision-select" v-else>
       <div class="decision-accordeon" :class="{wide: !selected}">
         <div class="group">

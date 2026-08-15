@@ -28,6 +28,18 @@
       background-color: variables.$bg-color-success-success;
     }
   }
+  &.warning{
+    border-color: variables.$color-warning;
+    &:not(.transparent){
+      background-color: variables.$bg-color-warning;
+    }
+  }
+  &.warning-warning{
+    border-color: variables.$color-warning;
+    &:not(.transparent){
+      background-color: variables.$bg-color-warning-warning;
+    }
+  }
   &.danger{
     border-color: variables.$color-danger;
     &:not(.transparent){

@@ -9,14 +9,14 @@
 namespace App\Http\Resources;
 
 
-use App\Models\ReturnShipment;
+use App\Models\ReturnRefund;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * ReturnShipmentResource
+ * ReturnRefundResource
  *
  * @author Alexandra Tikhomirova
- * @mixin ReturnShipment
+ * @mixin ReturnRefund
  */
 class ReturnRefundResource extends JsonResource
 {

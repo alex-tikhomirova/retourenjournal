@@ -21,20 +21,27 @@ class ShipmentStoreRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true; // позже можно добавить policy
+        return (bool) $this->user()?->current_organization_id;
     }
 
     // convert prices before validation
     protected function prepareForValidation(): void
     {
-        $this->merge([
-            'cost_cents' =>  $this->get('amount') * 100,
-        ]);
+        if ($this->has('amount')) {
+            $amount = $this->input('amount');
+
+            $this->merge([
+                'cost_cents' => $amount === null || trim((string) $amount) === ''
+                    ? null
+                    : (is_numeric($amount) ? (int) round($amount * 100) : $amount),
+            ]);
+        }
     }
 
     public function rules(): array
     {
         return [
+            'return_id' => ['required', 'integer'],
             'direction' => ['required', 'integer', Rule::in([1, 2])],
             'payer' => ['required', 'integer', Rule::in([1,2,3,4,5])],
             'carrier' => ['nullable', 'string', 'max:255'],

@@ -19,6 +19,8 @@ return new class extends Migration
                 ->constrained()
                 ->cascadeOnDelete();
 
+            $table->unsignedBigInteger('shipment_number');
+
             $table->foreignId('return_id')
                 ->constrained('returns')
                 ->cascadeOnDelete();
@@ -55,6 +57,7 @@ return new class extends Migration
 
             $table->timestamps();
 
+            $table->unique(['organization_id', 'shipment_number']);
             $table->index(['organization_id', 'return_id', 'created_at']);
             $table->index(['organization_id', 'direction', 'created_at']);
             $table->index(['organization_id', 'tracking_number']);

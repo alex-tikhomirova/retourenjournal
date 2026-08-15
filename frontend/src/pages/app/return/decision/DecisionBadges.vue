@@ -13,7 +13,7 @@ defineProps({
     <div class="color-card sub-compact primary text-primary text-small flex gap-6" v-if="decision.requires_inbound_item">
       <PackagePlus :size="12"/> Eingang
     </div>
-    <div class="color-card sub-compact danger text-danger text-small flex gap-6" v-if="decision.requires_refund">
+    <div class="color-card sub-compact warning-warning text-warning text-small flex gap-6" v-if="decision.requires_refund">
       <BanknoteArrowUp :size="12"/>
       Erstattung
     </div>

@@ -10,6 +10,7 @@ import {useLookupStore} from "@/stores/lookups.js";
 import FormGroup from "@/components/forms/FormGroup.vue";
 import {api} from "@/api/api.js";
 import DecisionNextStatus from "./DecisionNextStatus.vue";
+import {useFormErrors} from "@/utils/useFormErrors.js";
 
 const props = defineProps({
   decision: Object,
@@ -27,36 +28,70 @@ const formData = ref({
   refund: {
     auto: true,
     amount: refundValue,
+    return_id: props.returnData.id,
   },
   shipment: {
+    return_id: props.returnData.id,
     auto: true,
     direction: 1,
     carrier: 'DHL',
     payer: 2,
-    amount: '0',
+    amount: '',
   }
 })
 
 const saving = ref(false)
-const save =  async () => {
-  saving.value = true
-  try {
-    const {data} = await api.patch(`/api/returns/${props.returnData.id}/decision`, {decision_id: props.decision.id})
-    if (data.data?.decision_id === props.decision.id){
-      if (props.decision.requires_refund && formData.value.refund.auto){
-        await api.post(`/api/returns/${props.returnData.id}/refunds`, formData.value.refund)
-      }
-      if (props.decision.requires_outbound_shipment && formData.value.shipment.auto){
-        await api.post(`/api/returns/${props.returnData.id}/shipments`, formData.value.shipment)
-      }
-      emit('confirm')
-    }
+const decisionSaved = ref(false)
+const refundCreated = ref(false)
+const shipmentCreated = ref(false)
+const {
+  errorText,
+  handleRequest,
+  setErrors,
+} = useFormErrors()
 
-  }catch (error) {
+const save = () => handleRequest(async () => {
+  if (saving.value) return
 
+  const refundAmount = Number(formData.value.refund.amount)
+  if (
+    props.decision.requires_refund
+    && formData.value.refund.auto
+    && (!Number.isFinite(refundAmount) || refundAmount <= 0)
+  ) {
+    setErrors({_general: ['Bitte gib einen Erstattungsbetrag größer als 0 ein.']})
+    return
   }
 
-}
+  saving.value = true
+  try {
+    if (!decisionSaved.value) {
+      const {data} = await api.patch(`/api/returns/${props.returnData.id}/decision`, {
+        decision_id: props.decision.id,
+      })
+
+      if (data.data?.decision_id !== props.decision.id) {
+        throw new Error('Die Entscheidung konnte nicht gespeichert werden.')
+      }
+
+      decisionSaved.value = true
+    }
+
+    if (props.decision.requires_refund && formData.value.refund.auto && !refundCreated.value) {
+      await api.post(`/api/refunds`, formData.value.refund)
+      refundCreated.value = true
+    }
+
+    if (props.decision.requires_outbound_shipment && formData.value.shipment.auto && !shipmentCreated.value) {
+      await api.post(`/api/shipments`, formData.value.shipment)
+      shipmentCreated.value = true
+    }
+
+    emit('confirm')
+  } finally {
+    saving.value = false
+  }
+})
 
 </script>
 
@@ -64,7 +99,7 @@ const save =  async () => {
 
 
   <div class="decision-result flex flex-col gap-12 items-stretch" :class="{danger: decision.outcome === 'reject', primary: decision.outcome === 'approve'}">
-    <div class=" flex justify-between"><span class="title">Ausgewählte Entscheidung</span> <a href="#" @click.prevent="$emit('reset')" class="text-small">Zurücksetzen</a></div>
+    <div class=" flex justify-between"><span class="title">Ausgewählte Entscheidung</span> <a href="#" @click.prevent="$emit('reset')" class="text-small">Auswahl ändern</a></div>
 
     <div class="selected-decision ">
       <span class="text-muted text-small">Du hast gewählt:</span>
@@ -76,7 +111,7 @@ const save =  async () => {
 
     <DecisionNextStatus :status="decision.nextStatus"/>
 
-    <div class="refund color-card danger" v-if="decision.requires_refund">
+    <div class="refund color-card warning" v-if="decision.requires_refund">
       <h4 class="e-title text-muted flex gap-6 font-bold">
         <CheckBox v-model="formData.refund.auto"/> <BanknoteArrowUp /> Rückerstattung
       </h4>
@@ -85,7 +120,7 @@ const save =  async () => {
           <FormFieldText name="refund_amount" v-model="formData.refund.amount"/>
           <div class="refund-descr text-muted text-small">Basierend auf {{ props.returnData.items.length }} Artikeln</div>
         </div>
-        <div class="color-card compact danger-danger text-danger text-small">
+        <div class="color-card compact warning-warning text-warning text-small">
           Der Kunde erhält {{ refundValue.toFixed(2) }} {{ currency.activeCurrency.symbol }} zurückerstattet.
         </div>
       </div>
@@ -124,9 +159,11 @@ const save =  async () => {
       </div>
     </div>
 
+    <div v-if="errorText" class="text-right text-danger">{{ errorText }}</div>
+
     <div class="buttons flex gap-24 ">
 
-      <button class="btn btn-primary btn-block " @click="save">
+      <button class="btn btn-primary btn-block " :disabled="saving" @click="save">
         <Check/>
         Entscheidung bestätigen
       </button>

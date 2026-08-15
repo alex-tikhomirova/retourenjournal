@@ -12,8 +12,9 @@ use App\Models\Scopes\OrganizationScope;
 use App\Models\Support\ReturnEventRefLoadable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
+use LogicException;
 
 /**
  * Class ReturnStatus
@@ -150,10 +151,12 @@ class ReturnStatus extends Model
     }
 
     /**
-     * @return ReturnStatus|null
+     * Return the required initial return status.
      */
-    public static function initialReturnStatus(): ?self
+    public static function initialReturnStatus(): self
     {
-        return static::allStates()->firstWhere('kind', 1);
+        return static::allStates()->firstWhere('kind', 1) ?? throw new LogicException(
+            'Initial return status is not configured.'
+        );
     }
 }

@@ -8,7 +8,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+use LogicException;
 
 
 /**
@@ -57,4 +59,43 @@ class RefundStatus extends Model
         'is_counted',
         'sort_order',
     ];
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var string[]
+     */
+    protected $appends = [
+        'color',
+    ];
+
+    /**
+     * Get the UI color for this refund status.
+     *
+     * @return Attribute<string, never>
+     */
+    protected function color(): Attribute
+    {
+        return Attribute::get(fn (): string => match ($this->code) {
+            'not_required' => '#F3F4F6',
+            'pending' => '#FEF3C7',
+            'processing' => '#DBEAFE',
+            'refunded' => '#D1FAE5',
+            'failed' => '#FFE4E6',
+            'cancelled' => '#E7E5E4',
+            default => '#E7E5E4',
+        });
+    }
+
+    /**
+     * Return the required initial refund status.
+     */
+    public static function initialRefundStatus(): self
+    {
+        return static::query()
+            ->where('code', 'pending')
+            ->first() ?? throw new LogicException(
+            'Initial refund status "pending" is not configured.'
+        );
+    }
 }

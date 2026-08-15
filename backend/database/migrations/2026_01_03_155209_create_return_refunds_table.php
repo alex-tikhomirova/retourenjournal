@@ -18,6 +18,8 @@ return new class extends Migration
                 ->constrained()
                 ->cascadeOnDelete();
 
+            $table->unsignedBigInteger('refund_number');
+
             $table->foreignId('return_id')
                 ->constrained('returns')
                 ->cascadeOnDelete();
@@ -45,6 +47,7 @@ return new class extends Migration
                 ->nullOnDelete();
             $table->timestamps();
 
+            $table->unique(['organization_id', 'refund_number']);
             $table->index(['organization_id', 'return_id']);
             $table->index(['organization_id', 'status_id']);
         });

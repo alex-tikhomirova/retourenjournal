@@ -12,6 +12,7 @@ use App\Models\Scopes\OrganizationScope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class ReturnRefund
@@ -25,6 +26,9 @@ use Illuminate\Support\Carbon;
  *
  * @property int $organization_id
  *     Identifier of the organization this refund belongs to.
+ *
+ * @property int $refund_number
+ *     Sequential refund number unique within the organization.
  *
  * @property int $return_id
  *     Identifier of the return this refund is associated with.
@@ -98,7 +102,6 @@ class ReturnRefund extends Model
                 $model->organization_id = $user->current_organization_id;
                 $model->created_by_user_id = $user->id;
                 $model->updated_by_user_id = $user->id;
-                $model->status_id = 2;
             }
         });
 
@@ -108,7 +111,46 @@ class ReturnRefund extends Model
             }
         });
 
+        static::saved(function (self $model) {
+            $eventFields = ReturnEvent::eventFields('refund');
+
+            $dirtyAttributes = $model->getDirty();
+            foreach ($eventFields as $field => $eventField) {
+                if (isset($dirtyAttributes[$field])) {
+                    $model->return->events()->save(
+                        new ReturnEvent([
+                            'action' => (int) $model->wasRecentlyCreated,
+                            'return_id' => $model->return->id,
+                            'field' => "refund.$field",
+                            'ref_type' => $eventField['ref_type']??null,
+                            'ref_id' => isset($eventField['ref_type'])?$model->getAttributeValue($field):null,
+                            'value' => $model->getAttributeValue($field),
+                        ])
+                    );
+                }
+            }
+        });
+
         static::addGlobalScope(new OrganizationScope);
+    }
+
+    /**
+     * Reserve the next refund number for an organization.
+     *
+     * Must be called inside the transaction that creates the refund. The
+     * transaction-level advisory lock serializes concurrent number generation.
+     */
+    public static function nextNumberForOrganization(int $organizationId): int
+    {
+        DB::statement(
+            'SELECT pg_advisory_xact_lock(hashtextextended(?, 0))',
+            ["return_refunds:$organizationId"]
+        );
+
+        return ((int) static::query()
+            ->withoutGlobalScope(OrganizationScope::class)
+            ->where('organization_id', $organizationId)
+            ->max('refund_number')) + 1;
     }
 
     /**

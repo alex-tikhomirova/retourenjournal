@@ -43,9 +43,30 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // 404 — маршрут или модель не найдена
         $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e, $request) {
-            return response()->json([
+            $response = [
                 'message' => 'Not Found',
-            ], 404);
+            ];
+
+            if ($previous = $e->getPrevious()) {
+                $errorId = (string) \Illuminate\Support\Str::uuid();
+
+                \Illuminate\Support\Facades\Log::error('Not found while building API response', [
+                    'error_id' => $errorId,
+                    'method' => $request->method(),
+                    'url' => $request->fullUrl(),
+                    'user_id' => $request->user()?->id,
+                    'exception' => $previous,
+                ]);
+
+                $response['error_id'] = $errorId;
+
+                if (config('app.debug')) {
+                    $response['detail'] = $previous->getMessage();
+                    $response['exception'] = class_basename($previous);
+                }
+            }
+
+            return response()->json($response, 404);
         });
 
         // 405 — метод не разрешён

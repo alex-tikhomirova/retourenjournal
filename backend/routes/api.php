@@ -32,10 +32,10 @@ Route::middleware(['auth:sanctum', 'org.current'])->group(function () {
     Route::patch('/returns/{id}', [ReturnController::class, 'update']);
     Route::post('/returns/store', [ReturnController::class, 'store']);
     Route::patch('/returns/{return}/decision', [ReturnController::class, 'decision']);
-    Route::post('/returns/{return}/shipments', [ReturnShipmentController::class, 'store']);
-    Route::patch('/returns/{return}/shipments/{shipment}', [ReturnShipmentController::class, 'update']);
-    Route::post('/returns/{return}/refunds', [ReturnRefundController::class, 'store']);
-    Route::patch('/returns/{return}/refund/{refund}', [ReturnRefundController::class, 'update']);
+    Route::post('/shipments', [ReturnShipmentController::class, 'store']);
+    Route::patch('/shipments/{shipment}', [ReturnShipmentController::class, 'update']);
+    Route::post('/refunds', [ReturnRefundController::class, 'store']);
+    Route::patch('/refunds/{refund}', [ReturnRefundController::class, 'update']);
 });
 
 Route::middleware(['auth:sanctum', 'org.current'])->group(function () {

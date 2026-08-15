@@ -3,7 +3,7 @@
 import PageCard from "@/components/PageCard.vue";
 import FormGroup from "@/components/forms/FormGroup.vue";
 import FormFieldText from "@/components/forms/FormFieldText.vue";
-import {ref} from "vue";
+import {computed, ref} from "vue";
 import {api} from "@/api/api.js";
 import {useRouter} from "vue-router";
 import {X, Save} from "lucide-vue-next";
@@ -41,7 +41,7 @@ const {
 api.get('api/returns/next-number').then(res => formData.value.return_number = res.data?.data?.return_number ?? '')
 
 const lookup = useLookupStore()
-const initialStatus = lookup.returnStatuses.reduce((initial, status) => (status.kind !== 1 ? initial : status), null)
+const initialStatus = computed(() => lookup.initialReturnStatus)
 
 const save = async () => {
   try {

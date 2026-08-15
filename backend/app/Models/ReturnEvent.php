@@ -44,7 +44,7 @@ use ReflectionClass;
  *     Reference type (return_status, return_decision, return_shipment, return_refund).
  *
  * @property int|null $ref_id
- *     Referenced entity ID.
+ *     Referenced entity ID or organization-scoped domain number.
  *
  * @property string|null $value
  *     Text value
@@ -144,6 +144,7 @@ class ReturnEvent extends Model
             'shipmentstatus' => ShipmentStatus::class,
             'decision' => ReturnDecision::class,
             'refund'   => ReturnRefund::class,
+            'refundstatus'   => RefundStatus::class,
             'note'     => ReturnNote::class,
         ];
 
@@ -159,8 +160,16 @@ class ReturnEvent extends Model
             return $modelClass::resolveFromEvent($this);
         }
 
-        // fallback (если вдруг без трейта)
-        return $modelClass::query()->findOrFail((int) $this->ref_id);
+        $referenceColumn = match ($this->ref_type) {
+            'shipment' => 'shipment_number',
+            'refund' => 'refund_number',
+            default => 'id',
+        };
+
+        // Historical references may point to records that no longer exist.
+        return $modelClass::query()
+            ->where($referenceColumn, (int) $this->ref_id)
+            ->first();
     }
     public static function eventFields(?string $domain = null): ?array
     {
@@ -177,9 +186,15 @@ class ReturnEvent extends Model
                 'status_id' => ["title" => "Retourenstatus geändert", 'ref_type' => 'status',],
             ],
             'shipment' => [
-                'id' => ["title" => "Versand erstellt", 'ref_type' => 'shipment',],
+                'shipment_number' => ["title" => "Versand erstellt", 'ref_type' => 'shipment',],
                 'status_id' => ["title" => "Versandstatus geändert", 'ref_type' => 'shipmentstatus',],
                 'tracking_number' => ["title" => "Sendungsnummer geändert"],
+            ],
+            'refund' => [
+                'refund_number' => ["title" => "Erstattung erstellt", 'ref_type' => 'refund',],
+                'status_id' => ["title" => "Erstattungsstatus geändert", 'ref_type' => 'refundstatus',],
+                'reference' => ["title" => "Erstattungsreferenz geändert",],
+                'processed_at' => ["title" => "Erstattungsdatum geändert", ],
             ],
         ];
 

@@ -52,16 +52,16 @@ async function onSubmit() {
 
 <template>
   <div class="auth-page">
-    <h1>Register</h1>
+    <h1>Registrieren</h1>
 
     <form class="auth-form" @submit.prevent="onSubmit">
       <label class="field">
         <span>Name</span>
-        <input v-model.trim="form.name" type="text" autocomplete="name" required />
+        <input v-model.trim="form.name" type="text" autocomplete="name" required placeholder="Vorname Nachname" />
       </label>
 
       <label class="field">
-        <span>Email</span>
+        <span>E-Mail</span>
         <input
             v-model.trim="form.email"
             type="email"
@@ -72,12 +72,12 @@ async function onSubmit() {
       </label>
 
       <label class="field">
-        <span>Password</span>
+        <span>Passwort</span>
         <input v-model="form.password" type="password" autocomplete="new-password" required />
       </label>
 
       <label class="field">
-        <span>Repeat password</span>
+        <span>Passwort wiederholen</span>
         <input
             v-model="form.password_confirmation"
             type="password"
@@ -87,15 +87,15 @@ async function onSubmit() {
       </label>
 
       <button class="btn btn-primary" type="submit" :disabled="user.isLoading">
-        {{ user.isLoading ? 'Creating…' : 'Create account' }}
+        {{ user.isLoading ? 'Konto wird erstellt...' : 'Konto erstellen' }}
       </button>
 
       <p v-if="error" class="error">{{ error }}</p>
     </form>
 
     <p class="hint">
-      Already have an account?
-      <RouterLink to="/login">Login</RouterLink>
+      Sie haben bereits ein Konto?
+      <RouterLink to="/login">Anmelden</RouterLink>
     </p>
   </div>
 </template>

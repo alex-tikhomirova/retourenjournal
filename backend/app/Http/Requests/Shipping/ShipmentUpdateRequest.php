@@ -21,7 +21,7 @@ class ShipmentUpdateRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true; // позже можно добавить policy
+        return (bool) $this->user()?->current_organization_id;
     }
 
     // convert prices before validation
@@ -29,7 +29,7 @@ class ShipmentUpdateRequest extends FormRequest
     {
         if ($this->has('amount')) {
             $this->merge([
-                'cost_cents' =>  $this->get('amount') * 100,
+                'cost_cents' =>  $this->input('amount') * 100,
             ]);
         }
     }
@@ -37,11 +37,10 @@ class ShipmentUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'direction' => ['nullable', 'integer', Rule::in([1, 2])],
-            'payer' => ['nullable', 'integer', Rule::in([1, 2, 3, 4, 5])],
-            'carrier' => ['nullable', 'string', 'max:255'],
             'tracking_number' => ['nullable', 'string', 'max:255'],
             'label_ref' => ['nullable', 'string', 'max:255'],
+            'carrier' => ['nullable', 'string', 'max:255'],
+            'status_id' => ['required', 'nullable', 'integer',],
             'cost_cents' => ['nullable', 'integer', 'min:0'],
             'currency' => ['nullable', 'string', 'size:3'],
         ];

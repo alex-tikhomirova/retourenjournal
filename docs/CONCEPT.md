@@ -28,8 +28,8 @@ Retourenjournal - это API-first B2B SaaS-приложение для упра
 2. Сотрудник создает возврат с номером возврата, покупателем, ссылкой на заказ и позициями.
 3. Возврат получает начальный системный статус.
 4. В возврат добавляются одна или несколько доставок: клиент -> продавец, продавец -> клиент, повторные отправки.
-5. По доставкам фиксируются перевозчик, tracking number, стоимость, плательщик и статус.
-6. При необходимости создается возврат денег с суммой, валютой, reference и собственным статусом.
+5. По доставкам фиксируются уникальный в рамках организации `shipment_number`, перевозчик, tracking number, стоимость, плательщик и статус.
+6. При необходимости создается возврат денег с уникальным в рамках организации `refund_number`, суммой, валютой, reference и собственным статусом.
 7. Изменения доменной модели попадают в `return_events` как audit trail и timeline.
 8. Возврат закрывается терминальным статусом: например `closed`, `rejected` или `cancelled`.
 
@@ -122,9 +122,9 @@ The product interface is German-first. Internal planning and AI-facing documenta
 1. A user signs in and works inside the current organization.
 2. An employee creates a return with customer data, order reference, and return items.
 3. The system assigns the initial return status.
-4. One or more shipments can be attached to the return.
+4. One or more shipments can be attached to the return; each gets an organization-scoped sequential `shipment_number`.
 5. Shipment status, carrier, tracking number, cost, and payer can be tracked.
-6. Optional refunds can be created and updated with their own status lifecycle.
+6. Optional refunds can be created and updated with their own status lifecycle and an organization-scoped sequential `refund_number`.
 7. Significant changes are represented as return events for audit and timeline use.
 8. The return is eventually closed with a terminal status.
 

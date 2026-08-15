@@ -11,7 +11,9 @@ namespace App\Services;
 
 use App\Models\ReturnModel;
 use App\Models\ReturnShipment;
+use App\Models\ShipmentStatus;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
  * ShipmentService
@@ -20,11 +22,17 @@ use Illuminate\Support\Facades\DB;
  */
 class ShipmentService
 {
-    public function create(ReturnModel $return, array $payload): ReturnShipment
+    /**
+     * @throws Throwable
+     */
+    public function create(array $payload): ReturnShipment
     {
-        return DB::transaction(function () use ($return, $payload) {
+        return DB::transaction(function () use ($payload) {
+
+            $return = ReturnModel::findOrFail($payload['return_id']);
 
             $shipment = new ReturnShipment();
+            $shipment->shipment_number = ReturnShipment::nextNumberForOrganization($return->organization_id);
             $shipment->direction = $payload['direction'];
             $shipment->cost_cents = $payload['cost_cents']??null;
             $shipment->currency = $payload['currency']??'EUR';
@@ -32,12 +40,9 @@ class ShipmentService
             $shipment->carrier = $payload['carrier'];
             $shipment->tracking_number = $payload['tracking_number']??null;
             $shipment->label_ref = $payload['label_ref']??null;
-
+            $shipment->status_id = $payload['status_id']??ShipmentStatus::initialShipmentStatus()->id;
             $return->shipments()->save($shipment);
 
-            // TODO: Логирование
-
-            // TODO: Пересчёт статуса возврата
 
             return $shipment;
         });
@@ -52,23 +57,14 @@ class ShipmentService
             abort(404, 'Die Sendung existiert nicht');
         }
 
-        $shipment->direction = $payload['direction'] ?? $shipment->direction;
-        $shipment->currency = $payload['currency'] ?? $shipment->currency;
-        $shipment->payer = $payload['payer'] ?? $shipment->payer;
+        $shipment->status_id = $payload['status_id'] ?? $shipment->status_id;
         $shipment->carrier = $payload['carrier'] ?? $shipment->carrier;
         $shipment->tracking_number = $payload['tracking_number'] ?? $shipment->tracking_number;
         $shipment->label_ref = $payload['label_ref'] ?? $shipment->label_ref;
-
-        if (isset($payload['cost'])) {
-            $shipment->cost_cents = (int) round($payload['cost'] * 100);
-        }
+        $shipment->cost_cents = $payload['cost_cents']??null;
+        $shipment->currency = $payload['currency']??'EUR';
 
         $shipment->save();
-
-        // TODO: Логирование
-
-        // TODO: Пересчёт статуса возврата
-
         return $shipment;
     }
 }

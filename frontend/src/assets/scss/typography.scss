@@ -46,11 +46,19 @@ a:not(.btn) {
 .text-danger{
   color: variables.$color-danger;
 }
+.text-warning{
+  color: variables.$color-warning;
+}
 .text-muted{
   color: variables.$text-color-muted;
 }
 .text-small{
   font-size: 90%;
+}
+.text-underline{
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+
 }
 .text-center{
   text-align: center;

@@ -3,6 +3,7 @@ import {dateTimeStr} from "@/utils/datetime.js";
 import ReturnStatusLabel from "@/components/ui/return/ReturnStatusLabel.vue";
 import ShipmentStatusLabel from "@/components/ui/shipment/ShipmentStatusLabel.vue";
 import DecisionType from "../../../components/ui/return/DecisionType.vue";
+import RefundStatusLabel from "@/components/ui/refund/RefundStatusLabel.vue";
 
   defineProps({
     event: Object
@@ -19,6 +20,9 @@ import DecisionType from "../../../components/ui/return/DecisionType.vue";
     </div>
     <div v-else-if="event.ref_type === 'shipmentstatus' && event.event_ref">
       <ShipmentStatusLabel :status="event.event_ref"/>
+    </div>
+    <div v-else-if="event.ref_type === 'refundstatus' && event.event_ref">
+      <RefundStatusLabel :status="event.event_ref"/>
     </div>
     <div v-else-if="event.ref_type === 'decision' && event.event_ref">
       <DecisionType :decision="event.event_ref" small/>

@@ -12,6 +12,7 @@ use App\Models\Scopes\OrganizationScope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class ReturnShipment
@@ -25,6 +26,9 @@ use Illuminate\Support\Carbon;
  *
  * @property int $organization_id
  *     Identifier of the organization this shipment belongs to.
+ *
+ * @property int $shipment_number
+ *     Sequential shipment number unique within the organization.
  *
  * @property int $return_id
  *     Identifier of the return this shipment is associated with.
@@ -106,7 +110,6 @@ class ReturnShipment extends Model
                 $model->organization_id = $user->current_organization_id;
                 $model->created_by_user_id = $user->id;
                 $model->updated_by_user_id = $user->id;
-                $model->status_id = 1;
             }
         });
 
@@ -139,6 +142,26 @@ class ReturnShipment extends Model
         static::addGlobalScope(new OrganizationScope);
 
     }
+
+    /**
+     * Reserve the next shipment number for an organization.
+     *
+     * Must be called inside the transaction that creates the shipment. The
+     * transaction-level advisory lock serializes concurrent number generation.
+     */
+    public static function nextNumberForOrganization(int $organizationId): int
+    {
+        DB::statement(
+            'SELECT pg_advisory_xact_lock(hashtextextended(?, 0))',
+            ["return_shipments:$organizationId"]
+        );
+
+        return ((int) static::query()
+            ->withoutGlobalScope(OrganizationScope::class)
+            ->where('organization_id', $organizationId)
+            ->max('shipment_number')) + 1;
+    }
+
     /**
      * Get the organization that owns this shipment.
      */

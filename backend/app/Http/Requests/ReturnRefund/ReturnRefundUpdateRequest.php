@@ -15,7 +15,7 @@ class ReturnRefundUpdateRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'amount_cents' =>  $this->get('cost') * 100,
+            'amount_cents' =>  $this->input('cost') * 100,
         ]);
     }
 
@@ -23,7 +23,8 @@ class ReturnRefundUpdateRequest extends FormRequest
     {
         return [
             'reference' => ['nullable', 'string', 'max:255'],
-            'status_id' => ['required', 'integer',],
+            'status_id' => ['required', 'nullable', 'integer',],
+            'processed_at' => ['nullable', 'date'],
         ];
     }
 

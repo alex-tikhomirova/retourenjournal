@@ -19,10 +19,14 @@ const props = defineProps({
   },
 })
 
-defineEmits(["updated"])
+const emit = defineEmits(["updated"])
 
 const shippingForm = ref(false)
 
+const update = () => {
+  emit('updated')
+  shippingForm.value = false
+}
 
 </script>
 
@@ -33,12 +37,12 @@ const shippingForm = ref(false)
       <tr>
 
         <th>Richtung</th>
-        <th>Payer</th>
+        <th>Zahler</th>
         <th>Status</th>
-        <th>Carrier</th>
+        <th>Dienstleister</th>
         <th>Tracking</th>
         <th>Erstellt</th>
-        <th>ID</th>
+        <th>#</th>
       </tr>
       </thead>
 
@@ -52,16 +56,15 @@ const shippingForm = ref(false)
       </tbody>
     </table>
 
-    <div class="add-shipment" v-if="editable">
+    <div class="add-shipment" v-if="editable && shippingForm">
       <ReturnShipmentForm
-          v-if="shippingForm"
           :return_id="return_id"
-          @saved="$emit('updated')"
+          @saved="update"
           @close="shippingForm = false"
       />
-      <div v-else class="add-button text-right">
-        <button class="btn btn-primary btn-sm" @click="shippingForm = true"><Plus/> Versand anlegen</button>
-      </div>
+    </div>
+    <div v-else-if="editable" class="add-button text-right">
+      <button class="btn btn-primary btn-sm" @click="shippingForm = true"><Plus/> Versand anlegen</button>
     </div>
   </div>
 </template>
@@ -69,7 +72,10 @@ const shippingForm = ref(false)
 <style scoped lang="scss">
 .shipment-list {
   .add-shipment {
-    margin: 12px;
+    background-color: #F9FAFB;
+  }
+  .add-button{
+    padding: 12px;
   }
 }
 

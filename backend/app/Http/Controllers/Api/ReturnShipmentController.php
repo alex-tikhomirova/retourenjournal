@@ -16,6 +16,7 @@ use App\Http\Resources\ReturnShipmentResource;
 use App\Models\ReturnModel;
 use App\Services\ShipmentService;
 use Illuminate\Http\JsonResponse;
+use Throwable;
 
 /**
  * ShipmentController
@@ -24,14 +25,17 @@ use Illuminate\Http\JsonResponse;
  */
 class ReturnShipmentController extends Controller
 {
-    public function store(ShipmentStoreRequest $request, ReturnModel $return): JsonResponse
+    /**
+     * @throws Throwable
+     */
+    public function store(ShipmentStoreRequest $request): JsonResponse
     {
         $service = new ShipmentService();
-        $shipment = $service->create($return, $request->validated());
+        $shipment = $service->create($request->validated());
         return (new ReturnShipmentResource($shipment))->response()->setStatusCode(201);
     }
 
-    public function update(ShipmentUpdateRequest $request, ReturnModel $return, int $shipment): JsonResponse
+    public function update(ShipmentUpdateRequest $request, int $shipment): JsonResponse
     {
         // $return нужен для route model binding и проверки tenant-доступа через OrganizationScope.
         $service = new ShipmentService();

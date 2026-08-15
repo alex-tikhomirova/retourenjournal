@@ -12,11 +12,16 @@ $color-secondary: #6B7280;
 
 $color-success: #16A34A;
 $color-danger: #DC2626;
+//$color-warning: #f8d95d;
+$color-warning: #b1900b;
 
 $bg-color-primary: color.adjust($color-primary, $lightness: +58%);
 $bg-color-primary-primary: color.adjust($color-primary, $lightness: +54%);
 $bg-color-success: color.adjust($color-success, $lightness: +58%);
 $bg-color-success-success: color.adjust($color-success, $lightness: +54%);
+//$bg-color-warning: color.adjust($color-warning, $lightness: 22%, $saturation: 4%);
+$bg-color-warning: color.adjust($color-warning, $lightness: 58%, $saturation: 8%);
+$bg-color-warning-warning: color.adjust($color-warning, $lightness: 50%, $saturation: 8%);
 $bg-color-danger: color.adjust($color-danger, $lightness: +48%);
 $bg-color-danger-danger: color.adjust($color-danger, $lightness: +44%);
 

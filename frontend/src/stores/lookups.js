@@ -1,7 +1,16 @@
 import { defineStore } from 'pinia'
 import { api } from '@/api/api'
 
-const findById = (arr, id) => arr.find(x => x.id === id) ?? null
+/**
+ * Find a lookup item by one of its fields.
+ *
+ * @param {Array<Record<string, unknown>>} items
+ * @param {string} field
+ * @param {unknown} value
+ * @returns {Record<string, unknown>|null}
+ */
+const findBy = (items, field, value) => items.find(item => item[field] === value) ?? null
+
 export const useLookupStore = defineStore('lookups', {
     state: () => ({
         returnStatuses: [],
@@ -45,9 +54,13 @@ export const useLookupStore = defineStore('lookups', {
         },
     },
     getters: {
-        returnStatus: (state) => (id) => findById(state.returnStatuses, id),
-        returnDecision: (state) => (id) => findById(state.returnDecisions, id),
-        shipmentStatus: (state) => (id) => findById(state.shipmentStatuses, id),
-        refundStatus: (state) => (id) => findById(state.refundStatuses, id),
+        returnStatus: (state) => (value, field = 'id') => findBy(state.returnStatuses, field, value),
+        returnDecision: (state) => (value, field = 'id') => findBy(state.returnDecisions, field, value),
+        shipmentStatus: (state) => (value, field = 'id') => findBy(state.shipmentStatuses, field, value),
+        refundStatus: (state) => (value, field = 'id') => findBy(state.refundStatuses, field, value),
+
+        initialReturnStatus: (state) => findBy(state.returnStatuses, 'kind', 1),
+        initialShipmentStatus: (state) => findBy(state.shipmentStatuses, 'code', 'created'),
+        initialRefundStatus: (state) => findBy(state.refundStatuses, 'code', 'pending'),
     }
 })

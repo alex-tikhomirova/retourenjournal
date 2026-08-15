@@ -44,7 +44,7 @@ class ReturnController extends Controller
             'items:id,return_id,line_no,sku,serial,item_name,quantity,unit_price_cents,currency',
             'shipments.status:id,code,name',
             'shipments.createdBy' => fn ($q) => $q->select('id', 'name'),
-            'refunds.status:id,code,name',
+            'refunds.status:id,code,name,is_counted',
             'refunds.createdBy' => fn ($q) => $q->select('id', 'name'),
             'notes',
             'decision',

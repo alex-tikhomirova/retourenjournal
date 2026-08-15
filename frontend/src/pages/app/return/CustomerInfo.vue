@@ -19,23 +19,21 @@ defineProps({
   }
 })
 
+const emit = defineEmits(['updated'])
+
 const editMode = ref(false)
 
-const {
-  getError,
-  hasError,
-  clearError,
-  setErrorsFromResponse,
-} = useFormErrors()
+const formErrors = useFormErrors()
 const save = async () => {
   try{
     const {data} = await api.patch(`/api/customers/${customer.value.id}`, {customer: customer.value})
     if (data?.data?.id ?? null) {
       editMode.value = false
+      emit('updated')
     }
   }catch (error){
     if (error.response?.status === 422) {
-      setErrorsFromResponse(error.response)
+      formErrors.setErrorsFromResponse(error.response)
       return
     }
     throw error
@@ -56,9 +54,9 @@ const save = async () => {
         <div class="customer-form flex flex-col gap-24 items-end" v-if="editMode">
           <CustomerFormFields
               v-model="customer"
-              :get-error="getError"
-              :has-error="hasError"
-              :clear-error="clearError"
+              :get-error="formErrors.getError"
+              :has-error="formErrors.hasError"
+              :clear-error="formErrors.clearError"
           />
           <div class="controls flex gap-12 justify-end">
             <button class="btn btn-outline-primary btn-sm" @click="editMode = false">

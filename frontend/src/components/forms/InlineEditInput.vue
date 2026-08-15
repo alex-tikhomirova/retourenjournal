@@ -1,88 +1,65 @@
 <script setup>
-import {computed, ref, watch} from "vue";
+import {computed, nextTick, onBeforeUnmount, onMounted, useTemplateRef} from "vue";
 import {Check, X} from "lucide-vue-next";
-import FormFieldText from "@/components/forms/FormFieldText.vue";
 
 const props = defineProps({
-  value: {
-    type: [String, Number],
-    default: "",
-  },
-  type: {
-    type: String,
-    default: "text",
-    validator: (val) => ["text", "number"].includes(val),
-  },
   size: {
     type: String,
     default: "md",
     validator: (val) => ["xs", "sm", "md", "lg"].includes(val),
   },
-  name: {
-    type: String,
-    default: "inline-edit",
+  showActions: {
+    type: Boolean,
+    default: true,
   },
 });
 
 const emit = defineEmits(["close", "save"]);
+const element = useTemplateRef('element')
 
-const localValue = ref(props.value);
-
-watch(
-  () => props.value,
-  (nextValue) => {
-    localValue.value = nextValue;
+const closeOutside = (event) => {
+  const target = event.target
+  if (target instanceof Node && !element.value?.contains(target)) {
+    emit('close')
   }
-);
+}
 
-const inputSizeClass = computed(() => `input-${props.size}`);
+onMounted(() => nextTick(() => {
+  if (element.value) {
+    document.addEventListener('click', closeOutside, true)
+  }
+}))
+onBeforeUnmount(() => document.removeEventListener('click', closeOutside, true))
+
 const buttonSizeClass = computed(() => {
   if (props.size === "lg") return "btn-lg";
   if (props.size === "sm" || props.size === "xs") return "btn-sm";
   return "";
 });
 
-const normalizeValue = () => {
-  if (props.type !== "number") {
-    return localValue.value;
-  }
 
-  if (localValue.value === "" || localValue.value === null) {
-    return "";
-  }
-
-  const asNumber = Number(localValue.value);
-  return Number.isNaN(asNumber) ? localValue.value : asNumber;
-};
-
-const save = () => emit("save", normalizeValue());
-const close = () => emit("close");
 </script>
 
 <template>
-  <div class="input-group">
-    <FormFieldText
-      v-model="localValue"
-      :name="name"
-      :type="type"
-      :class="inputSizeClass"
-    />
-
+  <div ref="element" :class="{'input-group': showActions}">
+    <slot/>
     <button
+      v-if="showActions"
       type="button"
       class="btn btn-outline-primary"
       :class="buttonSizeClass"
       aria-label="Save"
-      @click="save"
+      @click="$emit('save')"
     >
       <Check />
     </button>
     <button
+      v-if="showActions"
       type="button"
       class="btn btn-outline-primary"
       :class="buttonSizeClass"
       aria-label="Close"
-      @click="close"
+      @click="$emit('close')"
     >
       <X />
     </button>
