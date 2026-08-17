@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { auth } from '@/api/auth'
 import { useUserStore } from '@/stores/user'
 import { useOrgStore } from '@/stores/org'
+import PageCard from "@/components/PageCard.vue";
 
 const route = useRoute()
 const router = useRouter()
@@ -17,7 +18,7 @@ onMounted(async () => {
     const { id, hash, expires, signature } = route.query
 
     if (!id || !hash || !expires || !signature) {
-      error.value = 'Invalid verification link'
+      error.value = 'Der Bestätigungslink ist ungültig oder unvollständig'
       return
     }
 
@@ -43,14 +44,21 @@ onMounted(async () => {
     }
     return router.replace('/app/returns')
   } catch (e) {
-    error.value = 'Verification failed'
+    error.value = 'Die E-Mail-Adresse konnte nicht bestätigt werden. Bitte fordern Sie einen neuen Bestätigungslink an'
   }
 })
 </script>
 
 <template>
-  <div style="padding: 24px">
-    <h1>Verifying email…</h1>
-    <p v-if="error">{{ error }}</p>
+  <div class="page-verify-email container container-small">
+    <PageCard class="padded" title="E-Mail-Bestätigung">
+      <div class="grid gap-24">
+        <h3>E-Mail-Adresse wird bestätigt…</h3>
+        <p v-if="error">{{ error }}</p>
+      </div>
+    </PageCard>
   </div>
 </template>
+<style scoped lang="scss">
+
+</style>

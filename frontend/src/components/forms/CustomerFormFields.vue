@@ -34,8 +34,8 @@ const onNameChange = () => {
 </script>
 
 <template>
-  <div class="customer-form-fields">
-    <FormGroup name="customer.name" label="Name" class="flex-1" :error="getError('customer.name')" required>
+  <div class="customer-form-fields grid gap-12">
+    <FormGroup name="customer.name" label="Name" class="" :error="getError('customer.name')" required>
       <FormFieldText
           v-model="customer.name"
           name="customer.name"
@@ -56,14 +56,5 @@ const onNameChange = () => {
 </template>
 
 <style scoped lang="scss">
-@use "@/assets/scss/variables";
-.customer-form-fields {
-  display: flex;
-  flex-wrap: wrap;
-  gap: variables.$module-gap;
 
-  > * {
-    flex: 1 1 calc((100% - #{variables.$module-gap}) / 2);
-  }
-}
 </style>

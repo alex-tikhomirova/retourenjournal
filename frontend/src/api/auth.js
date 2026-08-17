@@ -13,6 +13,10 @@ export const auth = {
         return api.get('/api/auth/me').then(r => r.data)
     },
 
+    updateProfile(payload) {
+        return api.patch('/api/auth/profile', payload).then(r => r.data)
+    },
+
     logout() {
         return api.post('/api/auth/logout').then(r => r.data)
     },

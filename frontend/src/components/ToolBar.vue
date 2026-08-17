@@ -25,7 +25,7 @@ const props = defineProps({
       <slot name="left"/>
 
     </div>
-    <div class="flex gap-10 right-side">
+    <div class="flex gap-12 right-side">
       <slot name="right"/>
 
     </div>

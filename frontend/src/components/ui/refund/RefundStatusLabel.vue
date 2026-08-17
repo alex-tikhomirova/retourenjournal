@@ -13,7 +13,9 @@ const props = defineProps({
 
 <template>
   <StatusLabel class="refund-status" :title="status?.name" :color="status?.color" marker="euro">
-    <slot/>
+    <template v-if="$slots.default" #default>
+      <slot/>
+    </template>
   </StatusLabel>
 </template>
 

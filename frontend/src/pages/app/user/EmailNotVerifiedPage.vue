@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { auth } from '@/api/auth'
 import { useUserStore } from '@/stores/user'
+import PageCard from "@/components/PageCard.vue";
 
 const userStore = useUserStore()
 const status = ref('')
@@ -20,29 +21,26 @@ async function resend() {
 </script>
 
 <template>
-  <div style="padding: 24px">
-    <h1>Bitte bestätigen Sie Ihre E-Mail-Adresse</h1>
-    <p class="text-muted">Überprüfen Sie Ihr Postfach und klicken Sie auf den Bestätigungslink.</p>
+  <div class="page-not-verified container container-small">
+    <PageCard class="padded" title="E-Mail-Bestätigung">
+      <div class="grid gap-24">
+        <h3>Bitte bestätigen Sie Ihre E-Mail-Adresse</h3>
+        <p class="text-muted">Öffnen Sie Ihr Postfach und klicken Sie auf den Bestätigungslink, um fortzufahren.</p>
+        <button class="btn btn-outline-primary resend" @click="resend">
+          Bestätigungs-E-Mail erneut senden
+        </button>
+        <div class="messages" v-if="status || error">
+          <span v-if="status" class="text-success">{{ status }}</span>
+          <span v-if="error" class="text-danger">{{ error }}</span>
+        </div>
+        <p class="status" v-if="userStore.user && userStore.user.email">
+          Angemeldet als: {{ userStore.user.email }}
+        </p>
+      </div>
+    </PageCard>
 
-    <button class="btn btn-outline-primary resend" @click="resend">
-      Bestätigungs-E-Mail erneut senden
-    </button>
 
-    <div class="messages">
-      <span v-if="status" class="text-success">{{ status }}</span>
-      <span v-if="error" class="text-danger">{{ error }}</span>
-    </div>
 
-    <p class="status" v-if="userStore.user && userStore.user.email">
-      Angemeldet als: {{ userStore.user.email }}
-    </p>
+
   </div>
 </template>
-<style scoped>
-.resend{
-  margin: 24px  0 4px 0;
-}
-.messages{
-  margin-bottom: 24px;
-}
-</style>

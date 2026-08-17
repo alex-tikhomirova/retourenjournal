@@ -2,6 +2,7 @@
 
 import {useLookupStore} from "@/stores/lookups.js";
 import {computed} from "vue";
+import ReturnStatusLabel from "@/components/ui/return/ReturnStatusLabel.vue";
 
 const lookup = useLookupStore()
 
@@ -21,33 +22,56 @@ const setState = (code) => {
   }
 }
 
+
 </script>
 
 <template>
-  <div class="status-btns flex gap-10" v-if="status">
-    <button v-if="status.code === 'created'" class="btn btn-primary" @click="() => setState('waiting_item')">
-      Warten auf Rücksendung
-    </button>
-    <button v-if="['created', 'waiting_item'].includes(status.code)" class="btn btn-primary"
-            @click="() => setState('in_review')">
+  <div class="status-btns flex gap-12" v-if="status">
+    <ReturnStatusLabel
+        v-if="status.code === 'created'"
+        mode="button"
+        :status="lookup.returnStatus('waiting_item', 'code')"
+        @click="() => setState('waiting_item')"
+    />
+    <ReturnStatusLabel
+        v-if="['created', 'waiting_item'].includes(status.code)"
+        mode="button"
+        :status="lookup.returnStatus('in_review', 'code')"
+        @click="() => setState('in_review')"
+    >
       Ware eingetroffen
-    </button>
-    <button v-if="['approved', 'rejected'].includes(status.code)" class="btn btn-primary"
-            @click="() => setState('closed')">
+    </ReturnStatusLabel>
+    <ReturnStatusLabel
+        v-if="['approved', 'rejected'].includes(status.code)"
+        mode="button"
+        :status="lookup.returnStatus('closed', 'code')"
+        @click="() => setState('closed')"
+    >
       Abschließen
-    </button>
+    </ReturnStatusLabel>
+
     <template v-if="status.code === 'in_review' && returnModel.decision">
-      <button v-if="returnModel.decision.outcome === 'approve'" class="btn btn-primary" @click="() => setState('approved')">
-        Freigeben
-      </button>
-      <button v-if="returnModel.decision.outcome === 'reject'" class="btn btn-primary" @click="() => setState('rejected')">
-        Ablehnen
-      </button>
+      <ReturnStatusLabel
+          v-if="returnModel.decision.outcome === 'approve'"
+          mode="button"
+          :status="lookup.returnStatus('approved', 'code')"
+          @click="() => setState('approved')"
+      />
+      <ReturnStatusLabel
+          v-if="returnModel.decision.outcome === 'reject'"
+          mode="button"
+          :status="lookup.returnStatus('rejected', 'code')"
+          @click="() => setState('rejected')"
+      />
     </template>
-    <button v-if="['closed', 'cancelled'].includes(status.code)" class="btn btn-outline-primary"
-            @click="() => setState('in_review')">
+    <ReturnStatusLabel
+        v-if="['closed', 'cancelled'].includes(status.code)"
+        mode="button"
+        :status="lookup.returnStatus('in_review', 'code')"
+        @click="() => setState('in_review')"
+    >
       Wiederherstellen
-    </button>
+    </ReturnStatusLabel>
   </div>
 </template>
 

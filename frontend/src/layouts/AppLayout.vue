@@ -1,6 +1,8 @@
 <script setup>
 
 import BrandHeader from "@/components/blocks/BrandHeader.vue";
+import AppNav from "@/components/blocks/AppNav.vue";
+import UserDropdown from "@/components/blocks/UserDropdown.vue";
 </script>
 
 <template>
@@ -10,10 +12,10 @@ import BrandHeader from "@/components/blocks/BrandHeader.vue";
         <div class="flex-row">
           <BrandHeader/>
           <div class="nav column">
-
+            <AppNav/>
           </div>
           <div class="actions column">
-
+            <UserDropdown/>
           </div>
         </div>
       </div>
@@ -37,7 +39,7 @@ import BrandHeader from "@/components/blocks/BrandHeader.vue";
           <div class="footer-nav flex">
             <nav>
               <ul>
-                <li><a href="#">Hilfe / FAQ</a></li>
+                <li><RouterLink to="/app/help">Hilfe / FAQ</RouterLink></li>
                 <li><a href="#">Kontakt</a></li>
                 <li><a href="#">Impressum</a></li>
                 <li><a href="#">Datenschutzerklärung</a></li>
@@ -76,6 +78,8 @@ import BrandHeader from "@/components/blocks/BrandHeader.vue";
         display: flex;
         >*{
           flex: 1;
+          display: flex;
+          align-items: center;
         }
       }
     }

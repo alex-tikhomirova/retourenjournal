@@ -66,14 +66,7 @@ const save = async () => {
   <ToolBar :on-back="() => router.push('/app/returns')" title="Neue Retoure erstellen"
            subtitle="Erfassen Sie die Retourendaten">
     <template #right>
-      <button class="btn btn-outline-primary" @click="router.push('/app/returns')">
-        <X/>
-        Abbrechen
-      </button>
-      <button class="btn btn-primary" @click="save">
-        <Save/>
-        Speichern
-      </button>
+
     </template>
   </ToolBar>
   <div class="return-form-page container">
@@ -82,20 +75,24 @@ const save = async () => {
       <template #title>
         <ReturnStatusLabel :status="initialStatus"/>
       </template>
-      <div class="flex gap-24">
-        <FormGroup name="return_number" label="Retourennummer" class="flex-1" :error="getError('return_number')"
-                   required>
-          <FormFieldText
-              v-model="formData.return_number"
-              name="return_number"
-              placeholder="z.B. RET-69C7BD7B"
-              :invalid="hasError('return_number')"
-              @update:modelValue="() => clearError('return_number')"
-          />
-        </FormGroup>
-        <FormGroup name="order_reference" label="Bestellnummer / Referenz" class="flex-1">
-          <FormFieldText v-model="formData.order_reference" name="order_reference" placeholder="z.B. ORD-12345"/>
-        </FormGroup>
+      <div class="flex flex-col gap-24 items-stretch">
+        <div class="flex gap-24">
+          <FormGroup name="return_number" label="Retourennummer" class="flex-1" :error="getError('return_number')"
+                     required>
+            <FormFieldText
+                v-model="formData.return_number"
+                name="return_number"
+                placeholder="z.B. RET-69C7BD7B"
+                :invalid="hasError('return_number')"
+                @update:modelValue="() => clearError('return_number')"
+            />
+          </FormGroup>
+          <FormGroup name="order_reference" label="Bestellnummer / Referenz" class="flex-1">
+            <FormFieldText v-model="formData.order_reference" name="order_reference" placeholder="z.B. ORD-12345"/>
+          </FormGroup>
+        </div>
+        <FormFieldTextArea v-model="formData.reason" name="reason" rows="3"
+                           placeholder="Begründen Sie die Rücksendung ..."/>
       </div>
     </PageCard>
 
@@ -105,13 +102,6 @@ const save = async () => {
         :has-error="hasError"
         :clear-error="clearError"
     />
-
-    <PageCard class="return-reason padded" title="Rücksendegrund">
-
-      <FormFieldTextArea v-model="formData.reason" name="reason" rows="3"
-                         placeholder="Begründen Sie die Rücksendung ..."/>
-
-    </PageCard>
 
     <ReturnItemsForm
         v-model="formData.items"
@@ -148,10 +138,6 @@ const save = async () => {
     @media (max-width: 768px) {
       flex-basis: 100%;
     }
-  }
-
-  .return-reason {
-    flex: 1 1 100%;
   }
 }
 </style>

@@ -45,13 +45,11 @@ async function onSubmit() {
 </script>
 
 <template>
-  <div class="auth-page">
+  <div class="auth-page container container-small grid gap-12">
 
     <h1>Anmelden</h1>
-    <br/>
-
-    <form class="auth-form" @submit.prevent="onSubmit">
-      <FormGroup label="Email" name="email">
+    <form class="auth-form grid gap-12" @submit.prevent="onSubmit">
+      <FormGroup label="E-mail" name="email">
         <FormFieldText
             v-model.trim="form.email"
             type="email"
@@ -87,14 +85,7 @@ async function onSubmit() {
 <style scoped lang="scss">
 @use "@/assets/scss/variables" ;
 .auth-page {
-  max-width: 420px;
   margin: 40px auto;
-  padding: variables.$module-padding;
 }
-
-.auth-form {
-  display: grid;
-  gap: 18px;
-}
-
+.hint { margin-top: 12px; }
 </style>

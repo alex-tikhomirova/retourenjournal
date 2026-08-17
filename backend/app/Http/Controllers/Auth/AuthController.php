@@ -11,6 +11,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\ProfileUpdateRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
@@ -80,6 +81,25 @@ class AuthController extends Controller
     {
         return response()->json([
             'user' => new UserResource($request->user()),
+        ]);
+    }
+
+    /**
+     * Update the authenticated user's editable profile fields.
+     */
+    public function update(ProfileUpdateRequest $request): JsonResponse
+    {
+        $user = $request->user();
+        $validated = $request->validated();
+
+        $user->name = $validated['name'];
+        if (!empty($validated['password'])) {
+            $user->password = $validated['password'];
+        }
+        $user->save();
+
+        return response()->json([
+            'user' => new UserResource($user),
         ]);
     }
 

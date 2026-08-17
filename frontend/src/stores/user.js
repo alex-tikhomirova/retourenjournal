@@ -64,7 +64,7 @@ export const useUserStore = defineStore('user', {
                     this.mePromise = null
                 }
             })()
-
+            return this.mePromise
         },
 
         async login(email, password) {
@@ -108,6 +108,19 @@ export const useUserStore = defineStore('user', {
             } catch (error) {
                 this.user = false
                 org.reset()
+                return { ok: false, error }
+            } finally {
+                this.isLoading = false
+            }
+        },
+
+        async updateProfile(payload) {
+            this.isLoading = true
+            try {
+                const data = await auth.updateProfile(payload)
+                this.user = data.user
+                return { ok: true }
+            } catch (error) {
                 return { ok: false, error }
             } finally {
                 this.isLoading = false

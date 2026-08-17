@@ -40,7 +40,7 @@ return new class extends Migration
             [
                 'organization_id' => null,
                 'code' => 'in_review',
-                'color' => '#EDE9FE',
+                'color' => '#DBEAFE',
                 'name' => 'In Prüfung',
                 'description' => 'Ware wird geprüft und bewertet',
                 'kind' => 2,
@@ -60,7 +60,7 @@ return new class extends Migration
             [
                 'organization_id' => null,
                 'code' => 'rejected',
-                'color' => '#E9E2F8',
+                'color' => '#FCE7F3',
                 'name' => 'Abgelehnt',
                 'description' => 'Rückgabe nicht akzeptiert',
                 'kind' => 2,

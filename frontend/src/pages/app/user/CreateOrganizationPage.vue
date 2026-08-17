@@ -5,57 +5,64 @@ import FormGroup from "@/components/forms/FormGroup.vue";
 import {ref} from "vue";
 import {useOrgStore} from "@/stores/org.js";
 import {useRouter} from "vue-router";
+import PageCard from "@/components/PageCard.vue";
+import {Check} from "lucide-vue-next";
+import {useFormErrors} from "@/utils/useFormErrors.js";
 
 const org = useOrgStore()
 const router = useRouter()
 
-const errorMessage = ref(null)
 const formData = ref({
   name: '',
 })
 
-const onSubmit = async () => {
-  const res = await org.createOrganization(formData.value)
-  if (!res.ok) {
-    errorMessage.value =
-        res.error?.response?.data?.message
+const {
+  getError,
+  hasError,
+  clearError,
+  clearErrors,
+  setErrors,
+  setErrorsFromResponse,
+} = useFormErrors()
 
-        ?? 'Fehler beim Erstellen'
+const onSubmit = async () => {
+  clearErrors()
+
+  if (!formData.value.name.trim()) {
+    setErrors({name: ['Dieses Feld ist erforderlich.']})
     return
   }
 
-  router.push('/app')
+  const res = await org.createOrganization(formData.value)
+  if (!res.ok) {
+    setErrorsFromResponse(res.error)
+    return
+  }
+
+  await router.push('/app/returns')
 
 }
 </script>
 
 <template>
-  <div class="create-organization-page">
-    <h1>Neue Organisation</h1>
-    <br/>
-    <div class="create-organization-form">
-      <FormGroup name="name" label="Name">
-        <FormFieldText v-model="formData.name" name="name"/>
-      </FormGroup>
-      <button class="btn btn-primary" type="submit" :disabled="org.isLoading" @click="onSubmit">
-        {{ org.isLoading ? 'Wird erstellt…' : 'Organisation erstellen' }}
-      </button>
+  <div class="create-organization-page container container-small">
+    <PageCard class="padded" title="Neue Organisation">
+      <form class="create-organization-form grid gap-24" @submit.prevent="onSubmit">
+        <FormGroup name="name" label="Name" :error="getError('name')" required>
+          <FormFieldText
+              v-model="formData.name"
+              name="name"
+              autocomplete="organization"
+              :invalid="hasError('name')"
+              @update:modelValue="clearError('name')"
+          />
+        </FormGroup>
+        <button class="btn btn-primary" type="submit" :disabled="org.isLoading">
+          <Check/> {{ org.isLoading ? 'Wird erstellt…' : 'Organisation erstellen' }}
+        </button>
 
-      <p v-if="errorMessage" class="text-danger">{{ errorMessage }}</p>
-    </div>
-
+        <p v-if="getError('_general')" class="text-danger">{{ getError('_general') }}</p>
+      </form>
+    </PageCard>
   </div>
 </template>
-
-<style scoped lang="scss">
-@use "@/assets/scss/variables" ;
- .create-organization-page{
-   max-width: 420px;
-   margin: 40px auto;
-   padding: variables.$module-padding;
- }
- .create-organization-form{
-   display: grid;
-   gap: 16px;
- }
-</style>

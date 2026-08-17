@@ -17,6 +17,7 @@ Route::prefix('auth')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('logout', [AuthController::class, 'destroy']);
         Route::get('me', [AuthController::class, 'me']);
+        Route::patch('profile', [AuthController::class, 'update']);
 
         Route::post('email/verification-notification', [EmailVerificationController::class, 'send'])
             ->middleware('throttle:1,1');

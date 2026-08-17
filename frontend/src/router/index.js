@@ -12,8 +12,11 @@ const routes = [
     children: [
       { path: '', component: () => import('@/pages/app/WelcomePage.vue') },
       { path: 'welcome', component: () => import('@/pages/app/WelcomePage.vue') },
+      { path: 'help', component: () => import('@/pages/app/HelpPage.vue') },
       { path: 'email-not-verified', component: () => import('@/pages/app/user/EmailNotVerifiedPage.vue') },
       { path: 'verify-email', component: () => import('@/pages/app/user/VerifyEmailPage.vue') },
+      { path: 'profile', component: () => import('@/pages/app/user/ProfilePage.vue') },
+      { path: 'organization', component: () => import('@/pages/app/user/OrganizationPage.vue') },
 
       {
         path: 'returns',
@@ -44,8 +47,8 @@ router.beforeEach(async (to, from, next) => {
   const isGuestPage = path === '/login' || path === '/register'
   const isApp = path === '/app' || path.startsWith('/app/')
 
-  const verifyPages = ['/app/email-not-verified', '/app/verify-email']
-  const orgOnboardingPages = ['/app/welcome', '/app/organization/new']
+  const verifyPages = ['/app/email-not-verified', '/app/verify-email', '/app/help']
+  const orgOnboardingPages = ['/app/welcome', '/app/organization/new', '/app/help']
 
   const isVerifyFlow = verifyPages.includes(path)
   const isOrgOnboarding = orgOnboardingPages.includes(path)

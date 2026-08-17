@@ -9,6 +9,13 @@
   margin-left: 20px;
   margin-right: 20px;
 }
+.container-small{
+  max-width: 520px;
+}
+
+.grid{
+  display: grid;
+}
 
 .flex{
   display: flex;

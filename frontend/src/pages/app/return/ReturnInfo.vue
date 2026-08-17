@@ -59,7 +59,7 @@ const save = () => handleRequest(async () => {
         </div>
         <div class="controls flex gap-12 justify-end">
           <div class="text-right text-danger" v-if="errorText">{{ errorText }}</div>
-          <div class="flex gap-10 justify-end">
+          <div class="flex gap-12 justify-end">
             <button class="btn btn-outline-primary btn-sm" @click="editMode = false">
               <X/>
               Abbrechen

@@ -50,8 +50,8 @@ const save = async () => {
 
       </a>
     </template>
-    <div class="customer-info">
-        <div class="customer-form flex flex-col gap-24 items-end" v-if="editMode">
+    <div class="customer-info ">
+        <div class="customer-form grid gap-24" v-if="editMode">
           <CustomerFormFields
               v-model="customer"
               :get-error="formErrors.getError"

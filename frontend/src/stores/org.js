@@ -71,6 +71,19 @@ export const useOrgStore = defineStore('org', {
             })()
 
             return this.createPromise
+        },
+
+        async updateOrganization(payload) {
+            this.isLoading = true
+            try {
+                const { data } = await api.patch('/api/organization', payload)
+                this.organization = data.data
+                return { ok: true }
+            } catch (error) {
+                return { ok: false, error }
+            } finally {
+                this.isLoading = false
+            }
         }
     },
 })

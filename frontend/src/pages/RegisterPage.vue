@@ -1,48 +1,62 @@
 <script setup>
-import { reactive, ref } from 'vue'
+import {ref} from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user.js'
+import FormFieldText from '@/components/forms/FormFieldText.vue'
+import FormGroup from '@/components/forms/FormGroup.vue'
+import {useFormErrors} from '@/utils/useFormErrors.js'
 
 const router = useRouter()
 const user = useUserStore()
 
-const form = reactive({
+const form = ref({
   name: '',
   email: '',
   password: '',
   password_confirmation: '',
 })
 
-const error = ref('')
+const {
+  getError,
+  hasError,
+  clearError,
+  clearErrors,
+  setErrors,
+  setErrorsFromResponse,
+} = useFormErrors()
 
-function redirectAuthedHome() {
+const redirectAuthedHome = () => {
   if (!user.isVerified) return router.push('/app/email-not-verified')
   if (!user.user?.current_organization_id) return router.push('/app/welcome')
   return router.push('/app/returns')
 }
 
-async function onSubmit() {
-  error.value = ''
+const onSubmit = async () => {
+  clearErrors()
 
-  if (!form.name || !form.email || !form.password || !form.password_confirmation) {
-    error.value = 'Please fill in all fields.'
+  const requiredErrors = {}
+  for (const field of ['name', 'email', 'password', 'password_confirmation']) {
+    if (!form.value[field]) requiredErrors[field] = ['Dieses Feld ist erforderlich.']
+  }
+  if (Object.keys(requiredErrors).length) {
+    setErrors(requiredErrors)
     return
   }
 
-  if (form.password !== form.password_confirmation) {
-    error.value = 'Passwords do not match.'
+  if (form.value.password !== form.value.password_confirmation) {
+    setErrors({password_confirmation: ['Die Passwörter stimmen nicht überein.']})
     return
   }
 
   const res = await user.register({
-    name: form.name,
-    email: form.email,
-    password: form.password,
-    password_confirmation: form.password_confirmation,
+    name: form.value.name,
+    email: form.value.email,
+    password: form.value.password,
+    password_confirmation: form.value.password_confirmation,
   })
 
   if (!res.ok) {
-    error.value = 'Registration failed.'
+    setErrorsFromResponse(res.error)
     return
   }
 
@@ -51,46 +65,60 @@ async function onSubmit() {
 </script>
 
 <template>
-  <div class="auth-page">
+  <div class="auth-page container container-small grid gap-12">
     <h1>Registrieren</h1>
 
-    <form class="auth-form" @submit.prevent="onSubmit">
-      <label class="field">
-        <span>Name</span>
-        <input v-model.trim="form.name" type="text" autocomplete="name" required placeholder="Vorname Nachname" />
-      </label>
+    <form class="auth-form grid gap-12" @submit.prevent="onSubmit">
+      <FormGroup name="name" label="Name" :error="getError('name')" required>
+        <FormFieldText
+            v-model.trim="form.name"
+            name="name"
+            autocomplete="name"
+            placeholder="Vorname Nachname"
+            :invalid="hasError('name')"
+            @update:modelValue="clearError('name')"
+        />
+      </FormGroup>
 
-      <label class="field">
-        <span>E-Mail</span>
-        <input
+      <FormGroup name="email" label="E-Mail" :error="getError('email')" required>
+        <FormFieldText
             v-model.trim="form.email"
+            name="email"
             type="email"
             autocomplete="email"
             inputmode="email"
-            required
+            :invalid="hasError('email')"
+            @update:modelValue="clearError('email')"
         />
-      </label>
+      </FormGroup>
 
-      <label class="field">
-        <span>Passwort</span>
-        <input v-model="form.password" type="password" autocomplete="new-password" required />
-      </label>
-
-      <label class="field">
-        <span>Passwort wiederholen</span>
-        <input
-            v-model="form.password_confirmation"
+      <FormGroup name="password" label="Passwort" :error="getError('password')" required>
+        <FormFieldText
+            v-model="form.password"
+            name="password"
             type="password"
             autocomplete="new-password"
-            required
+            :invalid="hasError('password')"
+            @update:modelValue="clearError('password')"
         />
-      </label>
+      </FormGroup>
+
+      <FormGroup name="password_confirmation" label="Passwort wiederholen" :error="getError('password_confirmation')" required>
+        <FormFieldText
+            v-model="form.password_confirmation"
+            name="password_confirmation"
+            type="password"
+            autocomplete="new-password"
+            :invalid="hasError('password_confirmation')"
+            @update:modelValue="clearError('password_confirmation')"
+        />
+      </FormGroup>
 
       <button class="btn btn-primary" type="submit" :disabled="user.isLoading">
         {{ user.isLoading ? 'Konto wird erstellt...' : 'Konto erstellen' }}
       </button>
 
-      <p v-if="error" class="error">{{ error }}</p>
+      <p v-if="getError('_general')" class="text-danger">{{ getError('_general') }}</p>
     </form>
 
     <p class="hint">
@@ -103,16 +131,8 @@ async function onSubmit() {
 <style scoped lang="scss">
 @use "@/assets/scss/variables" ;
 .auth-page {
-  max-width: 420px;
   margin: 40px auto;
-  padding: variables.$module-padding;
+
 }
-.auth-form { display: grid; gap: 12px; }
-.field { display: grid; gap: 6px; }
-.field span { font-size: 14px; opacity: .8; }
-input { padding: 10px 12px; border: 1px solid #ccc; border-radius: 8px; }
-.btn { padding: 10px 12px; border-radius: 8px; border: 0; cursor: pointer; }
-.btn:disabled { opacity: .6; cursor: not-allowed; }
-.error { color: #b00020; margin: 0; }
 .hint { margin-top: 12px; }
 </style>

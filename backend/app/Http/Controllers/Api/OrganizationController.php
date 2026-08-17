@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\OrganizationStoreRequest;
+use App\Http\Requests\OrganizationUpdateRequest;
 use App\Http\Resources\OrganizationResource;
 use App\Models\Organization;
 use App\Models\User;
@@ -73,6 +74,23 @@ class OrganizationController extends Controller
         return response()->json([
             'data' => new OrganizationResource($org),
         ], 201);
+    }
+
+    /**
+     * Update the authenticated user's current organization.
+     */
+    public function update(OrganizationUpdateRequest $request): JsonResponse
+    {
+        $user = $request->user();
+        $org = $user->organizations()
+            ->where('organizations.id', $user->current_organization_id)
+            ->firstOrFail();
+
+        $org->update($request->validated());
+
+        return response()->json([
+            'data' => new OrganizationResource($org),
+        ]);
     }
 
 

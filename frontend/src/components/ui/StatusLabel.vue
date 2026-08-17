@@ -66,11 +66,30 @@ const deriveBadgeColorsFromHsl = (h, s, l) => {
   };
 };
 
-hexToHsl(props.color)
-
 const styles = computed(() => {
   return deriveBadgeColorsFromHsl(...hexToHsl(props.color))
+})
 
+const element = computed(() => props.mode === 'button' ? 'button' : 'div')
+const classes = computed(() => ({
+  'status-label': props.mode === 'label',
+  'status-button': props.mode === 'button',
+  'btn': props.mode === 'button',
+}))
+const componentStyles = computed(() => {
+  if (props.mode === 'bulb') {
+    return {color: styles.value.color}
+  }
+
+  if (props.mode === 'button') {
+    return {
+      '--status-background': styles.value.backgroundColor,
+      '--status-color': styles.value.color,
+      '--status-border': styles.value.borderColor,
+    }
+  }
+
+  return styles.value
 })
 
 const markerComponent = computed(() => markers[props.marker] || null)
@@ -79,16 +98,18 @@ const isDotMarker = computed(() => props.marker === 'dot')
 </script>
 
 <template>
-  <div class="status status-label" :style="styles" v-if="mode === 'label'" title="Status">
+  <component
+      :is="element"
+      class="status"
+      :class="classes"
+      :style="componentStyles"
+      :type="mode === 'button' ? 'button' : undefined"
+      title="Status"
+  >
     <div v-if="isDotMarker" class="dot" :style="{backgroundColor: styles.borderColor}"></div>
     <component v-else-if="markerComponent" :is="markerComponent" size="11" :style="{color: styles.color}"/>
-    {{title}} <slot/>
-  </div>
-  <div class="status"  v-else-if="mode === 'bulb'" :style="{color: styles.color}">
-    <div v-if="isDotMarker" class="dot" :style="{backgroundColor: styles.borderColor}"></div>
-    <component v-else-if="markerComponent" :is="markerComponent" size="11" :style="{color: styles.color}"/>
-    {{title}}
-  </div>
+    <slot>{{title}}</slot>
+  </component>
 </template>
 
 <style scoped lang="scss">
@@ -107,6 +128,27 @@ const isDotMarker = computed(() => props.marker === 'dot')
       border-radius: variables.$border-radius;
       padding: 2px 8px;
       font-weight: 500;
+    }
+    &.status-button {
+      background: var(--status-background);
+      border-color: var(--status-border);
+      color: var(--status-color);
+
+      &:hover:not(:disabled):not(.is-disabled) {
+        background: color-mix(in srgb, var(--status-background), white 12%);
+        border-color: color-mix(in srgb, var(--status-border), white 12%);
+      }
+
+      &:active:not(:disabled):not(.is-disabled),
+      &.is-active {
+        background: color-mix(in srgb, var(--status-background), black 10%);
+        border-color: color-mix(in srgb, var(--status-border), black 10%);
+        transform: translateY(1px);
+      }
+
+      &:focus-visible {
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--status-border), transparent 72%);
+      }
     }
 
     .dot{

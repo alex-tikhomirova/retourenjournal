@@ -24,7 +24,7 @@ const user = useUserStore()
                   Retouren, Artikel, Status, Lieferungen und Rückerstattungen — klar dokumentiert und jederzeit
                   nachvollziehbar.</p>
               </div>
-              <div class="buttons flex gap-10">
+              <div class="buttons flex gap-12">
                 <RouterLink class="btn btn-lg btn-outline-primary" to="/login">Anmelden</RouterLink>
                 <RouterLink class="btn btn-lg btn-primary" to="/register">Registrieren</RouterLink>
               </div>

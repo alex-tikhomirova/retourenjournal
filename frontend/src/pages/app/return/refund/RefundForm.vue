@@ -87,7 +87,7 @@ const saveRefund = () => handleRequest(async () => {
       </div>
       <div class="flex flex-col gap-12 items-end">
       <div class="text-right text-danger" v-if="errorText">{{ errorText }}</div>
-        <div class="form__actions flex gap-10 justify-end">
+        <div class="form__actions flex gap-12 justify-end">
           <button type="button" class="btn btn-outline-primary btn-sm" @click="$emit('close')">
             <X/>
             Abbrechen
