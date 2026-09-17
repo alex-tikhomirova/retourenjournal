@@ -17,6 +17,10 @@ export const auth = {
         return api.patch('/api/auth/profile', payload).then(r => r.data)
     },
 
+    deleteProfile(payload) {
+        return api.delete('/api/auth/profile', {data: payload}).then(r => r.data)
+    },
+
     logout() {
         return api.post('/api/auth/logout').then(r => r.data)
     },

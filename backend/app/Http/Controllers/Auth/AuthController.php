@@ -18,6 +18,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
@@ -101,6 +102,56 @@ class AuthController extends Controller
         return response()->json([
             'user' => new UserResource($user),
         ]);
+    }
+
+    /**
+     * Permanently delete the authenticated user and their owned current organization.
+     */
+    public function deleteProfile(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'password' => ['required', 'string'],
+        ]);
+
+        /** @var User $user */
+        $user = $request->user();
+
+        if (!Hash::check($validated['password'], $user->password)) {
+            throw ValidationException::withMessages([
+                'password' => 'Das Konto konnte nicht gelöscht werden. Bitte prüfen Sie Ihr Passwort und versuchen Sie es erneut.',
+            ]);
+        }
+
+        $organization = $user->currentOrganization;
+        $ownsOrganization = $organization && $user->organizations()
+            ->where('organizations.id', $organization->id)
+            ->wherePivot('is_owner', true)
+            ->exists();
+
+        if ($ownsOrganization && $organization->users()->count() > 1) {
+            return response()->json([
+                'message' => 'Die Organisation hat weitere Mitglieder. Übertragen Sie die Inhaberschaft oder entfernen Sie die Mitglieder, bevor Sie Ihr Konto löschen.',
+            ], 409);
+        }
+
+        // Logout first: the session guard rotates remember tokens and would otherwise
+        // persist the already deleted user model again.
+        Auth::guard('web')->logout();
+
+        DB::transaction(function () use ($user, $organization, $ownsOrganization) {
+            if ($ownsOrganization) {
+                $organization->delete();
+            }
+
+            $user->delete();
+        });
+
+        if ($request->hasSession()) {
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
+
+        return response()->json(['ok' => true]);
     }
 
     /**

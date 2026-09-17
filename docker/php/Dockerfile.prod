@@ -1,0 +1,39 @@
+FROM php:8.3-fpm-alpine
+
+RUN apk add --no-cache \
+    bash \
+    icu-dev \
+    libzip-dev \
+    oniguruma-dev \
+    postgresql-dev \
+    unzip \
+    zip \
+    && docker-php-ext-install \
+    bcmath \
+    intl \
+    mbstring \
+    opcache \
+    pdo \
+    pdo_pgsql \
+    zip
+
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www/html/backend
+
+COPY backend/composer.json backend/composer.lock ./
+RUN composer install \
+    --no-dev \
+    --no-interaction \
+    --prefer-dist \
+    --optimize-autoloader \
+    --no-scripts
+
+COPY backend ./
+RUN composer dump-autoload --optimize \
+    && php artisan package:discover --ansi \
+    && chown -R www-data:www-data storage bootstrap/cache
+
+COPY docker/php/php.prod.ini /usr/local/etc/php/conf.d/99-app-prod.ini
+
+USER www-data

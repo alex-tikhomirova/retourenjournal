@@ -6,3 +6,6 @@
 /.zed
 Thumbs.db
 changes.diff
+/frontend/.env
+/.env.production
+/backend/.env.production

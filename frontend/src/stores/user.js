@@ -127,6 +127,21 @@ export const useUserStore = defineStore('user', {
             }
         },
 
+        async deleteProfile(password) {
+            this.isLoading = true
+            const org = useOrgStore()
+            try {
+                await auth.deleteProfile({ password })
+                this.user = false
+                org.reset()
+                return { ok: true }
+            } catch (error) {
+                return { ok: false, error }
+            } finally {
+                this.isLoading = false
+            }
+        },
+
         async logout() {
             this.isLoading = true
             const org = useOrgStore()

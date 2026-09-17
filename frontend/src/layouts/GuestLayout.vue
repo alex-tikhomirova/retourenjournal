@@ -44,24 +44,25 @@ const userStore = useUserStore()
             <nav>
               <h3 class="">Projekt</h3>
               <ul>
-                <li><a href="#">Überblick</a></li>
-                <li><a href="#">Funktionen</a></li>
-                <li><a href="#">GitHub</a></li>
+                <li><RouterLink :to="{path: '/', hash: '#ueberblick'}">Überblick</RouterLink></li>
+                <li><RouterLink :to="{path: '/', hash: '#funktionen'}">Funktionen</RouterLink></li>
+                <li><a href="https://github.com/alex-tikhomirova/retourenjournal">GitHub</a></li>
               </ul>
             </nav>
             <nav>
               <h3 class="">Rechtliches</h3>
               <ul>
-                <li><a href="#">Impressum</a></li>
-                <li><a href="#">Datenschutzerklärung</a></li>
+                <li><RouterLink to="/impressum">Impressum</RouterLink></li>
+                <li><RouterLink to="/legal/privacy">Datenschutzerklärung</RouterLink></li>
+                <li><RouterLink to="/legal/terms">Nutzungsbedingungen</RouterLink></li>
               </ul>
             </nav>
             <nav>
               <h3 class="">Support</h3>
               <ul>
-                <li><a href="#">Kontakt</a></li>
-                <li><a href="#">Hilfe / FAQ</a></li>
-                <li><a href="#">Demo anfragen</a></li>
+                <li><RouterLink :to="{path: '/', hash: '#kontakt'}">Kontakt</RouterLink></li>
+                <li><RouterLink to="/help">Hilfe / FAQ</RouterLink></li>
+                <li><RouterLink :to="{path: '/', query: {contactTopic: 'adjustment'}, hash: '#kontakt'}">Anpassung anfragen</RouterLink></li>
               </ul>
             </nav>
           </div>
@@ -138,3 +139,4 @@ const userStore = useUserStore()
   }
 }
 </style>
+

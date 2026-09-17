@@ -39,9 +39,9 @@ import UserDropdown from "@/components/blocks/UserDropdown.vue";
           <div class="footer-nav flex">
             <nav>
               <ul>
-                <li><RouterLink to="/app/help">Hilfe / FAQ</RouterLink></li>
+                <li><RouterLink to="/help">Hilfe / FAQ</RouterLink></li>
                 <li><a href="#">Kontakt</a></li>
-                <li><a href="#">Impressum</a></li>
+                <li><RouterLink to="/impressum">Impressum</RouterLink></li>
                 <li><a href="#">Datenschutzerklärung</a></li>
               </ul>
             </nav>

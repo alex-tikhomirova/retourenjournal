@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\LookupController;
 use App\Http\Controllers\Api\OrganizationController;
 use App\Http\Controllers\Api\CustomerController;
+use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\ReturnController;
 use App\Http\Controllers\Api\ReturnRefundController;
 use App\Http\Controllers\Api\ReturnShipmentController;
@@ -15,6 +16,9 @@ use App\Models\ReturnDecision;
 use App\Models\ReturnStatus;
 use App\Models\ShipmentStatus;
 use Illuminate\Support\Facades\Route;
+
+Route::post('/contact', [ContactController::class, 'send'])
+    ->middleware('throttle:5,1');
 
 
 

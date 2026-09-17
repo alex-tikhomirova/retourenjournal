@@ -2,6 +2,7 @@
 import {ref} from 'vue'
 import {Save, X, CircleX} from 'lucide-vue-next'
 import PageCard from '@/components/PageCard.vue'
+import Modal from '@/components/Modal.vue'
 import ToolBar from '@/components/ToolBar.vue'
 import FormGroup from '@/components/forms/FormGroup.vue'
 import FormFieldText from '@/components/forms/FormFieldText.vue'
@@ -12,6 +13,9 @@ import {useRouter} from "vue-router";
 const userStore = useUserStore()
 const router = useRouter()
 const saved = ref(false)
+const deleteModalOpen = ref(false)
+const deletePassword = ref('')
+const deleteError = ref('')
 const formData = ref({
   name: userStore.user?.name ?? '',
   email: userStore.user?.email ?? '',
@@ -32,6 +36,36 @@ const save = async () => {
   formData.value.password = ''
   formData.value.password_confirmation = ''
   saved.value = true
+}
+
+const openDeleteModal = () => {
+  deletePassword.value = ''
+  deleteError.value = ''
+  deleteModalOpen.value = true
+}
+
+const closeDeleteModal = () => {
+  if (userStore.isLoading) return
+
+  deleteModalOpen.value = false
+  deletePassword.value = ''
+  deleteError.value = ''
+}
+
+const deleteAccount = async () => {
+  if (userStore.isLoading) return
+
+  deleteError.value = ''
+  const result = await userStore.deleteProfile(deletePassword.value)
+
+  if (!result.ok) {
+    deleteError.value = result.error.response?.status === 409
+        ? result.error.response.data?.message
+        : 'Das Konto konnte nicht gelöscht werden. Bitte prüfen Sie Ihr Passwort und versuchen Sie es erneut.'
+    return
+  }
+
+  await router.push('/')
 }
 </script>
 
@@ -73,16 +107,57 @@ const save = async () => {
         {{ userStore.isLoading ? 'Wird gespeichert…' : 'Speichern' }}
       </button>
     </div>
-    <PageCard class="padded" title="Konto löschen">
-      <p>Konto und zugehörige Daten löschen</p>
+    <section class="delete-account-section grid gap-12">
+      <h3>Konto löschen</h3>
+      <p>
+        Wenn Sie Ihr Konto löschen, wird Ihr Konto dauerhaft entfernt. Wenn Sie Eigentümer der aktuellen Organisation
+        sind, werden auch die Organisation und alle zugehörigen Retouren, Kunden, Sendungen, Erstattungen und
+        Verlaufsdaten gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.
+      </p>
       <div class="text-right">
-        <button class="btn btn-danger">
+        <button class="btn btn-danger" @click="openDeleteModal">
           <CircleX/>
           Konto löschen
         </button>
       </div>
-    </PageCard>
+    </section>
 
 
   </div>
+
+  <Modal
+      v-if="deleteModalOpen"
+      title="Konto wirklich löschen?"
+      size="sm"
+      :dismissable="!userStore.isLoading"
+      @close="closeDeleteModal"
+  >
+    <div class="grid gap-20">
+      <p>
+        Diese Aktion löscht Ihr Konto dauerhaft. Wenn Sie Eigentümer der aktuellen Organisation sind, werden auch die
+        Organisation und alle zugehörigen Retouren, Kundendaten, Sendungen, Erstattungen und Verlaufsdaten gelöscht.
+      </p>
+      <FormGroup name="delete_password" label="Passwort" :error="deleteError">
+        <FormFieldText
+            v-model="deletePassword"
+            name="delete_password"
+            type="password"
+            autocomplete="current-password"
+            :invalid="!!deleteError"
+            @update:modelValue="deleteError = ''"
+            @keyup.enter="deleteAccount"
+        />
+      </FormGroup>
+    </div>
+    <template #footer>
+      <div class="flex justify-end gap-12">
+        <button class="btn btn-outline-primary" :disabled="userStore.isLoading" @click="closeDeleteModal">
+          Abbrechen
+        </button>
+        <button class="btn btn-danger" :disabled="userStore.isLoading" @click="deleteAccount">
+          {{ userStore.isLoading ? 'Konto wird gelöscht…' : 'Konto endgültig löschen' }}
+        </button>
+      </div>
+    </template>
+  </Modal>
 </template>

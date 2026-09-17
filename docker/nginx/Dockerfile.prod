@@ -1,0 +1,15 @@
+FROM node:22-alpine AS frontend
+
+WORKDIR /app/frontend
+
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci
+
+COPY frontend ./
+RUN npm run build
+
+FROM nginx:1.27-alpine
+
+COPY docker/nginx/prod-http.conf.template /etc/nginx/templates/default.conf.template
+COPY --from=frontend /app/frontend/dist /var/www/html/frontend
+COPY backend/public /var/www/html/backend/public

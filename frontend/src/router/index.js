@@ -6,13 +6,19 @@ const routes = [
   { path: '/', component: () => import('@/pages/LandingPage.vue') },
   { path: '/login', component: () => import('@/pages/LoginPage.vue') },
   { path: '/register', component: () => import('@/pages/RegisterPage.vue') },
-
+  { path: '/impressum', component: () => import('@/pages/ImpressumPage.vue') },
+  { path: '/help', component: () => import('@/pages/app/HelpPage.vue'), meta: { layout: 'guest' } },
+  {
+    path: '/legal/:document',
+    name: 'legal-document',
+    component: () => import('@/pages/LegalPage.vue'),
+  },
   {
     path: '/app',
     children: [
       { path: '', component: () => import('@/pages/app/WelcomePage.vue') },
       { path: 'welcome', component: () => import('@/pages/app/WelcomePage.vue') },
-      { path: 'help', component: () => import('@/pages/app/HelpPage.vue') },
+      { path: 'help', redirect: '/help' },
       { path: 'email-not-verified', component: () => import('@/pages/app/user/EmailNotVerifiedPage.vue') },
       { path: 'verify-email', component: () => import('@/pages/app/user/VerifyEmailPage.vue') },
       { path: 'profile', component: () => import('@/pages/app/user/ProfilePage.vue') },
@@ -34,6 +40,13 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
+  scrollBehavior(to) {
+    if (to.hash) {
+      return {el: to.hash, behavior: 'smooth'}
+    }
+
+    return {top: 0}
+  },
 })
 
 
@@ -47,8 +60,12 @@ router.beforeEach(async (to, from, next) => {
   const isGuestPage = path === '/login' || path === '/register'
   const isApp = path === '/app' || path.startsWith('/app/')
 
-  const verifyPages = ['/app/email-not-verified', '/app/verify-email', '/app/help']
-  const orgOnboardingPages = ['/app/welcome', '/app/organization/new', '/app/help']
+  if (path === '/app/help') {
+    return next('/help')
+  }
+
+  const verifyPages = ['/app/email-not-verified', '/app/verify-email']
+  const orgOnboardingPages = ['/app/welcome', '/app/organization/new']
 
   const isVerifyFlow = verifyPages.includes(path)
   const isOrgOnboarding = orgOnboardingPages.includes(path)
