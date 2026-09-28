@@ -137,6 +137,10 @@ const deleteAccount = async () => {
         Diese Aktion löscht Ihr Konto dauerhaft. Wenn Sie Eigentümer der aktuellen Organisation sind, werden auch die
         Organisation und alle zugehörigen Retouren, Kundendaten, Sendungen, Erstattungen und Verlaufsdaten gelöscht.
       </p>
+      <p>
+        Weitere Informationen zur Löschung personenbezogener Daten finden Sie in der
+        <RouterLink to="/legal/privacy" target="_blank">Datenschutzerklärung</RouterLink>.
+      </p>
       <FormGroup name="delete_password" label="Passwort" :error="deleteError">
         <FormFieldText
             v-model="deletePassword"

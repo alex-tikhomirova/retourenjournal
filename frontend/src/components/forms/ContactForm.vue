@@ -160,6 +160,11 @@ const onSubmit = async () => {
       </FormGroup>
     </div>
 
+    <p>
+      Ihre Angaben werden zur Bearbeitung Ihrer Anfrage verarbeitet. Weitere Informationen finden Sie in der
+      <RouterLink to="/legal/privacy">Datenschutzerklärung</RouterLink>.
+    </p>
+
     <p v-if="getError('_general')" class="text-danger">{{ getError('_general') }}</p>
     <p v-if="isSent" class="text-success" role="status">Ihre Nachricht wurde gesendet.</p>
 

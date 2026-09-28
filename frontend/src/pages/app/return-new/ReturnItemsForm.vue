@@ -144,6 +144,7 @@ if (!items.value.length) {
 
 .return-form-items {
   flex: 1 1 100%;
+  overflow-x: auto;
   .qty {
     width: 100px;
   }

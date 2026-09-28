@@ -38,7 +38,7 @@ const {
   setErrorsFromResponse,
 } = useFormErrors()
 
-api.get('api/returns/next-number').then(res => formData.value.return_number = res.data?.data?.return_number ?? '')
+api.get('/api/returns/next-number').then(res => formData.value.return_number = res.data?.data?.return_number ?? '')
 
 const lookup = useLookupStore()
 const initialStatus = computed(() => lookup.initialReturnStatus)
@@ -69,7 +69,7 @@ const save = async () => {
 
     </template>
   </ToolBar>
-  <div class="return-form-page container">
+  <div class="return-form-page container-full">
 
     <PageCard class="return padded" title="Retourdaten">
       <template #title>
@@ -135,7 +135,7 @@ const save = async () => {
   .return {
     flex: 1 1 calc((100% - #{variables.$module-gap}) / 2);
     min-width: 0;
-    @media (max-width: 768px) {
+    @media (max-width: variables.$breakpoint-md) {
       flex-basis: 100%;
     }
   }

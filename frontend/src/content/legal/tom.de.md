@@ -69,9 +69,9 @@ Der Hosting-Anbieter stellt die grundlegende Rechenzentrums-, Netzwerk- und Serv
 
 ### Datensicherung
 
-Soweit für die jeweilige Infrastruktur eingerichtet, werden Backups oder Snapshots zur Wiederherstellung nach technischen Störungen erstellt.
+Soweit für die jeweilige Infrastruktur eingerichtet, werden verschlüsselte Backups oder Snapshots zur Wiederherstellung nach technischen Störungen erstellt. Off-Server-Backups werden in {{BACKUP_PROVIDER}} innerhalb der Europäischen Union gespeichert.
 
-Backup- und Wiederherstellungsprozesse werden dem Reifegrad des Dienstes entsprechend weiterentwickelt.
+Backup- und Wiederherstellungsprozesse werden dem Reifegrad des Dienstes entsprechend weiterentwickelt. Backups werden nicht als einzige Kopie auf dem Produktionsserver vorgehalten.
 
 ### Wartung und Updates
 
@@ -101,7 +101,7 @@ Eine Verschlüsselung einzelner Datenbankfelder ist in der aktuellen Version nic
 
 ## 6. Wiederherstellbarkeit
 
-Soweit Backups oder Snapshots eingerichtet sind, dienen diese der Wiederherstellung der Anwendung und Daten nach technischen Störungen oder Datenverlust.
+Soweit Backups oder Snapshots eingerichtet sind, dienen diese der Wiederherstellung der Anwendung und Daten nach technischen Störungen oder Datenverlust. Wiederherstellungen werden nach Möglichkeit regelmäßig getestet.
 
 Die Wiederherstellung einzelner Datensätze kann nicht garantiert werden, sofern dies nicht ausdrücklich vereinbart ist.
 
@@ -127,7 +127,7 @@ Konten, Organisationen und zugehörige Daten können nach Maßgabe der Anwendung
 
 Bei Löschung einer Organisation können zugehörige Retouren, Kunden, Artikel, Sendungen, Erstattungen und Verlaufsdaten gelöscht werden.
 
-Technische Logs und Backups können Daten noch für einen begrenzten Zeitraum enthalten, bis sie regulär gelöscht oder überschrieben werden.
+Technische Logs und verschlüsselte Backups können Daten noch für einen begrenzten Zeitraum enthalten, bis sie regulär gelöscht oder überschrieben werden.
 
 ## 10. Trennung von Entwicklungs- und Produktivumgebung
 

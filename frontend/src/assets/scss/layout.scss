@@ -1,13 +1,16 @@
+@use "variables";
 
 
 .container{
   max-width: 1280px;
   margin-left: auto;
   margin-right: auto;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 .container-full{
-  margin-left: 20px;
-  margin-right: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 .container-small{
   max-width: 520px;
@@ -20,6 +23,7 @@
 .flex{
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
 }
 .flex-col{
   flex-direction: column;
@@ -66,3 +70,27 @@
 .gap-36{gap: 36px;}
 .gap-40{gap: 40px;}
 .gap-50{gap: 50px;}
+
+@media (max-width: variables.$breakpoint-sm) {
+  .hide-sm {
+    display: none !important;
+  }
+}
+
+@media (max-width: variables.$breakpoint-md) {
+  .hide-md {
+    display: none !important;
+  }
+}
+
+@media (max-width: variables.$breakpoint-lg) {
+  .hide-lg {
+    display: none !important;
+  }
+}
+
+@media (max-width: variables.$breakpoint-xl) {
+  .hide-xl {
+    display: none !important;
+  }
+}

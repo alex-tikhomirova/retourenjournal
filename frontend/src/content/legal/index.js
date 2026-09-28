@@ -9,22 +9,32 @@ const legalDocuments = {
     privacy: {
         title: 'Datenschutzerklärung',
         content: privacyDe,
+        version: '2026-09-25',
+        hash: null,
     },
     terms: {
         title: 'Nutzungsbedingungen',
         content: termsDe,
+        version: '2026-09-25',
+        hash: null,
     },
     avv: {
         title: 'Auftragsverarbeitungsvertrag',
         content: avvDe,
+        version: '2026-09-25',
+        hash: null,
     },
     tom: {
         title: 'Technische und organisatorische Maßnahmen',
         content: tomDe,
+        version: '2026-09-25',
+        hash: null,
     },
     subprocessors: {
         title: 'Unterauftragsverarbeiter',
         content: subprocessorsDe,
+        version: '2026-09-25',
+        hash: null,
     },
 }
 
@@ -35,6 +45,10 @@ const legalVariables = {
     LEGAL_PRIVACY_EMAIL: import.meta.env.VITE_LEGAL_PRIVACY_EMAIL,
     LEGAL_CONTACT_EMAIL: import.meta.env.VITE_LEGAL_CONTACT_EMAIL,
     HOSTING_PROVIDER: import.meta.env.VITE_LEGAL_HOSTING_PROVIDER,
+    MAIL_SERVER_PROVIDER: import.meta.env.VITE_LEGAL_MAIL_SERVER_PROVIDER,
+    INCOMING_MAIL_PROVIDER: import.meta.env.VITE_LEGAL_INCOMING_MAIL_PROVIDER,
+    ANALYTICS_PROVIDER: import.meta.env.VITE_LEGAL_ANALYTICS_PROVIDER,
+    BACKUP_PROVIDER: import.meta.env.VITE_LEGAL_BACKUP_PROVIDER,
 }
 
 const legalTemplatePattern = /{{([A-Z0-9_]+)}}/g

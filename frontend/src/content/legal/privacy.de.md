@@ -77,7 +77,9 @@ Wenn Sie uns kontaktieren, verarbeiten wir Ihre Angaben, um Ihre Anfrage zu bear
 
 Wir verarbeiten E-Mail-Adressen, um notwendige System-E-Mails zu versenden, zum Beispiel zur E-Mail-Bestätigung, Wiederherstellung des Zugangs oder für wichtige kontobezogene Informationen.
 
-System-E-Mails werden über einen eigenen Mailserver auf der Infrastruktur des Hosting-Anbieters versendet. Eingehende Nachrichten an Kontaktadressen können über den eigenen Mailserver angenommen und an ein externes Postfach weitergeleitet werden.
+System-E-Mails werden über die E-Mail-Infrastruktur {{MAIL_SERVER_PROVIDER}} versendet.
+
+Eingehende Nachrichten an Kontaktadressen können über den eigenen Mailserver angenommen, an {{INCOMING_MAIL_PROVIDER}} weitergeleitet und dort gespeichert werden.
 
 ### Sicherheit, Stabilität und Fehleranalyse
 
@@ -110,8 +112,9 @@ Zur Bereitstellung der Website und Anwendung können personenbezogene Daten an t
 
 - Hosting-Anbieter: {{HOSTING_PROVIDER}};
 - DNS- und Domainanbieter;
-- E-Mail-Infrastruktur oder externe E-Mail-Anbieter, soweit eingesetzt;
-- Analyse-Infrastruktur, soweit eingesetzt;
+- eigene E-Mail-Infrastruktur und externe E-Mail-Postfächer, soweit eingesetzt;
+- {{ANALYTICS_PROVIDER}}, soweit Analysefunktionen eingesetzt werden;
+- {{BACKUP_PROVIDER}} zur Speicherung verschlüsselter Sicherungen, soweit Backup-Speicher eingesetzt wird;
 - weitere technische Dienstleister, soweit diese für Betrieb, Sicherheit oder Wartung erforderlich sind.
 
 Dienstleister werden nur eingesetzt, soweit dies für den Betrieb des Dienstes erforderlich ist und geeignete vertragliche Regelungen bestehen.
@@ -140,15 +143,15 @@ Diese Technologien sind für den Betrieb der Anwendung erforderlich und werden n
 
 Soweit Informationen auf dem Endgerät gespeichert oder ausgelesen werden, erfolgt dies unter Berücksichtigung von § 25 TDDDG.
 
-## 12. Plausible Analytics
+## 12. {{ANALYTICS_PROVIDER}} Analytics
 
-Wir planen den Einsatz einer selbst gehosteten Instanz von Plausible Analytics zur statistischen Auswertung der Nutzung von Website und Anwendung.
+Wir verwenden {{ANALYTICS_PROVIDER}} zur datenschutzfreundlichen statistischen Auswertung der Nutzung von Website und Anwendung.
 
-Plausible wird ohne Cookies eingesetzt und erstellt keine Werbeprofile. Die Verarbeitung erfolgt auf unserer eigenen Infrastruktur innerhalb der Europäischen Union.
+Die Analysefunktion wird ohne Cookies eingesetzt und erstellt keine Werbeprofile.
 
 Verarbeitet werden insbesondere aggregierte Informationen zu aufgerufenen Seiten, Referrer, Gerätetyp, Browser, Land des Zugriffs und Zeitpunkt des Zugriffs.
 
-Wenn Plausible zum Zeitpunkt der Veröffentlichung noch nicht eingesetzt wird, wird dieser Abschnitt entsprechend angepasst.
+Die Verarbeitung erfolgt auf Grundlage unseres berechtigten Interesses gemäß Art. 6 Abs. 1 lit. f DSGVO, die Nutzung von Website und Anwendung zu verstehen und RetourenJournal zu verbessern.
 
 ## 13. Übermittlung in Drittländer
 
@@ -156,7 +159,7 @@ Die Verarbeitung erfolgt nach Möglichkeit innerhalb der Europäischen Union ode
 
 Eine Übermittlung in Länder außerhalb der EU oder des EWR findet nur statt, wenn hierfür eine geeignete Rechtsgrundlage besteht, zum Beispiel ein Angemessenheitsbeschluss, Standardvertragsklauseln oder ein anderer nach der DSGVO vorgesehener Mechanismus.
 
-Ob und welche Drittlandübermittlungen stattfinden, hängt insbesondere von der final eingesetzten E-Mail- und Dienstleister-Infrastruktur ab.
+Eine Drittlandübermittlung kann insbesondere im Zusammenhang mit externen E-Mail-Postfächern wie {{INCOMING_MAIL_PROVIDER}} oder mit {{ANALYTICS_PROVIDER}} stattfinden. In diesem Fall erfolgt die Übermittlung nur auf Grundlage geeigneter Garantien oder anderer nach der DSGVO vorgesehener Mechanismen.
 
 ## 14. Speicherdauer
 
@@ -213,7 +216,7 @@ Dazu gehören insbesondere:
 - Protokollierung wichtiger Änderungen;
 - Beschränkung des Zugriffs auf Server und Datenbank;
 - regelmäßige Aktualisierung der Server- und Anwendungskomponenten;
-- Sicherungen, soweit für die jeweilige Infrastruktur eingerichtet.
+- verschlüsselte Sicherungen, soweit für die jeweilige Infrastruktur eingerichtet.
 
 Eine Zwei-Faktor-Authentifizierung ist in der aktuellen Version nicht verpflichtend vorgesehen.
 

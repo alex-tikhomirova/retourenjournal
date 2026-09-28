@@ -10,7 +10,7 @@ import LogoChar from "@/components/blocks/LogoChar.vue";
 <template>
   <router-link class="brand" to="/">
     <LogoChar :size="40"/>
-    <div class="title">
+    <div class="title hide-sm">
       <span><span class="prefix">Retouren</span>journal</span>
     </div>
   </router-link>

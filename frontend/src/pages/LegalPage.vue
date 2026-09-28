@@ -29,6 +29,5 @@ const rendered = computed(() => {
 <style scoped lang="scss">
   @use "@/assets/scss/variables";
   .legal-page{
-    padding: 40px variables.$module-padding;
   }
 </style>

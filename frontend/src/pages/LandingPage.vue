@@ -389,7 +389,7 @@ $card-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
 }
 
 .landing-hero {
-  padding-top: 76px;
+  padding-top: 36px;
   padding-bottom: 58px;
 }
 
@@ -981,7 +981,7 @@ $card-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
     margin: 0;
   }
 }
-@media (max-width: 1100px) {
+@media (max-width: variables.$breakpoint-xl) {
   .hero-grid,
   .cta-card {
     grid-template-columns: 1fr;
@@ -996,7 +996,7 @@ $card-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: variables.$breakpoint-lg) {
   .contact-panel {
     grid-template-columns: 1fr;
   }
@@ -1016,7 +1016,7 @@ $card-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: variables.$breakpoint-sm) {
   .landing-hero {
     padding-top: 42px;
   }

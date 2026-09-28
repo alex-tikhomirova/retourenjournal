@@ -34,14 +34,10 @@ class PasswordResetController extends Controller
             'email' => ['required', 'email'],
         ]);
 
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
+        Password::sendResetLink($request->only('email'));
 
-        // Важно: не палим существует email или нет (security). Возвращаем "ok" всегда.
         return response()->json([
             'ok' => true,
-            'status' => __($status),
         ]);
     }
 

@@ -6,6 +6,8 @@ const routes = [
   { path: '/', component: () => import('@/pages/LandingPage.vue') },
   { path: '/login', component: () => import('@/pages/LoginPage.vue') },
   { path: '/register', component: () => import('@/pages/RegisterPage.vue') },
+  { path: '/forgot-password', component: () => import('@/pages/ForgotPasswordPage.vue') },
+  { path: '/reset-password', component: () => import('@/pages/ResetPasswordPage.vue') },
   { path: '/impressum', component: () => import('@/pages/ImpressumPage.vue') },
   { path: '/help', component: () => import('@/pages/app/HelpPage.vue'), meta: { layout: 'guest' } },
   {
@@ -57,7 +59,8 @@ router.beforeEach(async (to, from, next) => {
   const path = to.path
 
   const isLanding = path === '/'
-  const isGuestPage = path === '/login' || path === '/register'
+  const guestPages = ['/login', '/register', '/forgot-password', '/reset-password']
+  const isGuestPage = guestPages.includes(path)
   const isApp = path === '/app' || path.startsWith('/app/')
 
   if (path === '/app/help') {

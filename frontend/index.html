@@ -10,5 +10,33 @@
   <body>
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
+    <script>
+      window.filterUmamiPayload = (type, payload) => {
+        const path = new URL(payload.url, window.location.origin).pathname
+        payload.url = /^\/app\/returns\/[^/]+$/.test(path) && path !== '/app/returns/new'
+          ? '/app/returns/:id'
+          : path
+
+        if (payload.referrer) {
+          try {
+            payload.referrer = new URL(payload.referrer).origin
+          } catch {
+            payload.referrer = ''
+          }
+        }
+
+        return payload
+      }
+    </script>
+    <script
+      defer
+      src="https://cloud.umami.is/script.js"
+      data-website-id="d1a27735-243a-4982-ab1d-46d275755076"
+      data-domains="retourenjournal.de"
+      data-exclude-search="true"
+      data-exclude-hash="true"
+      data-before-send="filterUmamiPayload"
+      referrerpolicy="no-referrer"
+    ></script>
   </body>
 </html>

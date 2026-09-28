@@ -3,8 +3,10 @@
 namespace Tests\Feature\Auth;
 
 use App\Models\Organization;
+use App\Models\ReturnStatus;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class AccountDeletionTest extends TestCase
@@ -89,5 +91,39 @@ class AccountDeletionTest extends TestCase
         $this->assertDatabaseMissing('users', ['id' => $user->id]);
         $this->assertDatabaseHas('users', ['id' => $owner->id]);
         $this->assertDatabaseHas('organizations', ['id' => $organization->id]);
+    }
+
+    public function test_owner_deletion_removes_organization_returns_and_customer_data(): void
+    {
+        $user = User::factory()->create();
+        $organization = Organization::create(['name' => 'Test GmbH']);
+        $organization->users()->attach($user->id, ['is_owner' => true]);
+        $user->forceFill(['current_organization_id' => $organization->id])->save();
+        $customerId = DB::table('customers')->insertGetId([
+            'organization_id' => $organization->id, 'name' => 'Ada Customer',
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $returnId = DB::table('returns')->insertGetId([
+            'organization_id' => $organization->id, 'customer_id' => $customerId,
+            'return_number' => 'RET-1',
+            'status_id' => ReturnStatus::where('code', 'created')->firstOrFail()->id,
+            'created_by_user_id' => $user->id,
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $itemId = DB::table('return_items')->insertGetId([
+            'organization_id' => $organization->id,
+            'return_id' => $returnId, 'line_no' => 1, 'item_name' => 'Shoes',
+            'quantity' => 1, 'currency' => 'EUR',
+        ]);
+
+        $this->actingAs($user)->deleteJson('/api/auth/profile', [
+            'password' => 'password',
+        ])->assertOk();
+
+        $this->assertDatabaseMissing('users', ['id' => $user->id]);
+        $this->assertDatabaseMissing('organizations', ['id' => $organization->id]);
+        $this->assertDatabaseMissing('customers', ['id' => $customerId]);
+        $this->assertDatabaseMissing('returns', ['id' => $returnId]);
+        $this->assertDatabaseMissing('return_items', ['id' => $itemId]);
     }
 }

@@ -110,6 +110,7 @@ const update = () => {
 
 .decision-select {
   display: flex;
+  flex-wrap: wrap;
   .decision-accordeon {
     padding: variables.$module-padding;
     display: flex;

@@ -21,6 +21,8 @@ services:
     volumes:
       - app-storage:/var/www/html/backend/storage
       - app-cache:/var/www/html/backend/bootstrap/cache
+    extra_hosts:
+      - "mail.retourenjournal.de:${MAIL_HOST_GATEWAY:-172.18.0.1}"
     networks:
       - internal
 
@@ -89,6 +91,8 @@ services:
     volumes:
       - app-storage:/var/www/html/backend/storage
       - app-cache:/var/www/html/backend/bootstrap/cache
+    extra_hosts:
+      - "mail.retourenjournal.de:${MAIL_HOST_GATEWAY:-172.18.0.1}"
     networks:
       - internal
 
@@ -114,6 +118,8 @@ services:
     volumes:
       - app-storage:/var/www/html/backend/storage
       - app-cache:/var/www/html/backend/bootstrap/cache
+    extra_hosts:
+      - "mail.retourenjournal.de:${MAIL_HOST_GATEWAY:-172.18.0.1}"
     networks:
       - internal
 

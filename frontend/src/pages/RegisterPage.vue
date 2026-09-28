@@ -4,6 +4,8 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user.js'
 import FormFieldText from '@/components/forms/FormFieldText.vue'
 import FormGroup from '@/components/forms/FormGroup.vue'
+import CheckBox from '@/components/forms/CheckBox.vue'
+import {legalDocuments} from '@/content/legal'
 import {useFormErrors} from '@/utils/useFormErrors.js'
 
 const router = useRouter()
@@ -14,6 +16,8 @@ const form = ref({
   email: '',
   password: '',
   password_confirmation: '',
+  terms_accepted: false,
+  privacy_acknowledged: false,
 })
 
 const {
@@ -38,6 +42,8 @@ const onSubmit = async () => {
   for (const field of ['name', 'email', 'password', 'password_confirmation']) {
     if (!form.value[field]) requiredErrors[field] = ['Dieses Feld ist erforderlich.']
   }
+  if (!form.value.terms_accepted) requiredErrors.terms_accepted = ['Bitte akzeptieren Sie die Nutzungsbedingungen.']
+  if (!form.value.privacy_acknowledged) requiredErrors.privacy_acknowledged = ['Bitte bestätigen Sie die Kenntnisnahme der Datenschutzerklärung.']
   if (Object.keys(requiredErrors).length) {
     setErrors(requiredErrors)
     return
@@ -53,6 +59,20 @@ const onSubmit = async () => {
     email: form.value.email,
     password: form.value.password,
     password_confirmation: form.value.password_confirmation,
+    legal_acceptances: [
+      {
+        document_key: 'terms',
+        document_version: legalDocuments.terms.version,
+        document_hash: legalDocuments.terms.hash,
+        action: 'accepted',
+      },
+      {
+        document_key: 'privacy',
+        document_version: legalDocuments.privacy.version,
+        document_hash: legalDocuments.privacy.hash,
+        action: 'acknowledged',
+      },
+    ],
   })
 
   if (!res.ok) {
@@ -113,6 +133,20 @@ const onSubmit = async () => {
             @update:modelValue="clearError('password_confirmation')"
         />
       </FormGroup>
+
+      <div>
+        <CheckBox v-model="form.terms_accepted" @update:modelValue="clearError('terms_accepted')">
+          Ich akzeptiere die <RouterLink to="/legal/terms" target="_blank">Nutzungsbedingungen</RouterLink>.
+        </CheckBox>
+        <p v-if="getError('terms_accepted')" class="text-danger">{{ getError('terms_accepted') }}</p>
+      </div>
+
+      <div>
+        <CheckBox v-model="form.privacy_acknowledged" @update:modelValue="clearError('privacy_acknowledged')">
+          Ich habe die <RouterLink to="/legal/privacy" target="_blank">Datenschutzerklärung</RouterLink> zur Kenntnis genommen.
+        </CheckBox>
+        <p v-if="getError('privacy_acknowledged')" class="text-danger">{{ getError('privacy_acknowledged') }}</p>
+      </div>
 
       <button class="btn btn-primary" type="submit" :disabled="user.isLoading">
         {{ user.isLoading ? 'Konto wird erstellt...' : 'Konto erstellen' }}

@@ -220,10 +220,6 @@ const faqItems = [
 <style scoped lang="scss">
 @use "@/assets/scss/variables";
 
-.help-page {
-  padding: 40px variables.$module-padding;
-}
-
 .help-layout {
   display: grid;
   margin-top: variables.$module-padding;
@@ -352,7 +348,7 @@ const faqItems = [
   color: variables.$text-color-muted;
 }
 
-@media (max-width: 900px) {
+@media (max-width: variables.$breakpoint-lg) {
   .help-layout {
     grid-template-columns: 1fr;
   }

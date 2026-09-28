@@ -40,9 +40,10 @@ import UserDropdown from "@/components/blocks/UserDropdown.vue";
             <nav>
               <ul>
                 <li><RouterLink to="/help">Hilfe / FAQ</RouterLink></li>
-                <li><a href="#">Kontakt</a></li>
+                <li><RouterLink :to="{path: '/', hash: '#kontakt'}">Kontakt</RouterLink></li>
                 <li><RouterLink to="/impressum">Impressum</RouterLink></li>
-                <li><a href="#">Datenschutzerklärung</a></li>
+                <li><RouterLink to="/legal/privacy">Datenschutzerklärung</RouterLink></li>
+                <li><RouterLink to="/legal/terms">Nutzungsbedingungen</RouterLink></li>
               </ul>
             </nav>
           </div>
@@ -97,8 +98,11 @@ import UserDropdown from "@/components/blocks/UserDropdown.vue";
     .container-full{
       .flex-row{
         display: flex;
-
+        flex-wrap: wrap;
         gap: 50px;
+        @media (max-width: variables.$breakpoint-sm) {
+          gap: 24px;
+        }
         .footer-brand{
 
         }
@@ -108,6 +112,10 @@ import UserDropdown from "@/components/blocks/UserDropdown.vue";
             ul{
               display: flex;
               gap: 40px;
+              flex-wrap: wrap;
+              @media (max-width: variables.$breakpoint-sm) {
+                gap: 24px;
+              }
               li{
 
               }

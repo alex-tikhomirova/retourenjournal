@@ -148,10 +148,11 @@
     .filters{
       margin-bottom: variables.$module-padding;
       padding: variables.$module-padding;
+      overflow-x: auto;
     }
     .returns{
       margin-bottom: 18px;
-
+      overflow-x: auto;
       .returns-table{
           thead tr:first-child{
             th:first-child{

@@ -164,7 +164,7 @@
     background: variables.$head-bg-color;
   }
 
-  @media (max-width: 640px){
+  @media (max-width: variables.$breakpoint-sm){
     .modal-overlay{
       align-items: stretch;
       padding: 12px;

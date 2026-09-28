@@ -113,7 +113,7 @@ const onCustomerChange = (field) => {
 .return-customer-form {
   flex: 1 1 calc((100% - #{variables.$module-gap}) / 2);
   min-width: 0;
-  @media (max-width: 768px) {
+  @media (max-width: variables.$breakpoint-md) {
     flex-basis: 100%;
   }
 

@@ -10,45 +10,45 @@ class AuthenticationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_login_screen_can_be_rendered(): void
+    protected function setUp(): void
     {
-        $response = $this->get('/login');
-
-        $response->assertStatus(200);
+        parent::setUp();
+        config()->set('sanctum.stateful', ['localhost:5173']);
+        config()->set('sanctum.middleware.validate_csrf_token', null);
+        $this->withHeader('Origin', 'http://localhost:5173');
     }
 
-    public function test_users_can_authenticate_using_the_login_screen(): void
+    public function test_users_can_authenticate(): void
     {
         $user = User::factory()->create();
 
-        $response = $this->post('/login', [
+        $this->postJson('/api/auth/login', [
             'email' => $user->email,
             'password' => 'password',
-        ]);
+        ])->assertOk()->assertJsonPath('user.id', $user->id);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
     }
 
-    public function test_users_can_not_authenticate_with_invalid_password(): void
+    public function test_users_cannot_authenticate_with_invalid_password(): void
     {
         $user = User::factory()->create();
 
-        $this->post('/login', [
+        $this->postJson('/api/auth/login', [
             'email' => $user->email,
             'password' => 'wrong-password',
-        ]);
+        ])->assertUnprocessable()->assertJsonValidationErrors('email');
 
-        $this->assertGuest();
+        $this->assertGuest('web');
     }
 
     public function test_users_can_logout(): void
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->post('/logout');
+        $this->actingAs($user)->postJson('/api/auth/logout')
+            ->assertOk()->assertJson(['ok' => true]);
 
-        $this->assertGuest();
-        $response->assertRedirect('/');
+        $this->assertGuest('web');
     }
 }

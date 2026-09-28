@@ -31,7 +31,7 @@ const userStore = useUserStore()
 
       <div class="container">
 
-        <div class="flex-row">
+        <div class="flex-row" >
           <div class="footer-brand ">
             <div class="wrapper">
               <LogoChar :size="50"/>
@@ -101,6 +101,8 @@ const userStore = useUserStore()
     }
   }
   main{
+    padding-top: 40px;
+    padding-bottom: 40px;
     flex: 1;
   }
 
@@ -112,7 +114,9 @@ const userStore = useUserStore()
       display: flex;
       flex-direction: column;
       height: 100%;
-      justify-content: space-between;
+      @media (max-width: variables.$breakpoint-sm) {
+        flex-direction: column;
+      }
     }
     a{
       color: #ffffff;
@@ -121,12 +125,23 @@ const userStore = useUserStore()
       .flex-row{
         display: flex;
         justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 24px;
+        @media (max-width: variables.$breakpoint-sm) {
+          flex-direction: column;
+          svg{
+            height: 24px;
+          }
+        }
         .footer-brand{
           flex: 1;
+
         }
         .footer-nav{
           flex: 3;
           justify-content: space-between;
+          gap: 24px;
+          flex-wrap: wrap;
           h3{
             margin-bottom: 12px;
           }

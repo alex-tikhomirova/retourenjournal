@@ -27,6 +27,12 @@ class OrganizationStoreRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'min:2', 'max:255'],
+            'legal_acceptances' => ['required', 'array', 'size:1'],
+            'legal_acceptances.0' => ['required', 'array:document_key,document_version,document_hash,action'],
+            'legal_acceptances.0.document_key' => ['required', 'in:avv'],
+            'legal_acceptances.0.document_version' => ['required', 'string', 'max:255'],
+            'legal_acceptances.0.document_hash' => ['nullable', 'string', 'max:255'],
+            'legal_acceptances.0.action' => ['required', 'in:contract_concluded'],
         ];
     }
 

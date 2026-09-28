@@ -43,7 +43,6 @@ const contact = {
 @use "@/assets/scss/variables";
 
 .impressum-page {
-  padding: 40px variables.$module-padding;
 }
 
 address {

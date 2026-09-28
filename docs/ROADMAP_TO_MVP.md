@@ -28,36 +28,32 @@ MVP считается готовым, когда можно показать п
 
 - Laravel backend + PostgreSQL migrations.
 - Vue SPA + Vite.
-- Sanctum/Breeze API authentication.
-- Организации и `current_organization_id`.
+- Sanctum/Breeze API authentication, email verification, password reset.
+- Организации, `current_organization_id`, owner flow и legal acceptance flow.
 - Multi-tenant scope через `OrganizationScope`.
 - Доменные таблицы: returns, items, customers, shipments, refunds, notes, events, statuses, decisions.
-- API для организации, списка возвратов, просмотра возврата, создания/обновления возврата.
-- API для создания/обновления shipments.
-- API для создания/обновления refunds.
-- Lookup API для return statuses, decisions, shipment statuses, refund statuses.
-- Основной frontend flow: returns list -> create return -> return detail.
-- UI-блоки для статуса, решения, товаров, клиента, shipment list, refund list, timeline.
+- API и UI для возвратов, статусов, решений, доставок, refund, истории действий.
+- Создание/редактирование shipments и refunds, статусы и события в истории.
+- Нумерация/идентификация сущностей для UI.
+- App shell: header, footer, профиль, организация, legal/help/contact links.
+- Public/auth/onboarding flow на немецком: register, login, verify email, welcome, organization creation.
+- Legal-документы: Impressum, Datenschutzerklärung, Nutzungsbedingungen, AVV, TOMs, Unterauftragsverarbeiter.
+- Landing/public surface и footer links.
+- Mobile-safe pass для ключевых экранов; не perfect, но уже не критично.
+- Production deployment notes.
+- Production backup/restore scripts через restic + Cloudflare R2 EU storage.
 - `docs/CONCEPT.md` с русской и английской выдержкой.
 
-Основные незавершенности из кода:
+Осталось проверить на production:
 
-- `frontend/src/pages/app/return/refund/RefundForm.vue` пустой, refund creation UI не завершен.
-- `RefundItem.vue` не показывает статус refund.
-- В `ReturnRefundService` TODO по logging и recalculation.
-- В `ShipmentService` TODO по logging и recalculation, хотя часть событий уже есть в `ReturnShipment` model.
-- Нет отдельного API/UI для notes, хотя таблица и relation есть.
-- Нет domain feature tests для returns/shipments/refunds/tenant isolation.
-- Нет нормальной обработки validation errors в формах.
-- UI тексты местами смешаны DE/EN и местами видна битая кодировка.
-- `RegisterPage.vue` пока на английском, а продукт должен быть German-first.
-- `ReturnResource` пустой и отдает модель по умолчанию; для MVP лучше зафиксировать явный API contract.
-- Валидация местами подозрительная: например `required|nullable` в update request, refund update готовит `amount_cents` из `cost`, но сервис сумму не обновляет.
-- Нет финального README/runbook для локального запуска и demo walkthrough.
-- Форма создания возврата требует доводки: подсказка/генерация номера, frontend validation, понятные required/optional поля, редирект в созданный возврат.
-- Страница возврата требует доводки: редактирование данных клиента, стиль решений, подсказки по следующим действиям, сброс решения, refund form/status flow.
-- Нет единой frontend-системы пользовательских сообщений/alerts для ошибок API и успешных действий.
-- Public surface не завершен: app header, landing page, legal placeholders/docs для немецкого рынка.
+- Реальный deploy по `docs/DEPLOYMENT.md`.
+- Регистрация -> email verification -> организация -> возврат -> решение -> shipment/refund -> история.
+- Validation/error UX на живом API.
+- Tenant/security audit на реальных данных и edge cases.
+- Mobile sanity на production build.
+- Frontend build и backend smoke tests.
+- Restore-check из backup snapshot на тестовой базе/хосте.
+- Финальный German/legal text pass перед публичной ссылкой.
 
 ## 3. Work Strategy
 
@@ -470,7 +466,7 @@ Acceptance criteria:
 
 ### P5.1 Landing page
 
-Статус: todo
+Статус: done
 
 Задачи:
 
@@ -502,7 +498,7 @@ Acceptance criteria:
 
 ### P5.3 Legal documents checklist
 
-Статус: todo
+Статус: done, финальный legal review остается вне разработки
 
 Важно: это не юридическая консультация. Для публичного запуска в Германии документы нужно перепроверить с актуальными требованиями или специалистом.
 
@@ -588,6 +584,26 @@ Acceptance criteria:
 
 - Проект можно показать как работу разработчика, а не только как локальный код.
 
+### P6.5 Production backups
+
+Статус: done, restore-check на production/test host еще проверить
+
+Задачи:
+
+- Выбрать место для encrypted off-server backups. Backup target: Cloudflare R2 free tier, EU storage, только encrypted backups.
+- Настроить автоматический backup PostgreSQL: pg_dump или pg_dumpall, сжатие, шифрование, отправка во внешнее хранилище.
+- Настроить backup пользовательских файлов, если они появятся. Для текущего MVP достаточно базы и server-only env/deploy notes, если uploads еще нет.
+- Хранить минимум несколько daily restore points и один weekly restore point. Точные сроки retention зафиксировать после выбора хранилища.
+- Проверить restore на отдельной тестовой базе, а не только факт создания архива.
+- Не хранить единственную копию backup на том же сервере, где работает приложение.
+
+Acceptance criteria:
+
+- Есть documented backup command или script.
+- Backup уходит за пределы production-сервера.
+- Есть короткая инструкция restore.
+- Один restore был вручную проверен на тестовой базе.
+
 ## 11. Parking Lot - Not MVP
 
 Не берем до MVP, если только явно не понадобится:
@@ -608,21 +624,18 @@ Acceptance criteria:
 
 ## 12. Immediate Next Tasks
 
-Следующий рабочий порядок:
+Следующий рабочий порядок перед MVP-запуском:
 
-1. Разобрать текущие незакоммиченные изменения и отделить documentation changes от code changes.
-2. Запустить проект локально и проверить базовый auth/onboarding/returns flow.
-3. Довести форму создания возврата: required/optional поля, подсказка номера, frontend validation, API errors, redirect в созданный возврат.
-4. Доработать страницу возврата: customer edit, убрать кнопки-пустышки, привести decision block к стилю.
-5. Закрыть refund creation UI: `RefundForm.vue`.
-6. Исправить refund backend update/status/processed_at.
-7. Добавить/проверить refund events в timeline и правило create vs update events.
-8. Усилить tenant-safe update для shipment/refund.
-9. Перепроверить весь workflow вручную: registration -> organization -> return -> decision -> shipment -> refund -> close.
-10. Пройти немецкие visible strings и кодировку в ключевых страницах.
-11. Доработать app/public headers и landing skeleton.
-12. Добавить минимальные backend feature tests.
-13. Обновить README и demo walkthrough.
+1. Проверить `docs/DEPLOYMENT.md` на production-сервере и поправить по факту, если команды отличаются от реальности.
+2. Прогнать production deploy: containers, HTTPS, migrations, frontend build, env variables.
+3. Прогнать полный ручной сценарий на production: registration -> email verification -> organization -> return -> decision -> shipment/refund -> history.
+4. Проверить validation/error UX на production для auth, onboarding, return, shipment, refund и decision confirm flow.
+5. Проверить tenant/security edge cases: чужая организация, чужой return, shipment/refund update только через текущий return.
+6. Проверить mobile sanity на production build: public/auth/legal, returns list, return detail, tables/cards.
+7. Прогнать минимальные backend smoke/feature tests или хотя бы записать ручной smoke checklist, если тесты откладываем.
+8. Выполнить backup вручную, проверить `restic snapshots`, затем сделать restore-check на тестовой базе/хосте.
+9. Обновить README/demo walkthrough: что это за проект, как запустить, как пройти demo flow.
+10. Финальный немецкий text pass: visible strings, legal variables, footer links, no dead links.
 
 ## 13. How We Will Work
 

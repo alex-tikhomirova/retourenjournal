@@ -59,7 +59,7 @@ async function onSubmit() {
             required
             />
       </FormGroup>
-      <FormGroup label="Passwort" name="email">
+      <FormGroup label="Passwort" name="password">
         <FormFieldText
             v-model="form.password"
             name="password"
@@ -68,6 +68,9 @@ async function onSubmit() {
             required
         />
       </FormGroup>
+      <RouterLink class="forgot-password-link" to="/forgot-password">
+        Passwort vergessen?
+      </RouterLink>
       <button class="btn btn-primary" type="submit" :disabled="user.isLoading">
         {{ user.isLoading ? 'Anmeldung läuft…' : 'Anmelden' }}
       </button>
@@ -88,4 +91,7 @@ async function onSubmit() {
   margin: 40px auto;
 }
 .hint { margin-top: 12px; }
+.forgot-password-link {
+  justify-self: end;
+}
 </style>
